@@ -2,8 +2,9 @@
 
 ## Supported RAG types
 
-rag-titan **0.1** supports **2 RAG types**. Every one has the same method,
-`answer(question)`, and with `RAGTitan` you pick one using `rag_type`.
+rag-titan supports **2 RAG types**. Every one has the same methods,
+`answer(question)` and [`run(question)`](#seeing-every-step-run), and with
+`RAGTitan` you pick one using `rag_type`.
 
 | Status | RAG type | How it works | Best for | LLM calls |
 |---|---|---|---|---|
@@ -84,6 +85,62 @@ parts["pipeline"].run(["handbook.pdf"])        # index once
 for rag_type in RAG_TYPES:
     print(rag_type, build_rag(rag_type, parts).answer("How many leave days?"))
 ```
+
+## Seeing every step: `run()`
+
+`answer()` returns only the text. `run()` also returns the chunks used and
+every step the RAG type took, with its input, output and time:
+
+```python
+from rag_titan.rag_types import describe_steps
+
+result = rag.run("how many leave days?")
+result["answer"]     # same text as rag.answer(...)
+result["sources"]    # the chunks given to the generator
+result["steps"]      # [{"step": "route", "input": {...}, "output": "simple", "ms": 412.0}, ...]
+
+print(describe_steps(result["steps"]))
+```
+
+Adaptive RAG that did not find enough evidence the first time, then rewrote the
+query and searched wider (timings from a test with a fake LLM):
+
+```text
+1. route        0.00 ms  query='how many leave days?'
+                         -> 'simple'
+2. retrieve     0.06 ms  query='how many leave days?', top_k=4
+                         -> 3 chunks: chunk_0 (0.707), chunk_1 (0.000), chunk_2 (0.000)
+3. rerank       0.01 ms  query='how many leave days?', matches=3 chunks, top_n=2
+                         -> 2 chunks: chunk_0 (rerank 0.807), chunk_1 (rerank 0.000)
+4. check        0.01 ms  query='how many leave days?', chunks=2 chunks
+                         -> False
+5. rewrite      0.00 ms  query='how many leave days?'
+                         -> 'annual leave days per year'
+6. retrieve     0.01 ms  query='annual leave days per year', top_k=8
+                         -> 3 chunks: chunk_0 (1.000), chunk_1 (0.000), chunk_2 (0.000)
+7. rerank       0.01 ms  query='how many leave days?', matches=3 chunks, top_n=4
+                         -> 3 chunks: chunk_0 (rerank 1.100), chunk_1 (rerank 0.000), chunk_2 (rerank 0.000)
+8. check        0.00 ms  query='how many leave days?', chunks=3 chunks
+                         -> True
+9. generate     0.00 ms  query='how many leave days?', chunks=3 chunks
+                         -> 'You get 20 leave days [chunk_0]'
+```
+
+### The flow of each RAG type
+
+Every RAG type also describes its steps and the arrows between them in `FLOW`.
+The steps that `run()` records always follow these arrows (a test checks it),
+so a diagram can be drawn from `FLOW` and lit up with a real run.
+
+```python
+from rag_titan import AdaptiveRAG
+
+AdaptiveRAG.FLOW["nodes"][0]   # {"id": "route", "label": "Choose route", "kind": "llm"}
+AdaptiveRAG.FLOW["edges"][:2]  # [["route", "direct_reply"], ["route", "retrieve"]]
+```
+
+`kind` is `search`, `llm` or `output`. A RAG playground with live flow diagrams
+is planned; see the [roadmap](roadmap.md).
 
 ## Planned RAG types
 

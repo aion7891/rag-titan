@@ -14,6 +14,8 @@
 
 ::: rag_titan.retrieval.rerankers
 
+::: rag_titan.evaluation
+
 ::: rag_titan.generation
 
 ::: rag_titan.pipelines
