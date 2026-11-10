@@ -3,7 +3,7 @@
 #   Run manually (Actions -> Publish -> Run workflow)  -> TestPyPI only
 #   Publish a GitHub Release                           -> TestPyPI, then PyPI
 #
-# One-time setup is described in docs/publishing.md.
+# One-time setup is described in RELEASING.md.
 name: Publish
 
 on:

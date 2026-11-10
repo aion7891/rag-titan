@@ -46,5 +46,4 @@ nav:
       - RAGTitan and factory: api/core.md
       - RAG types: api/rag-types.md
       - Building blocks: api/building-blocks.md
-  - Publishing to PyPI: publishing.md
   - Roadmap: roadmap.md

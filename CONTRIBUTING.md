@@ -30,3 +30,7 @@ mkdocs serve      # preview the docs at http://127.0.0.1:8000
 - new parts inherit from the matching base class (see `docs/extending.md`)
 - add tests using `FakeLLM` / `FakeEmbedder` from `tests/conftest.py`
 - add a line to `CHANGELOG.md`
+
+## Releasing
+
+Maintainers: see [RELEASING.md](RELEASING.md) for how to publish to PyPI.

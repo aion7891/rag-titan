@@ -1,6 +1,6 @@
-# Publishing to PyPI
+# Releasing rag-titan
 
-This page is for maintainers. Releases use *trusted publishing*, so no API
+This guide is for maintainers. It is kept out of the public docs site. Releases use *trusted publishing*, so no API
 token is stored in GitHub.
 
 ## How it works
@@ -24,10 +24,10 @@ On **both** [PyPI](https://pypi.org/manage/account/publishing/) and
 | Workflow name     | `publish.yml`  | `publish.yml`  |
 | Environment name  | `pypi`         | `testpypi`     |
 
-!!! warning "The values must match exactly"
-    If the environment name on PyPI is different from the one in
-    `.github/workflows/publish.yml`, the upload fails with
-    `invalid-publisher`.
+> [!WARNING]
+> The values must match exactly. If the environment name on PyPI is different
+> from the one in `.github/workflows/publish.yml`, the upload fails with
+> `invalid-publisher`.
 
 GitHub creates the `pypi` and `testpypi` environments the first time the
 workflow runs. To ask for approval before the real upload, open
@@ -45,9 +45,9 @@ workflow runs. To ask for approval before the real upload, open
    ```
 5. On GitHub, create a **Release** with tag `v0.1.1`. The package goes to PyPI.
 
-!!! note "Versions are final"
-    PyPI and TestPyPI never accept the same version twice, even after deleting it.
-    Always increase `__version__` for a new upload.
+> [!NOTE]
+> PyPI and TestPyPI never accept the same version twice, even after deleting it.
+> Always increase `__version__` for a new upload.
 
 ## Building and checking locally
 
