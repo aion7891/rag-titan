@@ -1,114 +1,17 @@
-// Chunk playground for docs/chunking.md: try the chunkers in the browser.
-// The core mirrors rag_titan.chunking.fixed_size (same rules, same output).
-// Text is handled as an array of characters (code points) to match Python.
-
-const ChunkCore = (() => {
-  const SEPARATORS = ["\n\n", "\n", ". ", " ", ""];
-  const chars = (text) => Array.from(text);
-
-  function fixedWindows(units, size, overlap) {
-    const step = size - overlap;
-    const windows = [];
-    for (let start = 0; start < units.length; start += step) {
-      windows.push(units.slice(start, start + size));
-      if (start + size >= units.length) break;   // tail is not repeated
-    }
-    return windows;
-  }
-
-  function countWindows(n, size, overlap) {
-    if (n <= size) return Math.min(n, 1);
-    return 1 + Math.ceil((n - size) / (size - overlap));
-  }
-
-  function byCharacter(text, size, overlap) {
-    if (!text.trim()) return [];
-    return fixedWindows(chars(text), size, overlap).map((w, i) => ({
-      text: w.join(""), overlap: i === 0 ? 0 : overlap,
-    }));
-  }
-
-  function byWord(text, size, overlap) {
-    const words = text.split(/\s+/).filter(Boolean);
-    return fixedWindows(words, size, overlap).map((w, i) => ({
-      text: w.join(" "),
-      // shared words plus the space after them, in characters
-      overlap: i === 0 ? 0 : chars(w.slice(0, overlap).join(" ")).length + 1,
-    }));
-  }
-
-  function splitKeepSeparator(text, sep) {
-    const parts = text.split(sep);
-    const pieces = parts.slice(0, -1).map((p) => p + sep).concat(parts[parts.length - 1]);
-    return pieces.filter(Boolean);
-  }
-
-  function recursiveSplit(text, separators, size) {
-    if (chars(text).length <= size) return [text];
-    for (let i = 0; i < separators.length; i++) {
-      const sep = separators[i];
-      if (sep === "") break;
-      if (text.includes(sep)) {
-        return splitKeepSeparator(text, sep)
-          .flatMap((part) => recursiveSplit(part, separators.slice(i + 1), size));
-      }
-    }
-    return fixedWindows(chars(text), size, 0).map((w) => w.join(""));   // hard cut
-  }
-
-  function recursiveMerge(pieces, size, overlap) {
-    const sizes = pieces.map((p) => chars(p).length);
-    const total = (ids) => ids.reduce((sum, i) => sum + sizes[i], 0);
-    const groups = [];
-    let current = [];
-    let carried = 0;
-    sizes.forEach((s, index) => {
-      if (current.length && total(current) + s > size) {
-        groups.push({ ids: current, carried });
-        let tail = [];
-        for (const i of [...current].reverse()) {   // last whole pieces <= overlap
-          if (total(tail) + sizes[i] > overlap) break;
-          tail.unshift(i);
-        }
-        while (tail.length && total(tail) + s > size) tail.shift();
-        current = tail;
-        carried = tail.length;
-      }
-      current.push(index);
-    });
-    if (current.length) groups.push({ ids: current, carried });
-    return groups;
-  }
-
-  function byRecursive(text, size, overlap) {
-    if (!text.trim()) return [];
-    const pieces = recursiveSplit(text, SEPARATORS, size);
-    return recursiveMerge(pieces, size, overlap).map(({ ids, carried }) => {
-      const raw = ids.map((i) => pieces[i]).join("");
-      const lead = chars(raw).length - chars(raw.trimStart()).length;
-      const repeated = chars(ids.slice(0, carried).map((i) => pieces[i]).join("")).length;
-      const text = raw.trim();
-      // trimming can remove a whitespace-only new piece, so keep the highlight inside the chunk
-      return { text, overlap: Math.min(Math.max(0, repeated - lead), chars(text).length) };
-    }).filter((chunk) => chunk.text);
-  }
-
-  const UNITS = {
-    character: { run: byCharacter, count: (t) => chars(t).length, name: "characters" },
-    word: { run: byWord, count: (t) => t.split(/\s+/).filter(Boolean).length, name: "words" },
-    recursive: { run: byRecursive, count: (t) => chars(t).length, name: "characters" },
-  };
-
-  return { fixedWindows, countWindows, UNITS };
-})();
-
-// ---------- the page: controls and live output ----------
+// Chunk playground for docs/chunking.md: the controls and the live output.
+// The chunking rules live in chunk-core.js (ChunkCore), which mirrors the Python package.
 
 const PLAYGROUND = {
   text: "Leave policy\n\nStaff get twenty days. Unused days carry over. "
     + "Ask HR for the form. Sick leave is separate.",
   // per mode: [default size, default overlap, max size]
-  modes: { recursive: [50, 25, 400], character: [18, 4, 400], word: [4, 1, 60] },
+  modes: {
+    recursive: [50, 25, 400],
+    sentence: [50, 25, 400],
+    paragraph: [60, 0, 400],
+    character: [18, 4, 400],
+    word: [4, 1, 60],
+  },
 };
 
 function el(tag, props, children) {
@@ -139,9 +42,9 @@ function statsText(mode, text, size, overlap, chunks) {
   const k = chunks.length;
   const h = size - overlap;
   const lines = [`N = ${n} ${unit.name} · S = ${size} · O = ${overlap} · H = S − O = ${h} · K = ${k} chunks`];
-  if (mode === "recursive") {
+  if (unit.packed) {
     const stored = chunks.reduce((sum, c) => sum + Array.from(c.text).length, 0);
-    lines.push(`stored ${stored} characters for ${n} (overlap repeats whole pieces only)`);
+    lines.push(`stored ${stored} characters for ${n} (overlap repeats whole ${unit.packed} only)`);
   } else if (n > size) {
     const plain = ChunkCore.countWindows(n, size, 0);
     lines.push(`K = 1 + ⌈(N − S) / H⌉ = 1 + ⌈(${n} − ${size}) / ${h}⌉ = ${k}`);
@@ -189,9 +92,7 @@ function buildPlayground(root) {
   render();
 }
 
-if (typeof module !== "undefined") {
-  module.exports = ChunkCore;   // for tests in Node
-} else {
+if (typeof document !== "undefined") {
   const start = () => {
     const root = document.getElementById("chunk-playground");
     if (root && !root.dataset.ready) buildPlayground(root);

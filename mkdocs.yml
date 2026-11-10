@@ -63,5 +63,6 @@ extra_css:
 # chunking page: formulas (pymdownx.arithmatex + MathJax) and the chunk playground
 extra_javascript:
   - assets/javascripts/mathjax.js
+  - assets/javascripts/chunk-core.js
   - assets/javascripts/chunk-playground.js
   - https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js

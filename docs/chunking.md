@@ -28,10 +28,13 @@ rag-titan ships eight chunkers in two families from the chunking handbook:
 ## Try it: chunk playground
 
 Change the text, the chunker, the size and the overlap, and watch the chunks
-change. The <mark>highlighted</mark> start of a chunk is the overlap repeated from
-the chunk before. It runs in your browser with the same rules as the Python
-package (checked against it on 3,000 random texts). Token counting needs
-tiktoken, so it is not in the playground.
+change. Try `sentence` with abbreviations like "Dr." or "e.g." to see the
+sentence rules at work. The <mark>highlighted</mark> start of a chunk is the
+overlap repeated from the chunk before. It runs in your browser with the same
+rules as the Python package (checked against it on 4,000 random texts full of
+abbreviations, decimals and other traps). Token counting needs tiktoken, and
+the heading and page chunkers need whole documents, so they are not in the
+playground.
 
 <div id="chunk-playground"><p><em>The playground needs JavaScript.</em></p></div>
 
