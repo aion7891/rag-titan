@@ -43,11 +43,36 @@ workflow runs. To ask for approval before the real upload, open
    pip install -i https://test.pypi.org/simple/ \
        --extra-index-url https://pypi.org/simple/ rag-titan
    ```
-5. On GitHub, create a **Release** with tag `v0.1.1`. The package goes to PyPI.
+5. Only **after** the merge, update `main` and check the version:
+   ```bash
+   git checkout main && git pull
+   grep __version__ src/rag_titan/__init__.py    # must show the new version
+   ```
+6. Create the **Release** from `main` (this also creates the tag):
+   ```bash
+   gh release create v0.1.1 --target main --title "0.1.1" --notes-file notes.md
+   ```
+   The notes are the text shown on the Release page; use the new CHANGELOG section.
+7. Check that it really published: https://pypi.org/project/rag-titan/ shows
+   the new version, and `pip install "rag-titan==0.1.1"` works. PyPI can take a
+   few minutes to show it everywhere, and the README badge up to a few hours.
 
 > [!NOTE]
 > PyPI and TestPyPI never accept the same version twice, even after deleting it.
 > Always increase `__version__` for a new upload.
+
+### The release guard
+
+For releases, the Publish workflow first checks the version and stops with a
+clear error if:
+
+- the tag does not match `__version__` (for example a release created before
+  the PR was merged, which would rebuild the old version), or
+- that version is already on PyPI (`__version__` was not bumped).
+
+If it stops, nothing was uploaded. Delete the release and its tag
+(`gh release delete v0.1.1 --cleanup-tag --yes`), fix the cause, and create the
+release again.
 
 ## Building and checking locally
 

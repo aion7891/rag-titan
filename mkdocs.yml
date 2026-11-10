@@ -54,6 +54,9 @@ nav:
       - Building blocks: api/building-blocks.md
   - Roadmap: roadmap.md
 
+hooks:
+  - hooks/cache_bust.py   # adds ?v=<version> to our CSS/JS so browsers get new copies
+
 extra_css:
   - assets/stylesheets/extra.css
 
