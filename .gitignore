@@ -37,3 +37,6 @@ dist/
 
 # Docs build output
 site/
+
+# Local feature plans (feature-dev skill), never committed
+features/

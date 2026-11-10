@@ -1,0 +1,126 @@
+"""
+Chunker that splits on natural separators first (handbook section 2.5).
+
+It tries the biggest separator first (paragraph, line, sentence, space) and
+only falls back to a smaller one, and finally to a hard cut, when a piece is
+still too big. Small pieces are then packed together up to chunk_size.
+"""
+
+from rag_titan.chunking.base_chunker import BaseChunker
+from rag_titan.chunking.fixed_size.fixed_windows import check_window_size, fixed_windows
+
+# paragraph, line, sentence, word, then "" = hard cut
+SEPARATORS = ("\n\n", "\n", ". ", " ", "")
+
+
+def split_keep_separator(text, separator):
+    """Split `text` on `separator`, keeping it at the end of each part, so no text is lost."""
+    parts = text.split(separator)
+    pieces = [part + separator for part in parts[:-1]] + [parts[-1]]
+    return [piece for piece in pieces if piece]
+
+
+class RecursiveChunker(BaseChunker):
+    """
+    Splits text on paragraphs, then lines, sentences and words, packing the
+    pieces into chunks of at most `chunk_size` characters (or tokens).
+    Example: size 1000, overlap 200 -> paragraphs stay whole when they fit.
+
+    Args:
+        chunk_size: largest chunk, in characters (or tokens with a tokenizer).
+        overlap: how much of the end of a chunk is repeated at the start of
+            the next one. Only whole pieces are repeated, so it may be less.
+        separators: separators to try, biggest first. "" means a hard cut.
+        tokenizer: optional, any object with encode(text) -> ids and
+            decode(ids) -> text. When given, sizes count tokens.
+    """
+
+    def __init__(self, chunk_size=1000, overlap=200, separators=SEPARATORS, tokenizer=None):
+        check_window_size(chunk_size, overlap)
+
+        if not separators:
+            raise ValueError("separators must contain at least one separator")
+
+        has_methods = hasattr(tokenizer, "encode") and hasattr(tokenizer, "decode")
+        if tokenizer is not None and not has_methods:
+            raise ValueError("tokenizer must have encode(text) and decode(ids) methods")
+
+        self.chunk_size = chunk_size
+        self.overlap = overlap
+        self.separators = tuple(separators)
+        self.tokenizer = tokenizer
+
+    def length(self, text):
+        """Size of `text` in characters, or in tokens when a tokenizer is set."""
+        if self.tokenizer is None:
+            return len(text)
+        return len(self.tokenizer.encode(text))
+
+    def split_text(self, text):
+        """Return chunks of at most `chunk_size`, split on the biggest separators possible."""
+        # blank text has nothing worth indexing, so it gives no chunks
+        if not text.strip():
+            return []
+
+        pieces = self._split(text, self.separators)
+        chunks = [chunk.strip() for chunk in self._merge(pieces)]
+        return [chunk for chunk in chunks if chunk]
+
+    def _split(self, text, separators):
+        """Break `text` into pieces that each fit in chunk_size."""
+        if self.length(text) <= self.chunk_size:
+            return [text]
+
+        for index, separator in enumerate(separators):
+            if separator == "":
+                return self._hard_cut(text)
+
+            # use the biggest separator found; smaller ones handle what is still too big
+            if separator in text:
+                pieces = []
+                for part in split_keep_separator(text, separator):
+                    pieces.extend(self._split(part, separators[index + 1:]))
+                return pieces
+
+        # no separator matched and no "" fallback was given
+        return self._hard_cut(text)
+
+    def _hard_cut(self, text):
+        """Last resort: cut `text` into exact chunk_size pieces."""
+        if self.tokenizer is None:
+            return fixed_windows(text, self.chunk_size)
+
+        ids = list(self.tokenizer.encode(text))
+        return [self.tokenizer.decode(window) for window in fixed_windows(ids, self.chunk_size)]
+
+    def _merge(self, pieces):
+        """Pack pieces into chunks of at most chunk_size, repeating the overlap."""
+        sizes = [self.length(piece) for piece in pieces]
+        chunks, current = [], []
+
+        for index, size in enumerate(sizes):
+            if current and sum(sizes[i] for i in current) + size > self.chunk_size:
+                chunks.append("".join(pieces[i] for i in current))
+                current = self._tail(current, sizes)
+
+                # drop repeated pieces until the new piece fits
+                while current and sum(sizes[i] for i in current) + size > self.chunk_size:
+                    current.pop(0)
+
+            current.append(index)
+
+        if current:
+            chunks.append("".join(pieces[i] for i in current))
+        return chunks
+
+    def _tail(self, current, sizes):
+        """Return the last whole pieces of `current` whose total size is at most overlap."""
+        tail, total = [], 0
+
+        for index in reversed(current):
+            if total + sizes[index] > self.overlap:
+                break
+            tail.insert(0, index)
+            total += sizes[index]
+
+        return tail

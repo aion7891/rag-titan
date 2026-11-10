@@ -22,5 +22,6 @@
 - [ ] Vector stores: Chroma, Qdrant, FAISS, pgvector
 - [ ] Rerankers: cross-encoder, LLM reranker
 - [ ] Loaders: TXT, Markdown, HTML, CSV
-- [ ] Chunkers: sentence, recursive, semantic
+- [x] Chunkers: character, token, recursive (`"character"`, `"token"`, `"recursive"`), available since 0.2.0
+- [ ] Chunkers: sentence, paragraph, semantic
 - [ ] Evaluation helpers
