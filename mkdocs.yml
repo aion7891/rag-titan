@@ -1,0 +1,50 @@
+site_name: rag-titan
+site_description: A Swiss Army knife for RAG, simple and beginner friendly.
+site_url: https://aion7891.github.io/rag-titan
+repo_url: https://github.com/aion7891/rag-titan
+repo_name: aion7891/rag-titan
+
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - content.code.copy
+  palette:
+    - scheme: default
+      toggle: { icon: material/weather-night, name: Dark mode }
+    - scheme: slate
+      toggle: { icon: material/weather-sunny, name: Light mode }
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+          options:
+            docstring_style: google
+            docstring_options:
+              warn_missing_types: false
+            show_source: true
+
+markdown_extensions:
+  - admonition
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - tables
+
+nav:
+  - Home: index.md
+  - Getting started: getting-started.md
+  - RAG types: rag-types.md
+  - Building blocks: building-blocks.md
+  - Configuration: configuration.md
+  - Command line: cli.md
+  - Agents: agents.md
+  - Extending rag-titan: extending.md
+  - API reference:
+      - RAGTitan and factory: api/core.md
+      - RAG types: api/rag-types.md
+      - Building blocks: api/building-blocks.md
+  - Publishing to PyPI: publishing.md
+  - Roadmap: roadmap.md

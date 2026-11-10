@@ -29,3 +29,11 @@ htmlcov/
 .DS_Store
 .idea/
 .vscode/
+# Packaging / build output
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Docs build output
+site/
