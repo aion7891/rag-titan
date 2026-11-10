@@ -40,81 +40,81 @@
 <text class="sub" x="40" y="70">TokenChunker(chunk_size=8, overlap=2): windows of 8 tokens, each starting 6 tokens after the last one.</text>
 <text class="sub" x="40" y="90">Orange frame = the chunk being made. Filled orange = overlap, repeated from the chunk before.</text>
 <text class="h" x="40" y="114">1. The text, cut into 24 tokens (tiktoken cl100k_base; ␣ = space, ↵ = line break)</text>
-<rect class="unit" x="40.0" y="128" width="51.0" height="26" rx="5"/>
+<rect class="unit" x="40.0" y="128" width="52.5" height="26" rx="5"/>
 <text class="mono" x="48.0" y="146">Leave</text>
-<rect class="unit" x="97.0" y="128" width="65.0" height="26" rx="5"/>
-<text class="mono" x="105.0" y="146">␣policy</text>
-<rect class="unit" x="168.0" y="128" width="30.0" height="26" rx="5"/>
-<text class="mono" x="176.0" y="146">↵↵</text>
-<rect class="unit" x="204.0" y="128" width="51.0" height="26" rx="5"/>
-<text class="mono" x="212.0" y="146">Staff</text>
-<rect class="unit" x="261.0" y="128" width="44.0" height="26" rx="5"/>
-<text class="mono" x="269.0" y="146">␣get</text>
-<rect class="unit" x="311.0" y="128" width="65.0" height="26" rx="5"/>
-<text class="mono" x="319.0" y="146">␣twenty</text>
-<rect class="unit" x="382.0" y="128" width="51.0" height="26" rx="5"/>
-<text class="mono" x="390.0" y="146">␣days</text>
-<rect class="unit" x="439.0" y="128" width="23.0" height="26" rx="5"/>
-<text class="mono" x="447.0" y="146">.</text>
-<rect class="unit" x="468.0" y="128" width="65.0" height="26" rx="5"/>
-<text class="mono" x="476.0" y="146">␣Unused</text>
-<rect class="unit" x="539.0" y="128" width="51.0" height="26" rx="5"/>
-<text class="mono" x="547.0" y="146">␣days</text>
-<rect class="unit" x="596.0" y="128" width="58.0" height="26" rx="5"/>
-<text class="mono" x="604.0" y="146">␣carry</text>
-<rect class="unit" x="660.0" y="128" width="51.0" height="26" rx="5"/>
-<text class="mono" x="668.0" y="146">␣over</text>
-<rect class="unit" x="717.0" y="128" width="23.0" height="26" rx="5"/>
-<text class="mono" x="725.0" y="146">.</text>
-<rect class="unit" x="746.0" y="128" width="44.0" height="26" rx="5"/>
-<text class="mono" x="754.0" y="146">␣Ask</text>
-<rect class="unit" x="796.0" y="128" width="37.0" height="26" rx="5"/>
-<text class="mono" x="804.0" y="146">␣HR</text>
-<rect class="unit" x="839.0" y="128" width="44.0" height="26" rx="5"/>
-<text class="mono" x="847.0" y="146">␣for</text>
-<rect class="unit" x="40.0" y="160" width="44.0" height="26" rx="5"/>
+<rect class="unit" x="98.5" y="128" width="67.1" height="26" rx="5"/>
+<text class="mono" x="106.5" y="146">␣policy</text>
+<rect class="unit" x="171.6" y="128" width="30.6" height="26" rx="5"/>
+<text class="mono" x="179.6" y="146">↵↵</text>
+<rect class="unit" x="208.2" y="128" width="52.5" height="26" rx="5"/>
+<text class="mono" x="216.2" y="146">Staff</text>
+<rect class="unit" x="266.7" y="128" width="45.2" height="26" rx="5"/>
+<text class="mono" x="274.7" y="146">␣get</text>
+<rect class="unit" x="317.9" y="128" width="67.1" height="26" rx="5"/>
+<text class="mono" x="325.9" y="146">␣twenty</text>
+<rect class="unit" x="391.0" y="128" width="52.5" height="26" rx="5"/>
+<text class="mono" x="399.0" y="146">␣days</text>
+<rect class="unit" x="449.5" y="128" width="23.3" height="26" rx="5"/>
+<text class="mono" x="457.5" y="146">.</text>
+<rect class="unit" x="478.8" y="128" width="67.1" height="26" rx="5"/>
+<text class="mono" x="486.8" y="146">␣Unused</text>
+<rect class="unit" x="551.9" y="128" width="52.5" height="26" rx="5"/>
+<text class="mono" x="559.9" y="146">␣days</text>
+<rect class="unit" x="610.4" y="128" width="59.8" height="26" rx="5"/>
+<text class="mono" x="618.4" y="146">␣carry</text>
+<rect class="unit" x="676.2" y="128" width="52.5" height="26" rx="5"/>
+<text class="mono" x="684.2" y="146">␣over</text>
+<rect class="unit" x="734.7" y="128" width="23.3" height="26" rx="5"/>
+<text class="mono" x="742.7" y="146">.</text>
+<rect class="unit" x="764.0" y="128" width="45.2" height="26" rx="5"/>
+<text class="mono" x="772.0" y="146">␣Ask</text>
+<rect class="unit" x="815.2" y="128" width="37.9" height="26" rx="5"/>
+<text class="mono" x="823.2" y="146">␣HR</text>
+<rect class="unit" x="859.1" y="128" width="45.2" height="26" rx="5"/>
+<text class="mono" x="867.1" y="146">␣for</text>
+<rect class="unit" x="40.0" y="160" width="45.2" height="26" rx="5"/>
 <text class="mono" x="48.0" y="178">␣the</text>
-<rect class="unit" x="90.0" y="160" width="51.0" height="26" rx="5"/>
-<text class="mono" x="98.0" y="178">␣form</text>
-<rect class="unit" x="147.0" y="160" width="23.0" height="26" rx="5"/>
-<text class="mono" x="155.0" y="178">.</text>
-<rect class="unit" x="176.0" y="160" width="51.0" height="26" rx="5"/>
-<text class="mono" x="184.0" y="178">␣Sick</text>
-<rect class="unit" x="233.0" y="160" width="58.0" height="26" rx="5"/>
-<text class="mono" x="241.0" y="178">␣leave</text>
-<rect class="unit" x="297.0" y="160" width="37.0" height="26" rx="5"/>
-<text class="mono" x="305.0" y="178">␣is</text>
-<rect class="unit" x="340.0" y="160" width="79.0" height="26" rx="5"/>
-<text class="mono" x="348.0" y="178">␣separate</text>
-<rect class="unit" x="425.0" y="160" width="23.0" height="26" rx="5"/>
-<text class="mono" x="433.0" y="178">.</text>
-<g class="h0"><rect class="pick" x="38.0" y="126" width="55.0" height="30" rx="6"/>
-<rect class="pick" x="95.0" y="126" width="69.0" height="30" rx="6"/>
-<rect class="pick" x="166.0" y="126" width="34.0" height="30" rx="6"/>
-<rect class="pick" x="202.0" y="126" width="55.0" height="30" rx="6"/>
-<rect class="pick" x="259.0" y="126" width="48.0" height="30" rx="6"/>
-<rect class="pick" x="309.0" y="126" width="69.0" height="30" rx="6"/>
-<rect class="pick" x="380.0" y="126" width="55.0" height="30" rx="6"/>
-<rect class="pick" x="437.0" y="126" width="27.0" height="30" rx="6"/></g>
-<g class="h1"><rect class="pick" x="466.0" y="126" width="69.0" height="30" rx="6"/>
-<rect class="pick" x="537.0" y="126" width="55.0" height="30" rx="6"/>
-<rect class="pick" x="594.0" y="126" width="62.0" height="30" rx="6"/>
-<rect class="pick" x="658.0" y="126" width="55.0" height="30" rx="6"/>
-<rect class="pick" x="715.0" y="126" width="27.0" height="30" rx="6"/>
-<rect class="pick" x="744.0" y="126" width="48.0" height="30" rx="6"/><rect class="shared" x="380.0" y="126" width="55.0" height="30" rx="6"/>
-<rect class="shared" x="437.0" y="126" width="27.0" height="30" rx="6"/></g>
-<g class="h2"><rect class="pick" x="794.0" y="126" width="41.0" height="30" rx="6"/>
-<rect class="pick" x="837.0" y="126" width="48.0" height="30" rx="6"/>
-<rect class="pick" x="38.0" y="158" width="48.0" height="30" rx="6"/>
-<rect class="pick" x="88.0" y="158" width="55.0" height="30" rx="6"/>
-<rect class="pick" x="145.0" y="158" width="27.0" height="30" rx="6"/>
-<rect class="pick" x="174.0" y="158" width="55.0" height="30" rx="6"/><rect class="shared" x="715.0" y="126" width="27.0" height="30" rx="6"/>
-<rect class="shared" x="744.0" y="126" width="48.0" height="30" rx="6"/></g>
-<g class="h3"><rect class="pick" x="231.0" y="158" width="62.0" height="30" rx="6"/>
-<rect class="pick" x="295.0" y="158" width="41.0" height="30" rx="6"/>
-<rect class="pick" x="338.0" y="158" width="83.0" height="30" rx="6"/>
-<rect class="pick" x="423.0" y="158" width="27.0" height="30" rx="6"/><rect class="shared" x="145.0" y="158" width="27.0" height="30" rx="6"/>
-<rect class="shared" x="174.0" y="158" width="55.0" height="30" rx="6"/></g>
+<rect class="unit" x="91.2" y="160" width="52.5" height="26" rx="5"/>
+<text class="mono" x="99.2" y="178">␣form</text>
+<rect class="unit" x="149.7" y="160" width="23.3" height="26" rx="5"/>
+<text class="mono" x="157.7" y="178">.</text>
+<rect class="unit" x="179.0" y="160" width="52.5" height="26" rx="5"/>
+<text class="mono" x="187.0" y="178">␣Sick</text>
+<rect class="unit" x="237.5" y="160" width="59.8" height="26" rx="5"/>
+<text class="mono" x="245.5" y="178">␣leave</text>
+<rect class="unit" x="303.3" y="160" width="37.9" height="26" rx="5"/>
+<text class="mono" x="311.3" y="178">␣is</text>
+<rect class="unit" x="347.2" y="160" width="81.7" height="26" rx="5"/>
+<text class="mono" x="355.2" y="178">␣separate</text>
+<rect class="unit" x="434.9" y="160" width="23.3" height="26" rx="5"/>
+<text class="mono" x="442.9" y="178">.</text>
+<g class="h0"><rect class="pick" x="38.0" y="126" width="56.5" height="30" rx="6"/>
+<rect class="pick" x="96.5" y="126" width="71.1" height="30" rx="6"/>
+<rect class="pick" x="169.6" y="126" width="34.6" height="30" rx="6"/>
+<rect class="pick" x="206.2" y="126" width="56.5" height="30" rx="6"/>
+<rect class="pick" x="264.7" y="126" width="49.2" height="30" rx="6"/>
+<rect class="pick" x="315.9" y="126" width="71.1" height="30" rx="6"/>
+<rect class="pick" x="389.0" y="126" width="56.5" height="30" rx="6"/>
+<rect class="pick" x="447.5" y="126" width="27.3" height="30" rx="6"/></g>
+<g class="h1"><rect class="pick" x="476.8" y="126" width="71.1" height="30" rx="6"/>
+<rect class="pick" x="549.9" y="126" width="56.5" height="30" rx="6"/>
+<rect class="pick" x="608.4" y="126" width="63.8" height="30" rx="6"/>
+<rect class="pick" x="674.2" y="126" width="56.5" height="30" rx="6"/>
+<rect class="pick" x="732.7" y="126" width="27.3" height="30" rx="6"/>
+<rect class="pick" x="762.0" y="126" width="49.2" height="30" rx="6"/><rect class="shared" x="389.0" y="126" width="56.5" height="30" rx="6"/>
+<rect class="shared" x="447.5" y="126" width="27.3" height="30" rx="6"/></g>
+<g class="h2"><rect class="pick" x="813.2" y="126" width="41.9" height="30" rx="6"/>
+<rect class="pick" x="857.1" y="126" width="49.2" height="30" rx="6"/>
+<rect class="pick" x="38.0" y="158" width="49.2" height="30" rx="6"/>
+<rect class="pick" x="89.2" y="158" width="56.5" height="30" rx="6"/>
+<rect class="pick" x="147.7" y="158" width="27.3" height="30" rx="6"/>
+<rect class="pick" x="177.0" y="158" width="56.5" height="30" rx="6"/><rect class="shared" x="732.7" y="126" width="27.3" height="30" rx="6"/>
+<rect class="shared" x="762.0" y="126" width="49.2" height="30" rx="6"/></g>
+<g class="h3"><rect class="pick" x="235.5" y="158" width="63.8" height="30" rx="6"/>
+<rect class="pick" x="301.3" y="158" width="41.9" height="30" rx="6"/>
+<rect class="pick" x="345.2" y="158" width="85.7" height="30" rx="6"/>
+<rect class="pick" x="432.9" y="158" width="27.3" height="30" rx="6"/><rect class="shared" x="147.7" y="158" width="27.3" height="30" rx="6"/>
+<rect class="shared" x="177.0" y="158" width="56.5" height="30" rx="6"/></g>
 <text class="h" x="40" y="210">2. The chunks (real output)</text>
 <g class="c0"><rect class="card" x="40" y="220" width="880" height="30" rx="8"/>
 <text class="tag" x="50" y="241">C0</text>

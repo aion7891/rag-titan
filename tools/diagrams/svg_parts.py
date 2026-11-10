@@ -5,7 +5,7 @@ from xml.sax.saxutils import escape
 
 WIDTH = 960
 LEFT, RIGHT = 40, 920
-CHAR_W = 7.0   # width of one character of the 12px monospace font
+CHAR_W = 7.3   # width of one 12px monospace character (a little more than real, so text fits)
 LINE_H = 16
 CARD_CHARS = 112   # characters that fit on one line of a chunk card
 

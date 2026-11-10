@@ -36,6 +36,8 @@ def animation_css(count):
 
 def chunk_segments(spec, k):
     """The pieces of chunk k as (text, shared) pairs; shared = repeated from chunk k-1."""
+    if "cards" in spec:   # chunkers that add text (a heading path): show their exact output
+        return trim([(spec["cards"][k], False)], 0, False)
     group, previous = spec["groups"][k], set(spec["groups"][k - 1]) if k else set()
     parts = [(spec["units"][i], i in previous) for i in group]
     text = spec["joiner"].join(unit for unit, _ in parts)

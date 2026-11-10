@@ -36,18 +36,18 @@
 <text class="sub" x="40" y="70">ParagraphChunker(chunk_size=70, overlap=0): whole paragraphs (split at blank lines), packed up to 70.</text>
 <text class="sub" x="40" y="90">Orange frame = the chunk being made. Filled orange = overlap, repeated from the chunk before.</text>
 <text class="h" x="40" y="114">1. The text, cut into 4 paragraphs (number = size in characters)</text>
-<rect class="unit" x="40.0" y="128" width="128.0" height="26" rx="5"/>
+<rect class="unit" x="40.0" y="128" width="132.8" height="26" rx="5"/>
 <text class="mono" x="48.0" y="146">Leave policy  14</text>
-<rect class="unit" x="174.0" y="128" width="366.0" height="26" rx="5"/>
-<text class="mono" x="182.0" y="146">Staff get twenty days. Unused days carry over.  48</text>
-<rect class="unit" x="546.0" y="128" width="352.0" height="26" rx="5"/>
-<text class="mono" x="554.0" y="146">Ask HR for the form. Sick leave is separate.  46</text>
-<rect class="unit" x="40.0" y="160" width="275.0" height="26" rx="5"/>
-<text class="mono" x="48.0" y="178">Dr. Lee signs it within 3.5 days.  33</text>
-<g class="h0"><rect class="pick" x="38.0" y="126" width="132.0" height="30" rx="6"/>
-<rect class="pick" x="172.0" y="126" width="370.0" height="30" rx="6"/></g>
-<g class="h1"><rect class="pick" x="544.0" y="126" width="356.0" height="30" rx="6"/></g>
-<g class="h2"><rect class="pick" x="38.0" y="158" width="279.0" height="30" rx="6"/></g>
+<rect class="unit" x="178.8" y="128" width="381.0" height="26" rx="5"/>
+<text class="mono" x="186.8" y="146">Staff get twenty days. Unused days carry over.  48</text>
+<rect class="unit" x="40.0" y="160" width="366.4" height="26" rx="5"/>
+<text class="mono" x="48.0" y="178">Ask HR for the form. Sick leave is separate.  46</text>
+<rect class="unit" x="412.4" y="160" width="286.1" height="26" rx="5"/>
+<text class="mono" x="420.4" y="178">Dr. Lee signs it within 3.5 days.  33</text>
+<g class="h0"><rect class="pick" x="38.0" y="126" width="136.8" height="30" rx="6"/>
+<rect class="pick" x="176.8" y="126" width="385.0" height="30" rx="6"/></g>
+<g class="h1"><rect class="pick" x="38.0" y="158" width="370.4" height="30" rx="6"/></g>
+<g class="h2"><rect class="pick" x="410.4" y="158" width="290.1" height="30" rx="6"/></g>
 <text class="h" x="40" y="210">2. The chunks (real output)</text>
 <g class="c0"><rect class="card" x="40" y="220" width="880" height="30" rx="8"/>
 <text class="tag" x="50" y="241">C0</text>

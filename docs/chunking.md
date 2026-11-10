@@ -158,6 +158,10 @@ Here is the same sentence cut by each one (real output):
 Splits on whitespace and counts words. It is the default because word counts are
 easy to reason about: "150 words" is roughly one paragraph.
 
+![WordChunker running on the leave-policy text: windows of 6 words, 2 shared](assets/images/chunkers/word-chunker.svg)
+
+*Watch each window of 6 words light up; the 2 shared words are filled orange.*
+
 ```python
 from rag_titan.chunking import WordChunker
 
@@ -180,6 +184,10 @@ Cuts the raw string every $S$ characters (handbook 2.1). The text is kept exactl
 as it is, spaces and newlines included, so it works for any language, even ones
 without spaces between words.
 
+![CharacterChunker running on the leave-policy text: windows of 30 characters](assets/images/chunkers/character-chunker.svg)
+
+*Each box is one character. Note the cuts in the middle of words: `the fo` | `rm`.*
+
 ```python
 from rag_titan.chunking import CharacterChunker
 
@@ -199,6 +207,10 @@ CharacterChunker(chunk_size=12, overlap=4).split_text("Leave policy: twenty days
 Counts **model tokens**, the units an embedding model reads (handbook 2.3). Every
 embedding model has a maximum input length in tokens. Counting with the same
 tokenizer is the only way to be sure no chunk is cut off by the model.
+
+![TokenChunker running on the leave-policy text with real tiktoken tokens](assets/images/chunkers/token-chunker.svg)
+
+*Real tiktoken tokens: the blank line is one token, and each full stop is its own.*
 
 The text is encoded to token ids, the ids are cut with `fixed_windows`, and each
 window is decoded back to text:
@@ -270,6 +282,10 @@ chunker = TokenChunker(chunk_size=256, overlap=32, tokenizer=HFTokenizer("BAAI/b
 
 Fixed windows ignore the meaning of the text. `RecursiveChunker` (handbook 2.5)
 keeps the same size limit but prefers to cut where the text already has a break.
+
+![RecursiveChunker running on the leave-policy text plus a sentence with Dr.](assets/images/chunkers/recursive-chunker.svg)
+
+*The extra sentence "Dr. Lee signs it within 3.5 days." shows the weak spot: recursive splits on any `". "`, so `Dr.` ends up at the end of the previous chunk. Compare with `SentenceChunker` below.*
 
 ### How it works
 
@@ -347,9 +363,7 @@ RecursiveChunker(chunk_size=50, overlap=25).split_text(doc)
 
 The second paragraph is longer than 50 characters, so it falls back to
 sentences. No sentence is ever cut, and with overlap each chunk repeats the
-previous sentence:
-
-![RecursiveChunker splits on paragraphs, then sentences, then packs whole pieces](assets/images/recursive-chunker.svg)
+previous sentence.
 
 !!! note "Overlap is *up to* `overlap`"
     Only whole pieces are repeated. A piece longer than $O$ is never repeated,
@@ -411,6 +425,10 @@ dotted forms (`e.g.`, `U.S.`), initials (`J. K.`), list numbers (`1.`),
 decimals (`3.5`), quotes, `...`, and the end marks `。！？।` used in Japanese,
 Chinese and Hindi.
 
+![SentenceChunker running on the same text: Dr. Lee stays one sentence](assets/images/chunkers/sentence-chunker.svg)
+
+*Same text as the recursive diagram: here `Dr. Lee signs it within 3.5 days.` stays whole.*
+
 ```python
 from rag_titan.chunking import SentenceChunker
 from rag_titan.chunking.structure_aware import split_sentences
@@ -449,6 +467,10 @@ Packs whole paragraphs, separated by a blank line (handbook 3.2). The handbook
 calls paragraph grouping "frequently a strong general baseline for reports and
 documentation".
 
+![ParagraphChunker packing whole paragraphs up to 70 characters](assets/images/chunkers/paragraph-chunker.svg)
+
+*The same sentences written as paragraphs: the heading packs with the first paragraph.*
+
 ```python
 from rag_titan.chunking import ParagraphChunker
 
@@ -472,6 +494,10 @@ sentences. The last paragraph fits, so it stays whole.
 Splits at headings, so **a chunk never mixes two sections**, and starts each
 chunk with its **heading path** (handbook 3.3). A heading closes every open
 heading at its level or deeper, which builds the path:
+
+![HeadingChunker: each chunk stays in one section and starts with its path](assets/images/chunkers/heading-chunker.svg)
+
+*Each chunk stays inside its section and starts with its heading path.*
 
 $$
 C_i = (h_1, \dots, h_d,\ \text{body}_i)
@@ -513,6 +539,10 @@ HeadingChunker(chunk_size=200, include_path=False).split_text(md)
 Chunks each page on its own, so **a chunk never spans two pages**
 (handbook 3.4). A page that fits is one chunk; a bigger page is cut into
 paragraphs, then sentences. Empty pages are skipped.
+
+![PageChunker: pages 1 and 2 stay separate even though they would fit together](assets/images/chunkers/page-chunker.svg)
+
+*Pages 1 and 2 would fit in one 70-character chunk, but they stay separate.*
 
 ```python
 from rag_titan.chunking import PageChunker

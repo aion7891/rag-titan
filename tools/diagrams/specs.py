@@ -11,6 +11,8 @@ sys.path.insert(0, str(ROOT / "src"))   # use the package in this repo, not an i
 
 from rag_titan.chunking import (  # noqa: E402
     CharacterChunker,
+    HeadingChunker,
+    PageChunker,
     ParagraphChunker,
     RecursiveChunker,
     SentenceChunker,
@@ -20,11 +22,20 @@ from rag_titan.chunking import (  # noqa: E402
     fixed_windows,
 )
 from rag_titan.chunking.packing import pack  # noqa: E402
+from rag_titan.chunking.structure_aware import split_sections  # noqa: E402
 
 TEXT = ("Leave policy\n\nStaff get twenty days. Unused days carry over. "
         "Ask HR for the form. Sick leave is separate.")
 # one tricky sentence more, to show what sentence rules change
 TRICKY = TEXT + " Dr. Lee signs it within 3.5 days."
+# the same sentences as a Markdown document with headings
+MARKDOWN = ("# Leave policy\n\n## Annual leave\n\nStaff get twenty days. Unused days carry over. "
+            "Ask HR for the form.\n\n## Sick leave\n\n"
+            "Sick leave is separate. Dr. Lee signs it within 3.5 days.")
+# three PDF pages ("\f" = page break); pages 1 and 2 would fit in one chunk together
+PAGES = ("Leave policy\n\nStaff get twenty days.\fAsk HR for the form.\f"
+         "Unused days carry over. Sick leave is separate. "
+         "Dr. Lee signs it within 3.5 days. A doctor's note is needed after three days.")
 # the same sentences, written as paragraphs
 PARAGRAPHS = ("Leave policy\n\nStaff get twenty days. Unused days carry over.\n\n"
               "Ask HR for the form. Sick leave is separate.\n\nDr. Lee signs it within 3.5 days.")
@@ -111,6 +122,59 @@ def paragraph_spec():
                       "paragraphs", "whole paragraphs (split at blank lines), packed up to 70.")
 
 
+def flat(text):
+    """Text with every run of spaces and line breaks made one space, for comparing."""
+    return " ".join(text.split())
+
+
+def find_home(part, homes, name):
+    """Index of the one section/page whose text contains `part`; fail otherwise."""
+    found = [i for i, text in enumerate(homes) if flat(part) in flat(text)]
+    if len(found) != 1:
+        raise SystemExit(f"{name}: {part!r} is in {len(found)} sections/pages, not exactly 1")
+    return found[0]
+
+
+def container_spec(name, chunker, chunks, groups, labels, subtitle, unit_name):
+    """Spec for chunkers that never cross a section or page: each chunk lights up its home."""
+    return {
+        "title": name, "subtitle": subtitle,
+        "desc": f"{name} keeps every chunk inside one {unit_name[:-1]}: {len(labels)} "
+                f"{unit_name} give {len(chunks)} chunks.",
+        "units_label": f"The text, cut into {len(labels)} {unit_name} "
+                       "(number = size in characters)",
+        "units": labels, "groups": groups, "joiner": "", "strip": False, "show": str,
+        "max_chars": 60, "chunks": chunks, "cards": chunks,
+        "footer": f"S = {chunker.chunk_size} · K = {len(chunks)} chunks · "
+                  f"a chunk never mixes two {unit_name}",
+    }
+
+
+def heading_spec():
+    chunker = HeadingChunker(80, 0)
+    sections = split_sections(MARKDOWN)
+    bodies = [body for _, body in sections]
+    labels = [f"[{' > '.join(path)}]  {body.strip()}  {len(body)}" for path, body in sections]
+    chunks = chunker.split_text(MARKDOWN)
+    # a chunk is "path\n\n" + part of one section body: find that body
+    groups = [[find_home(c.split("\n\n", 1)[-1], bodies, "HeadingChunker")] for c in chunks]
+    return container_spec("HeadingChunker", chunker, chunks, groups, labels,
+                          "HeadingChunker(chunk_size=80, overlap=0): never mixes two sections; "
+                          "each chunk starts with its heading path.", "sections")
+
+
+def page_spec():
+    chunker = PageChunker(70, 0)
+    pages = PAGES.split("\f")
+    labels = [f"page {i + 1}: {page.replace(chr(10), '↵')}  {len(page)}"
+              for i, page in enumerate(pages)]
+    chunks = chunker.split_text(PAGES)
+    groups = [[find_home(chunk, pages, "PageChunker")] for chunk in chunks]
+    return container_spec("PageChunker", chunker, chunks, groups, labels,
+                          "PageChunker(chunk_size=70, overlap=0): pages 1 and 2 would fit in "
+                          "one chunk, but a chunk never spans two pages.", "pages")
+
+
 SPECS = {
     "word": word_spec,
     "character": character_spec,
@@ -118,4 +182,6 @@ SPECS = {
     "recursive": recursive_spec,
     "sentence": sentence_spec,
     "paragraph": paragraph_spec,
+    "heading": heading_spec,
+    "page": page_spec,
 }

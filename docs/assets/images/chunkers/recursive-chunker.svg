@@ -44,27 +44,27 @@
 <text class="sub" x="40" y="70">RecursiveChunker(chunk_size=50, overlap=25): splits on "\n\n", "\n", ". ", " " until pieces fit. Note "Dr." cut off.</text>
 <text class="sub" x="40" y="90">Orange frame = the chunk being made. Filled orange = overlap, repeated from the chunk before.</text>
 <text class="h" x="40" y="114">1. The text, cut into 7 pieces (number = size in characters)</text>
-<rect class="unit" x="40.0" y="128" width="128.0" height="26" rx="5"/>
+<rect class="unit" x="40.0" y="128" width="132.8" height="26" rx="5"/>
 <text class="mono" x="48.0" y="146">Leave policy  14</text>
-<rect class="unit" x="174.0" y="128" width="198.0" height="26" rx="5"/>
-<text class="mono" x="182.0" y="146">Staff get twenty days.  23</text>
-<rect class="unit" x="378.0" y="128" width="205.0" height="26" rx="5"/>
-<text class="mono" x="386.0" y="146">Unused days carry over.  24</text>
-<rect class="unit" x="589.0" y="128" width="184.0" height="26" rx="5"/>
-<text class="mono" x="597.0" y="146">Ask HR for the form.  21</text>
-<rect class="unit" x="40.0" y="160" width="205.0" height="26" rx="5"/>
+<rect class="unit" x="178.8" y="128" width="205.8" height="26" rx="5"/>
+<text class="mono" x="186.8" y="146">Staff get twenty days.  23</text>
+<rect class="unit" x="390.6" y="128" width="213.1" height="26" rx="5"/>
+<text class="mono" x="398.6" y="146">Unused days carry over.  24</text>
+<rect class="unit" x="609.7" y="128" width="191.2" height="26" rx="5"/>
+<text class="mono" x="617.7" y="146">Ask HR for the form.  21</text>
+<rect class="unit" x="40.0" y="160" width="213.1" height="26" rx="5"/>
 <text class="mono" x="48.0" y="178">Sick leave is separate.  24</text>
-<rect class="unit" x="251.0" y="160" width="58.0" height="26" rx="5"/>
-<text class="mono" x="259.0" y="178">Dr.  4</text>
-<rect class="unit" x="315.0" y="160" width="247.0" height="26" rx="5"/>
-<text class="mono" x="323.0" y="178">Lee signs it within 3.5 days.  29</text>
-<g class="h0"><rect class="pick" x="38.0" y="126" width="132.0" height="30" rx="6"/>
-<rect class="pick" x="172.0" y="126" width="202.0" height="30" rx="6"/></g>
-<g class="h1"><rect class="pick" x="376.0" y="126" width="209.0" height="30" rx="6"/><rect class="shared" x="172.0" y="126" width="202.0" height="30" rx="6"/></g>
-<g class="h2"><rect class="pick" x="587.0" y="126" width="188.0" height="30" rx="6"/><rect class="shared" x="376.0" y="126" width="209.0" height="30" rx="6"/></g>
-<g class="h3"><rect class="pick" x="38.0" y="158" width="209.0" height="30" rx="6"/>
-<rect class="pick" x="249.0" y="158" width="62.0" height="30" rx="6"/><rect class="shared" x="587.0" y="126" width="188.0" height="30" rx="6"/></g>
-<g class="h4"><rect class="pick" x="313.0" y="158" width="251.0" height="30" rx="6"/><rect class="shared" x="249.0" y="158" width="62.0" height="30" rx="6"/></g>
+<rect class="unit" x="259.1" y="160" width="59.8" height="26" rx="5"/>
+<text class="mono" x="267.1" y="178">Dr.  4</text>
+<rect class="unit" x="324.9" y="160" width="256.9" height="26" rx="5"/>
+<text class="mono" x="332.9" y="178">Lee signs it within 3.5 days.  29</text>
+<g class="h0"><rect class="pick" x="38.0" y="126" width="136.8" height="30" rx="6"/>
+<rect class="pick" x="176.8" y="126" width="209.8" height="30" rx="6"/></g>
+<g class="h1"><rect class="pick" x="388.6" y="126" width="217.1" height="30" rx="6"/><rect class="shared" x="176.8" y="126" width="209.8" height="30" rx="6"/></g>
+<g class="h2"><rect class="pick" x="607.7" y="126" width="195.2" height="30" rx="6"/><rect class="shared" x="388.6" y="126" width="217.1" height="30" rx="6"/></g>
+<g class="h3"><rect class="pick" x="38.0" y="158" width="217.1" height="30" rx="6"/>
+<rect class="pick" x="257.1" y="158" width="63.8" height="30" rx="6"/><rect class="shared" x="607.7" y="126" width="195.2" height="30" rx="6"/></g>
+<g class="h4"><rect class="pick" x="322.9" y="158" width="260.9" height="30" rx="6"/><rect class="shared" x="257.1" y="158" width="63.8" height="30" rx="6"/></g>
 <text class="h" x="40" y="210">2. The chunks (real output)</text>
 <g class="c0"><rect class="card" x="40" y="220" width="880" height="30" rx="8"/>
 <text class="tag" x="50" y="241">C0</text>
