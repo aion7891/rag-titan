@@ -11,14 +11,23 @@ sys.path.insert(0, str(ROOT / "src"))   # use the package in this repo, not an i
 
 from rag_titan.chunking import (  # noqa: E402
     CharacterChunker,
+    ParagraphChunker,
+    RecursiveChunker,
+    SentenceChunker,
     TokenChunker,
     WordChunker,
     count_windows,
     fixed_windows,
 )
+from rag_titan.chunking.packing import pack  # noqa: E402
 
 TEXT = ("Leave policy\n\nStaff get twenty days. Unused days carry over. "
         "Ask HR for the form. Sick leave is separate.")
+# one tricky sentence more, to show what sentence rules change
+TRICKY = TEXT + " Dr. Lee signs it within 3.5 days."
+# the same sentences, written as paragraphs
+PARAGRAPHS = ("Leave policy\n\nStaff get twenty days. Unused days carry over.\n\n"
+              "Ask HR for the form. Sick leave is separate.\n\nDr. Lee signs it within 3.5 days.")
 
 
 def window_spec(name, chunker, units, joiner, show, unit_name):
@@ -63,8 +72,50 @@ def token_spec():
     return spec
 
 
+def piece_spec(name, chunker, text, pieces, unit_name, rule):
+    """Spec for a chunker that packs whole pieces (recursive pieces, sentences, paragraphs)."""
+    size, overlap = chunker.chunk_size, chunker.overlap
+    sizes = [chunker.length(piece) for piece in pieces]
+    # like the chunkers: a chunk that is only spaces is dropped
+    groups = [g for g in pack(sizes, size, overlap) if "".join(pieces[i] for i in g).strip()]
+    return {
+        "title": name,
+        "subtitle": f"{name}(chunk_size={size}, overlap={overlap}): {rule}",
+        "desc": f"{name} cuts the text into {len(pieces)} {unit_name} and packs whole "
+                f"{unit_name} into {len(groups)} chunks of at most {size} characters.",
+        "units_label": f"The text, cut into {len(pieces)} {unit_name} "
+                       "(number = size in characters)",
+        "units": pieces, "groups": groups, "joiner": "", "strip": True,
+        "show": lambda piece: piece.strip().replace("\n", "↵") + f"  {len(piece)}",
+        "max_chars": 60, "chunks": chunker.split_text(text),
+        "footer": f"S = {size} · O = {overlap} · K = {len(groups)} chunks · "
+                  f"whole {unit_name}, sizes add up to ≤ S",
+    }
+
+
+def recursive_spec():
+    chunker = RecursiveChunker(50, 25)
+    return piece_spec("RecursiveChunker", chunker, TRICKY, chunker.split_pieces(TRICKY), "pieces",
+                      'splits on "\\n\\n", "\\n", ". ", " " until pieces fit. Note "Dr." cut off.')
+
+
+def sentence_spec():
+    chunker = SentenceChunker(50, 25)
+    return piece_spec("SentenceChunker", chunker, TRICKY, chunker.pieces(TRICKY), "sentences",
+                      'whole sentences; "Dr." and "3.5" do not end a sentence.')
+
+
+def paragraph_spec():
+    chunker = ParagraphChunker(70, 0)
+    return piece_spec("ParagraphChunker", chunker, PARAGRAPHS, chunker.pieces(PARAGRAPHS),
+                      "paragraphs", "whole paragraphs (split at blank lines), packed up to 70.")
+
+
 SPECS = {
     "word": word_spec,
     "character": character_spec,
     "token": token_spec,
+    "recursive": recursive_spec,
+    "sentence": sentence_spec,
+    "paragraph": paragraph_spec,
 }
