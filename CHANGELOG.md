@@ -6,6 +6,16 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.6.1] - 2026-11-11
+
+### Fixed
+- `pip install rag-titan` no longer installs pytest: it was listed as a runtime
+  dependency by mistake. It stays in the `dev` extra.
+
+### Changed
+- README shows the 0.6 features: `rag-titan evaluate` with a real report,
+  `run()` / `--trace` step logs, and the Evaluating RAG page.
+
 ## [0.6.0] - 2026-11-11
 
 ### Added

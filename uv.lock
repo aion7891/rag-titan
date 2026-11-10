@@ -2009,7 +2009,6 @@ dependencies = [
     { name = "numpy", version = "2.5.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
     { name = "ollama" },
     { name = "pypdf" },
-    { name = "pytest" },
     { name = "python-docx" },
     { name = "python-dotenv" },
 ]
@@ -2039,7 +2038,6 @@ requires-dist = [
     { name = "numpy", specifier = ">=1.24" },
     { name = "ollama", specifier = ">=0.4.0" },
     { name = "pypdf", specifier = ">=4.0" },
-    { name = "pytest", specifier = ">=8.4.2" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0" },
     { name = "python-docx", specifier = ">=1.1" },
     { name = "python-dotenv", specifier = ">=1.0" },
