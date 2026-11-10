@@ -6,7 +6,6 @@ Before using it, pull the model:
 """
 
 import numpy as np
-import ollama
 
 from rag_titan.embeddings.base_embedder import BaseEmbedder
 from rag_titan.utils.logger import get_logger
@@ -25,6 +24,9 @@ class OllamaEmbedder(BaseEmbedder):
     """
 
     def __init__(self, model="nomic-embed-text", host=None, batch_size=32):
+        # imported here, so the package also loads where ollama is missing (the browser)
+        import ollama
+
         super().__init__(model)
         self.batch_size = batch_size
         self.client = ollama.Client(host=host)

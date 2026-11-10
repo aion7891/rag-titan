@@ -19,6 +19,7 @@ from rag_titan.chunking.structure_aware import (
     ParagraphChunker,
     SentenceChunker,
 )
+from rag_titan.embeddings.hash_embedder import HashEmbedder
 from rag_titan.embeddings.ollama_embedder import OllamaEmbedder
 from rag_titan.generation.grounded_generator import GroundedGenerator
 from rag_titan.llm.ollama_llm import OllamaLLM
@@ -59,6 +60,9 @@ def build_embedder(settings):
 
     if name == "ollama":
         return OllamaEmbedder(settings["embed_model"], host=settings["ollama_host"])
+
+    if name == "hash":
+        return HashEmbedder()
 
     raise ValueError(f"Unknown embedding provider: {name}")
 
