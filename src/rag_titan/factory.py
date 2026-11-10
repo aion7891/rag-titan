@@ -7,7 +7,12 @@ Adding a new provider or strategy:
     3. change the setting in .env (or pass it in `get_settings()`)
 """
 
-from rag_titan.chunking.fixed_size import CharacterChunker, TokenChunker, WordChunker
+from rag_titan.chunking.fixed_size import (
+    CharacterChunker,
+    RecursiveChunker,
+    TokenChunker,
+    WordChunker,
+)
 from rag_titan.embeddings.ollama_embedder import OllamaEmbedder
 from rag_titan.generation.grounded_generator import GroundedGenerator
 from rag_titan.llm.ollama_llm import OllamaLLM
@@ -66,6 +71,9 @@ def build_chunker(settings):
 
     if name == "token":
         return TokenChunker(size, overlap, encoding=settings["chunk_encoding"])
+
+    if name == "recursive":
+        return RecursiveChunker(size, overlap)
 
     raise ValueError(f"Unknown chunker: {name}")
 
