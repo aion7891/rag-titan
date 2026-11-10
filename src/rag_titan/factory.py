@@ -7,9 +7,7 @@ Adding a new provider or strategy:
     3. change the setting in .env (or pass it in `get_settings()`)
 """
 
-from rag_titan.chunking.character_chunker import CharacterChunker
-from rag_titan.chunking.token_chunker import TokenChunker
-from rag_titan.chunking.word_chunker import WordChunker
+from rag_titan.chunking.fixed_size import CharacterChunker, TokenChunker, WordChunker
 from rag_titan.embeddings.ollama_embedder import OllamaEmbedder
 from rag_titan.generation.grounded_generator import GroundedGenerator
 from rag_titan.llm.ollama_llm import OllamaLLM

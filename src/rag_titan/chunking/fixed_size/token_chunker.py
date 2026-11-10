@@ -1,7 +1,7 @@
 """Chunker that splits text by counting model tokens."""
 
 from rag_titan.chunking.base_chunker import BaseChunker
-from rag_titan.chunking.fixed_windows import check_window_size, fixed_windows
+from rag_titan.chunking.fixed_size.fixed_windows import check_window_size, fixed_windows
 
 INSTALL_HINT = (
     "TokenChunker uses tiktoken by default. Install it with "

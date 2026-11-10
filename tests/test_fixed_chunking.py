@@ -66,3 +66,10 @@ def test_word_chunker_lossless_over_words():
     chunker = WordChunker(chunk_size=3, overlap=1)
     windows = [piece.split() for piece in chunker.split_text(TEXT)]
     assert rebuild(windows, 1) == TEXT.split()
+
+
+def test_old_word_chunker_import_path_still_works():
+    # code written for 0.1.0 imports from rag_titan.chunking.word_chunker
+    from rag_titan.chunking.word_chunker import WordChunker as OldWordChunker
+
+    assert OldWordChunker is WordChunker
