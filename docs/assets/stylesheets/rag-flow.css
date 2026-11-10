@@ -1,0 +1,51 @@
+/* RAG flow diagrams (rag-flow.js) and step details (rag-steps.js). Same colours as the docs SVGs. */
+:root {
+  --rf-text: var(--md-default-fg-color, #0f172a);
+  --rf-muted: var(--md-default-fg-color--light, #64748b);
+  --rf-edge: #94a3b8;
+  --rf-taken: #f97316;
+  --rf-search-bg: #ecfeff; --rf-search: #06b6d4;
+  --rf-llm-bg: #fffbeb;    --rf-llm: #f59e0b;
+  --rf-output-bg: #f0fdf4; --rf-output: #22c55e;
+  --rf-loop: #d97706;
+}
+[data-md-color-scheme="slate"] {
+  --rf-edge: #64748b;
+  --rf-search-bg: #083344; --rf-search: #22d3ee;
+  --rf-llm-bg: #3b2a06;    --rf-llm: #fbbf24;
+  --rf-output-bg: #052e16; --rf-output: #4ade80;
+  --rf-loop: #f59e0b;
+}
+
+.rf-diagram { max-width: 100%; height: auto; display: block; }
+.rf-edge { fill: none; stroke: var(--rf-edge); stroke-width: 2; stroke-dasharray: 5 5; }
+.rf-loop { stroke: var(--rf-loop); }
+.rf-head-plain { fill: var(--rf-edge); }
+.rf-head-loop { fill: var(--rf-loop); }
+.rf-head-taken { fill: var(--rf-taken); }
+.rf-edge.rf-taken { stroke: var(--rf-taken); stroke-width: 3; stroke-dasharray: none; }
+
+.rf-node { cursor: pointer; outline: none; }
+.rf-node rect { stroke-width: 1.5; transition: stroke-width 0.2s, opacity 0.2s; opacity: 0.55; }
+.rf-search rect { fill: var(--rf-search-bg); stroke: var(--rf-search); }
+.rf-llm rect { fill: var(--rf-llm-bg); stroke: var(--rf-llm); }
+.rf-output rect { fill: var(--rf-output-bg); stroke: var(--rf-output); }
+.rf-node.rf-visited rect { opacity: 1; }
+.rf-node.rf-current rect { stroke: var(--rf-taken); stroke-width: 3.5; }
+.rf-node:hover rect, .rf-node:focus rect { stroke-width: 3; opacity: 1; }
+.rf-label { font: 600 13px system-ui, sans-serif; fill: var(--rf-text); text-anchor: middle; }
+.rf-badge { font: 700 10px ui-monospace, monospace; fill: var(--rf-taken); text-anchor: end; }
+
+@media (prefers-reduced-motion: reduce) {
+  .rf-node rect { transition: none; }
+}
+
+/* the details of the steps behind a clicked node */
+.rf-details { font-size: 0.75rem; display: flex; flex-direction: column; gap: 0.5rem; }
+.rf-step { border-left: 4px solid var(--rf-taken); border-radius: 6px; padding: 0.3rem 0.6rem;
+           background: var(--md-code-bg-color, #f8fafc); }
+.rf-step-head { font-weight: 700; }
+.rf-step-head span { font-weight: 400; color: var(--rf-muted); }
+.rf-io { font: 0.72rem/1.5 var(--md-code-font-family, ui-monospace, monospace);
+         white-space: pre-wrap; word-break: break-word; margin: 0.15rem 0 0; }
+.rf-io b { font-family: system-ui, sans-serif; }
