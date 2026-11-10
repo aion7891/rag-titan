@@ -27,7 +27,7 @@
 - **Many RAG types, one API.** Two today (`simple`, `adaptive`), with more on the way. Switch with one word: `rag_type="adaptive"`.
 - **Runs 100% locally** with [Ollama](https://ollama.com), so your documents never leave your machine.
 - **Grounded answers.** The model answers only from your files and cites the chunks it used.
-- **Chunking your way.** Eight chunkers: by words, characters or model tokens (tiktoken or your own tokenizer), recursive separators, and structure-aware chunkers that keep sentences, paragraphs, heading sections or pages whole.
+- **Chunking your way.** Eight chunkers: by words, characters or model tokens (tiktoken or your own tokenizer), recursive separators, and structure-aware chunkers that keep sentences, paragraphs, heading sections or pages whole. [Try them live in the chunk playground →](https://aion7891.github.io/rag-titan/playground/)
 - **PDF, Word, Markdown and text files**, with paragraphs, headings and pages kept for the chunkers.
 - **Easy to read, easy to change.** Short files, plain Python, and a docstring on every class. Swap any part by inheriting one base class.
 
@@ -93,6 +93,16 @@ Click any picture to open its page.
 <table>
   <tr>
     <td width="50%" valign="top">
+      <a href="https://aion7891.github.io/rag-titan/chunking/"><img src="https://cdn.jsdelivr.net/gh/aion7891/rag-titan@main/docs/assets/images/fixed-chunkers.svg" alt="One sentence chunked by characters, words and tokens"></a>
+      <p><b><a href="https://aion7891.github.io/rag-titan/chunking/">Chunking methods</a></b><br>All 8 chunkers explained, with formulas and animated diagrams.</p>
+    </td>
+    <td width="50%" valign="top">
+      <a href="https://aion7891.github.io/rag-titan/playground/"><img src="https://cdn.jsdelivr.net/gh/aion7891/rag-titan@main/docs/assets/images/playground.png" alt="Chunk playground: tricky sentences split by the sentence chunker"></a>
+      <p><b><a href="https://aion7891.github.io/rag-titan/playground/">Chunk playground</a></b><br>Paste your text and watch the chunkers cut it, live in the browser.</p>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
       <a href="https://aion7891.github.io/rag-titan/building-blocks/"><img src="https://cdn.jsdelivr.net/gh/aion7891/rag-titan@main/docs/assets/images/indexing.svg" alt="Indexing pipeline"></a>
       <p><b><a href="https://aion7891.github.io/rag-titan/building-blocks/">Building blocks</a></b><br>Load → chunk → embed → store, with the data at every step.</p>
     </td>
@@ -117,6 +127,8 @@ Click any picture to open its page.
 |---|---|
 | Install it and ask my first question | [Getting started](https://aion7891.github.io/rag-titan/getting-started/) |
 | Pick the right RAG type | [RAG types](https://aion7891.github.io/rag-titan/rag-types/) |
+| Pick the right chunker | [Chunking methods](https://aion7891.github.io/rag-titan/chunking/) |
+| Try the chunkers on my own text | [Chunk playground](https://aion7891.github.io/rag-titan/playground/) |
 | Change models, chunk size or reranker | [Configuration](https://aion7891.github.io/rag-titan/configuration/) |
 | See every class and method | [API reference](https://aion7891.github.io/rag-titan/api/core/) |
 

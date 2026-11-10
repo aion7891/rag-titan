@@ -44,6 +44,7 @@ nav:
   - RAG types: rag-types.md
   - Building blocks: building-blocks.md
   - Chunking methods: chunking.md
+  - Chunk playground: playground.md
   - Configuration: configuration.md
   - Command line: cli.md
   - Agents: agents.md

@@ -25,18 +25,9 @@ rag-titan ships eight chunkers in two families from the chunking handbook:
 | `HeadingChunker`   | structure-aware | characters (or tokens) | `CHUNKER=heading`   | sections (never mixes two)                 |
 | `PageChunker`      | structure-aware | characters (or tokens) | `CHUNKER=page`      | pages (never spans two)                    |
 
-## Try it: chunk playground
-
-Change the text, the chunker, the size and the overlap, and watch the chunks
-change. Try `sentence` with abbreviations like "Dr." or "e.g." to see the
-sentence rules at work. The <mark>highlighted</mark> start of a chunk is the
-overlap repeated from the chunk before. It runs in your browser with the same
-rules as the Python package (checked against it on 4,000 random texts full of
-abbreviations, decimals and other traps). Token counting needs tiktoken, and
-the heading and page chunkers need whole documents, so they are not in the
-playground.
-
-<div id="chunk-playground"><p><em>The playground needs JavaScript.</em></p></div>
+!!! tip "Try it: chunk playground"
+    Paste your own text and watch every chunker on this page cut it, live in
+    your browser: **[open the chunk playground](playground.md)**.
 
 ## What every chunker returns
 

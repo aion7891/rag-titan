@@ -1,9 +1,23 @@
-// Chunk playground for docs/chunking.md: the controls and the live output.
+// Chunk playground (docs/playground.md): the controls and the live output.
 // The chunking rules live in chunk-core.js (ChunkCore), which mirrors the Python package.
 
 const PLAYGROUND = {
-  text: "Leave policy\n\nStaff get twenty days. Unused days carry over. "
-    + "Ask HR for the form. Sick leave is separate.",
+  // example texts, loaded with one click; the first one is shown at the start
+  presets: {
+    "Leave policy": "Leave policy\n\nStaff get twenty days. Unused days carry over. "
+      + "Ask HR for the form. Sick leave is separate.",
+    "Markdown with headings": "# Leave policy\n\n## Annual leave\n\nStaff get twenty days. "
+      + "Unused days carry over.\n\n## Sick leave\n\nTell your manager before nine. "
+      + "A doctor's note is needed after three days.",
+    "Tricky sentences": "Dr. Smith met J. K. Rowling at 3.5 p.m. on Monday. She said: \"Hi!\" "
+      + "Then they left... Steps: 1. Open the form. 2. Sign it. Fruit, e.g. apples, is fine. "
+      + "The U.S. Army came. 東京は大きい。大阪も大きい。",
+    "One long paragraph": "Every member of staff gets twenty days of paid leave each year, "
+      + "and the days are added on the first of January. Days that are not used by the end "
+      + "of the year move to the next year, up to a limit of five days, and anything above "
+      + "that limit is lost unless your manager agrees in writing before the end of March. "
+      + "Ask HR for the carry-over form if you need it.",
+  },
   // per mode: [default size, default overlap, max size]
   modes: {
     recursive: [50, 25, 400],
@@ -53,13 +67,23 @@ function statsText(mode, text, size, overlap, chunks) {
   return lines.join("\n");
 }
 
+function presetButtons(text, render) {
+  const buttons = Object.entries(PLAYGROUND.presets).map(([name, value]) => {
+    const button = el("button", { type: "button", className: "cp-preset", textContent: name });
+    button.addEventListener("click", () => { text.value = value; render(); });
+    return button;
+  });
+  return el("div", { className: "cp-presets" }, ["examples: ", ...buttons]);
+}
+
 function buildPlayground(root) {
   root.dataset.ready = "1";
   const mode = el("select", {}, Object.keys(PLAYGROUND.modes).map(
     (name) => el("option", { value: name, textContent: name })));
   const size = slider("size", 50, 400);
   const overlap = slider("overlap", 25, 49);
-  const text = el("textarea", { rows: 5, value: PLAYGROUND.text, spellcheck: false });
+  const firstPreset = Object.values(PLAYGROUND.presets)[0];
+  const text = el("textarea", { rows: 6, value: firstPreset, spellcheck: false });
   const stats = el("pre", { className: "cp-stats" });
   stats.setAttribute("aria-live", "polite");
   const output = el("div", { className: "cp-chunks" });
@@ -88,13 +112,13 @@ function buildPlayground(root) {
 
   const controls = el("div", { className: "cp-controls" },
     [el("label", { className: "cp-field" }, ["chunker ", mode]), size.row, overlap.row]);
-  root.replaceChildren(controls, text, stats, output);
+  root.replaceChildren(controls, presetButtons(text, render), text, stats, output);
   render();
 }
 
 if (typeof document !== "undefined") {
   const start = () => {
-    const root = document.getElementById("chunk-playground");
+    const root = document.getElementById("chunk-playground-app");
     if (root && !root.dataset.ready) buildPlayground(root);
   };
   if (typeof document$ !== "undefined") document$.subscribe(start);
