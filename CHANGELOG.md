@@ -6,6 +6,10 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+- Docs site: the 0.4.0 docs were not published, because a docstring
+  (`BaseChunker.chunk`) was read as a broken link in the API reference.
+
 ## [0.4.0] - 2026-11-11
 
 ### Added

@@ -21,8 +21,9 @@ class BaseChunker:
 
         Returns:
             List of {"id": "chunk_0", "source": ..., "text": ...,
-            "start_offset": 0, "end_offset": 120} dicts. document["text"][start:end]
-            is where the chunk comes from (offsets are None if it cannot be found).
+            "start_offset": 0, "end_offset": 120} dicts.
+            `document["text"][start_offset:end_offset]` is where the chunk comes
+            from (the offsets are None if it cannot be found).
             When known, chunks also get "page_numbers" (PDFs) and
             "section_path" (documents with headings).
         """
