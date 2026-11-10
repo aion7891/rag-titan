@@ -1,0 +1,132 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 404" width="960" height="404" role="img" aria-labelledby="title desc">
+<title id="title">TokenChunker</title>
+<desc id="desc">TokenChunker cuts the leave-policy text into 24 tokens and makes 4 chunks of 8 tokens that overlap by 2.</desc>
+<!-- made by tools/diagrams/make_chunk_diagrams.py from real chunker output; do not edit -->
+<defs><style>
+.bg { fill: #ffffff; stroke: #e2e8f0; }
+.title { font: 700 22px system-ui, -apple-system, "Segoe UI", sans-serif; fill: #0f172a; }
+.sub { font: 400 13px system-ui, -apple-system, "Segoe UI", sans-serif; fill: #475569; }
+.h { font: 700 13px system-ui, -apple-system, "Segoe UI", sans-serif; fill: #334155; }
+.unit { fill: #eff6ff; stroke: #93c5fd; stroke-width: 1; }
+.mono { font: 12px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #0f172a;
+        white-space: pre; }
+.pick { fill: none; stroke: #f97316; stroke-width: 2.5; }
+.shared { fill: rgba(249, 115, 22, 0.28); stroke: #f97316; stroke-width: 2.5; }
+.card { fill: #f8fafc; stroke: #cbd5e1; stroke-width: 1; }
+.tag { font: 700 12px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #64748b; }
+.ov { fill: #ea580c; font-weight: 700; }
+.foot { font: 13px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #0f172a; }
+
+@keyframes h0 { 0%, 0.00% { opacity: 0; } 0.50%, 18.55% { opacity: 1; } 19.05%, 100% { opacity: 0; } }
+@keyframes c0 { 0%, 0.00% { opacity: 0.15; } 0.50%, 97.12% { opacity: 1; } 97.62%, 100% { opacity: 0.15; } }
+.h0 { opacity: 0; animation: h0 8.4s infinite; }
+.c0 { opacity: 0.15; animation: c0 8.4s infinite; }
+@keyframes h1 { 0%, 19.05% { opacity: 0; } 19.55%, 37.60% { opacity: 1; } 38.10%, 100% { opacity: 0; } }
+@keyframes c1 { 0%, 19.05% { opacity: 0.15; } 19.55%, 97.12% { opacity: 1; } 97.62%, 100% { opacity: 0.15; } }
+.h1 { opacity: 0; animation: h1 8.4s infinite; }
+.c1 { opacity: 0.15; animation: c1 8.4s infinite; }
+@keyframes h2 { 0%, 38.10% { opacity: 0; } 38.60%, 56.64% { opacity: 1; } 57.14%, 100% { opacity: 0; } }
+@keyframes c2 { 0%, 38.10% { opacity: 0.15; } 38.60%, 97.12% { opacity: 1; } 97.62%, 100% { opacity: 0.15; } }
+.h2 { opacity: 0; animation: h2 8.4s infinite; }
+.c2 { opacity: 0.15; animation: c2 8.4s infinite; }
+@keyframes h3 { 0%, 57.14% { opacity: 0; } 57.64%, 75.69% { opacity: 1; } 76.19%, 100% { opacity: 0; } }
+@keyframes c3 { 0%, 57.14% { opacity: 0.15; } 57.64%, 97.12% { opacity: 1; } 97.62%, 100% { opacity: 0.15; } }
+.h3 { opacity: 0; animation: h3 8.4s infinite; }
+.c3 { opacity: 0.15; animation: c3 8.4s infinite; }
+@media (prefers-reduced-motion: reduce) { .h0, .h1, .h2, .h3 { animation: none; opacity: 0; } .c0, .c1, .c2, .c3 { animation: none; opacity: 1; } }
+</style></defs>
+<rect class="bg" x="1" y="1" width="958" height="402" rx="14"/>
+<text class="title" x="40" y="46">TokenChunker</text>
+<text class="sub" x="40" y="70">TokenChunker(chunk_size=8, overlap=2): windows of 8 tokens, each starting 6 tokens after the last one.</text>
+<text class="sub" x="40" y="90">Orange frame = the chunk being made. Filled orange = overlap, repeated from the chunk before.</text>
+<text class="h" x="40" y="114">1. The text, cut into 24 tokens (tiktoken cl100k_base; ␣ = space, ↵ = line break)</text>
+<rect class="unit" x="40.0" y="128" width="51.0" height="26" rx="5"/>
+<text class="mono" x="48.0" y="146">Leave</text>
+<rect class="unit" x="97.0" y="128" width="65.0" height="26" rx="5"/>
+<text class="mono" x="105.0" y="146">␣policy</text>
+<rect class="unit" x="168.0" y="128" width="30.0" height="26" rx="5"/>
+<text class="mono" x="176.0" y="146">↵↵</text>
+<rect class="unit" x="204.0" y="128" width="51.0" height="26" rx="5"/>
+<text class="mono" x="212.0" y="146">Staff</text>
+<rect class="unit" x="261.0" y="128" width="44.0" height="26" rx="5"/>
+<text class="mono" x="269.0" y="146">␣get</text>
+<rect class="unit" x="311.0" y="128" width="65.0" height="26" rx="5"/>
+<text class="mono" x="319.0" y="146">␣twenty</text>
+<rect class="unit" x="382.0" y="128" width="51.0" height="26" rx="5"/>
+<text class="mono" x="390.0" y="146">␣days</text>
+<rect class="unit" x="439.0" y="128" width="23.0" height="26" rx="5"/>
+<text class="mono" x="447.0" y="146">.</text>
+<rect class="unit" x="468.0" y="128" width="65.0" height="26" rx="5"/>
+<text class="mono" x="476.0" y="146">␣Unused</text>
+<rect class="unit" x="539.0" y="128" width="51.0" height="26" rx="5"/>
+<text class="mono" x="547.0" y="146">␣days</text>
+<rect class="unit" x="596.0" y="128" width="58.0" height="26" rx="5"/>
+<text class="mono" x="604.0" y="146">␣carry</text>
+<rect class="unit" x="660.0" y="128" width="51.0" height="26" rx="5"/>
+<text class="mono" x="668.0" y="146">␣over</text>
+<rect class="unit" x="717.0" y="128" width="23.0" height="26" rx="5"/>
+<text class="mono" x="725.0" y="146">.</text>
+<rect class="unit" x="746.0" y="128" width="44.0" height="26" rx="5"/>
+<text class="mono" x="754.0" y="146">␣Ask</text>
+<rect class="unit" x="796.0" y="128" width="37.0" height="26" rx="5"/>
+<text class="mono" x="804.0" y="146">␣HR</text>
+<rect class="unit" x="839.0" y="128" width="44.0" height="26" rx="5"/>
+<text class="mono" x="847.0" y="146">␣for</text>
+<rect class="unit" x="40.0" y="160" width="44.0" height="26" rx="5"/>
+<text class="mono" x="48.0" y="178">␣the</text>
+<rect class="unit" x="90.0" y="160" width="51.0" height="26" rx="5"/>
+<text class="mono" x="98.0" y="178">␣form</text>
+<rect class="unit" x="147.0" y="160" width="23.0" height="26" rx="5"/>
+<text class="mono" x="155.0" y="178">.</text>
+<rect class="unit" x="176.0" y="160" width="51.0" height="26" rx="5"/>
+<text class="mono" x="184.0" y="178">␣Sick</text>
+<rect class="unit" x="233.0" y="160" width="58.0" height="26" rx="5"/>
+<text class="mono" x="241.0" y="178">␣leave</text>
+<rect class="unit" x="297.0" y="160" width="37.0" height="26" rx="5"/>
+<text class="mono" x="305.0" y="178">␣is</text>
+<rect class="unit" x="340.0" y="160" width="79.0" height="26" rx="5"/>
+<text class="mono" x="348.0" y="178">␣separate</text>
+<rect class="unit" x="425.0" y="160" width="23.0" height="26" rx="5"/>
+<text class="mono" x="433.0" y="178">.</text>
+<g class="h0"><rect class="pick" x="38.0" y="126" width="55.0" height="30" rx="6"/>
+<rect class="pick" x="95.0" y="126" width="69.0" height="30" rx="6"/>
+<rect class="pick" x="166.0" y="126" width="34.0" height="30" rx="6"/>
+<rect class="pick" x="202.0" y="126" width="55.0" height="30" rx="6"/>
+<rect class="pick" x="259.0" y="126" width="48.0" height="30" rx="6"/>
+<rect class="pick" x="309.0" y="126" width="69.0" height="30" rx="6"/>
+<rect class="pick" x="380.0" y="126" width="55.0" height="30" rx="6"/>
+<rect class="pick" x="437.0" y="126" width="27.0" height="30" rx="6"/></g>
+<g class="h1"><rect class="pick" x="466.0" y="126" width="69.0" height="30" rx="6"/>
+<rect class="pick" x="537.0" y="126" width="55.0" height="30" rx="6"/>
+<rect class="pick" x="594.0" y="126" width="62.0" height="30" rx="6"/>
+<rect class="pick" x="658.0" y="126" width="55.0" height="30" rx="6"/>
+<rect class="pick" x="715.0" y="126" width="27.0" height="30" rx="6"/>
+<rect class="pick" x="744.0" y="126" width="48.0" height="30" rx="6"/><rect class="shared" x="380.0" y="126" width="55.0" height="30" rx="6"/>
+<rect class="shared" x="437.0" y="126" width="27.0" height="30" rx="6"/></g>
+<g class="h2"><rect class="pick" x="794.0" y="126" width="41.0" height="30" rx="6"/>
+<rect class="pick" x="837.0" y="126" width="48.0" height="30" rx="6"/>
+<rect class="pick" x="38.0" y="158" width="48.0" height="30" rx="6"/>
+<rect class="pick" x="88.0" y="158" width="55.0" height="30" rx="6"/>
+<rect class="pick" x="145.0" y="158" width="27.0" height="30" rx="6"/>
+<rect class="pick" x="174.0" y="158" width="55.0" height="30" rx="6"/><rect class="shared" x="715.0" y="126" width="27.0" height="30" rx="6"/>
+<rect class="shared" x="744.0" y="126" width="48.0" height="30" rx="6"/></g>
+<g class="h3"><rect class="pick" x="231.0" y="158" width="62.0" height="30" rx="6"/>
+<rect class="pick" x="295.0" y="158" width="41.0" height="30" rx="6"/>
+<rect class="pick" x="338.0" y="158" width="83.0" height="30" rx="6"/>
+<rect class="pick" x="423.0" y="158" width="27.0" height="30" rx="6"/><rect class="shared" x="145.0" y="158" width="27.0" height="30" rx="6"/>
+<rect class="shared" x="174.0" y="158" width="55.0" height="30" rx="6"/></g>
+<text class="h" x="40" y="210">2. The chunks (real output)</text>
+<g class="c0"><rect class="card" x="40" y="220" width="880" height="30" rx="8"/>
+<text class="tag" x="50" y="241">C0</text>
+<text class="mono" x="84" y="241">Leave policy↵↵Staff get twenty days.</text></g>
+<g class="c1"><rect class="card" x="40" y="256" width="880" height="30" rx="8"/>
+<text class="tag" x="50" y="277">C1</text>
+<text class="mono" x="84" y="277"><tspan class="ov"> days.</tspan> Unused days carry over. Ask</text></g>
+<g class="c2"><rect class="card" x="40" y="292" width="880" height="30" rx="8"/>
+<text class="tag" x="50" y="313">C2</text>
+<text class="mono" x="84" y="313"><tspan class="ov">. Ask</tspan> HR for the form. Sick</text></g>
+<g class="c3"><rect class="card" x="40" y="328" width="880" height="30" rx="8"/>
+<text class="tag" x="50" y="349">C3</text>
+<text class="mono" x="84" y="349"><tspan class="ov">. Sick</tspan> leave is separate.</text></g>
+<text class="foot" x="40" y="384">N = 24 tokens · S = 8 · O = 2 · H = 6 · K = 1 + ⌈(N − S) / H⌉ = 4 chunks</text>
+</svg>
