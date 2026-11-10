@@ -5,6 +5,7 @@ To add a new strategy (sentence, semantic, recursive, ...), inherit from
 BaseChunker and implement split_text(). The id/source/offset handling is shared.
 """
 
+from rag_titan.chunking.locations import Locations
 from rag_titan.chunking.offsets import located_spans
 
 
@@ -22,10 +23,13 @@ class BaseChunker:
             List of {"id": "chunk_0", "source": ..., "text": ...,
             "start_offset": 0, "end_offset": 120} dicts. document["text"][start:end]
             is where the chunk comes from (offsets are None if it cannot be found).
+            When known, chunks also get "page_numbers" (PDFs) and
+            "section_path" (documents with headings).
         """
         chunks = []
 
         for document in documents:
+            locations = Locations(document["text"])
             for text, start, end in self.split_spans(document["text"]):
                 chunks.append({
                     "id": f"chunk_{len(chunks)}",
@@ -33,6 +37,7 @@ class BaseChunker:
                     "text": text,
                     "start_offset": start,
                     "end_offset": end,
+                    **locations.describe(start, end),
                 })
 
         return chunks

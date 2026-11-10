@@ -1,15 +1,9 @@
 """Chunker that follows the heading hierarchy (handbook section 3.3)."""
 
-import re
-
+from rag_titan.chunking.headings import FENCE, HEADING
 from rag_titan.chunking.offsets import shift
 from rag_titan.chunking.structure_aware.base import PieceChunker
 from rag_titan.chunking.structure_aware.paragraph_chunker import ParagraphChunker
-
-# Markdown headings "# Title" to "###### Title" (the DOCX loader writes these too)
-HEADING = re.compile(r"^(#{1,6})[ \t]+(.+?)[ \t#]*$")
-# ``` or ~~~ starts and ends a code block; "#" lines inside it are code, not headings
-FENCE = re.compile(r"^\s*(```|~~~)")
 
 
 def only_headings(lines):
