@@ -75,6 +75,12 @@ above is a structure-aware idea, so it would go in `chunking/structure_aware/`.
 Export it from that folder's `__init__.py` and from `chunking/__init__.py`, so
 users can write `from rag_titan.chunking import LineChunker`.
 
+Your chunker gets `start_offset` / `end_offset` (and `page_numbers`,
+`section_path`) for free: `BaseChunker` searches for each chunk in the text, in
+order. If your chunker knows its exact positions, override
+`split_spans(text)` to return `(chunk_text, start, end)` for each chunk; that
+is exact even in very repetitive text.
+
 ![Where your new class plugs in](assets/images/architecture.svg)
 
 ## What each base class needs

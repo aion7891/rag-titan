@@ -36,13 +36,18 @@ Everything is a plain Python `dict`, so it is easy to print and inspect.
 **Chunk** (made by a chunker)
 
 ```python
-{"id": "chunk_0", "source": "handbook.pdf", "text": "150 words..."}
+{"id": "chunk_0", "source": "handbook.pdf", "text": "150 words...",
+ "start_offset": 0, "end_offset": 912,             # where the chunk is in the document
+ "page_numbers": [1], "section_path": ["Leave policy"]}   # when known
 ```
+
+See [what every chunker returns](chunking.md#what-every-chunker-returns).
 
 **Match** (made by the retriever, then the reranker)
 
 ```python
 {"id": "chunk_0", "source": "handbook.pdf", "text": "...",
+ "start_offset": 0, "end_offset": 912, "page_numbers": [1],
  "score": 0.82, "rerank_score": 0.97}
 ```
 
