@@ -1,16 +1,17 @@
-// RAG playground (docs/rag-playground.md): pick chunkings, RAG types and a question,
-// then watch each setup run on its own live flow diagram. Python runs in rag-worker.js.
+// RAG playground (docs/rag-playground.md): pick chunkings, RAG types and a question, then
+// watch each setup run on its own live flow diagram. Python runs in rag-worker.js;
+// the cards and the report are drawn by rag-cards.js.
 
 (() => {
   const app = document.getElementById("rag-playground-app");
   if (!app) return;
+  const { el, choices, documentsBox, card, reportTable } = RagCards;
 
   const here = document.currentScript.src;   // .../assets/javascripts/rag-playground.js?v=...
   const assets = new URL("../", here).href;
   const worker = new Worker(new URL(`rag-worker.js${new URL(here).search}`, here), { type: "module" });
   const waiting = {};
   let calls = 0;
-
   const status = el("p", "rp-status", "Starting…");
   app.replaceChildren(status);
 
@@ -29,74 +30,47 @@
     worker.postMessage({ id: calls, call, args, assets });
   });
 
-  function el(tag, className, text) {
-    const node = document.createElement(tag);
-    if (className) node.className = className;
-    if (text !== undefined) node.textContent = text;
-    return node;
-  }
-
-  function choices(title, names, describe, checked) {
-    const box = el("fieldset", "rp-choices");
-    box.append(el("legend", "", title));
-    const inputs = names.map((name) => {
-      const input = Object.assign(el("input"), { type: "checkbox", value: name,
-                                                 checked: checked.includes(name) });
-      const label = el("label", "rp-choice");
-      label.append(input, ` ${name}`, el("span", "", describe(name)));
-      box.append(label);
-      return input;
-    });
-    return { box, picked: () => inputs.filter((i) => i.checked).map((i) => i.value) };
-  }
-
-  function documentsBox(documents) {
-    const box = el("details", "rp-documents");
-    box.append(el("summary", "", `The ${documents.length} documents every setup searches`));
-    documents.forEach((doc) => box.append(el("h4", "", doc.source), el("pre", "", doc.text)));
-    return box;
-  }
-
-  function card(info, chunking, ragType, run) {
-    const box = el("div", "rp-card");
-    const holder = el("div"), details = el("div", "rp-details");
-    const flow = info.flows[ragType];
-    const label = (id) => flow.nodes.find((node) => node.id === id).label;
-    box.append(el("h3", "", `${ragType} + ${chunking}`), holder,
-      el("p", run.answered ? "rp-answer" : "rp-answer rp-none", run.answer),
-      el("p", "rp-stats", `found ${run.recall * 100}% of the evidence · ${run.steps.length} steps · `
-        + `files given to the LLM: ${[...new Set(run.sources)].join(", ") || "none"}`), details);
-    const diagram = RagFlow.render(holder, flow, {
-      label: `${ragType} + ${chunking}`,
-      onSelect: (id, visits) => details.replaceChildren(RagSteps.details(label(id), visits)),
-    });
-    return { box, play: () => diagram.play(run.steps, 650).then(() => diagram.select("retrieve")) };
-  }
-
-  function reportTable(report) {
-    const table = el("table", "rp-report");
-    const head = ["setup", "Recall", "MRR", "nDCG", "Answered", "Steps"];
-    const row = (cells, tag) => {
-      const tr = el("tr");
-      cells.forEach((cell) => tr.append(el(tag, "", cell)));
-      table.append(tr);
+  // live mode: your Ollama, any question, the sample documents or your own text
+  function liveControls() {
+    const box = el("div", "rp-live");
+    const address = Object.assign(el("input", "rp-input"), { value: "http://localhost:11434" });
+    const connect = el("button", "md-button", "Connect");
+    const model = el("select", "rp-input"), embedModel = el("select", "rp-input");
+    const own = Object.assign(el("textarea", "rp-input rp-own"),
+      { placeholder: "Optional: paste your own text here. Empty = the sample documents." });
+    const help = el("p", "rp-help", "Start Ollama so this page may use it: OLLAMA_ORIGINS="
+      + `${location.origin} ollama serve (on a Mac with the Ollama app: launchctl setenv `
+      + `OLLAMA_ORIGINS ${location.origin}, then restart the app).`);
+    const base = () => address.value.trim().replace(/\/$/, "");
+    connect.onclick = async () => {
+      help.textContent = "Connecting…";
+      try {
+        const names = await python("models", base());
+        const pick = (select, list, preferred) => select.replaceChildren(...list.map((n) =>
+          Object.assign(el("option", "", n), { value: n, selected: n.startsWith(preferred) })));
+        pick(model, names.filter((n) => !n.includes("embed")), "gemma3:4b");
+        pick(embedModel, names.filter((n) => n.includes("embed")), "nomic-embed-text");
+        help.textContent = `Connected: ${names.length} models.`;
+      } catch (error) { help.textContent = error.message; }
     };
-    row(head, "th");
-    report.results.forEach((r) => row([r.name, r.recall.toFixed(3), r.mrr.toFixed(3),
-      r.ndcg.toFixed(3), `${Math.round(r.answered * 100)}%`, r.steps.toFixed(1)], "td"));
-    const weak = report.results.flatMap((r) => r.rows.filter((q) => q.recall < 1 || !q.answered)
-      .map((q) => `${r.name}: ${q.id} · recall ${q.recall.toFixed(2)}`
-        + `${q.answered ? "" : " · not answered"} · found ${[...new Set(q.sources)].join(", ") || "nothing"}`));
-    const list = el("ul", "rp-weak");
-    (weak.length ? weak : ["Every question found all its evidence."])
-      .forEach((line) => list.append(el("li", "", line)));
-    return [table, el("p", "rp-stats", "Questions to look at:"), list];
+    box.append(el("label", "rp-label", "Your Ollama"), address, connect, help,
+      el("label", "rp-label", "Chat model"), model, el("label", "rp-label", "Embedding model"),
+      embedModel, el("label", "rp-label", "Documents"), own);
+    return { box, settings: () => [base(), model.value, embedModel.value],
+             documents: () => (own.value.trim() ? [{ source: "your-text.md", text: own.value }] : null),
+             ready: () => Boolean(model.value && embedModel.value) };
   }
 
-  async function build(info) {
-    const question = el("select", "rp-question");
-    info.questions.forEach((q) => question.append(Object.assign(el("option", "", q.question),
-                                                                { value: q.id })));
+  function build(info) {
+    const mode = el("select", "rp-input rp-mode");
+    mode.append(Object.assign(el("option", "", `Recorded runs (${info.model}, instant)`), { value: "recorded" }),
+      Object.assign(el("option", "", "Live with your Ollama (any question, your own text)"), { value: "live" }));
+    const live = liveControls();
+    const question = Object.assign(el("input", "rp-input rp-question"),
+      { value: info.questions[0].question, placeholder: "Ask a question" });
+    const presets = Object.assign(el("datalist"), { id: "rp-presets" });
+    info.questions.forEach((q) => presets.append(Object.assign(el("option"), { value: q.question })));
+    question.setAttribute("list", "rp-presets");
     const chunkings = choices("Ingestion (chunker)", Object.keys(info.chunkings), (name) => {
       const s = info.chunkings[name];
       return ` ${s.chunk_size} ${name === "word" ? "words" : "characters"}, overlap ${s.chunk_overlap}`;
@@ -106,29 +80,58 @@
     const evalButton = el("button", "md-button", "Evaluate all questions");
     const results = el("div", "rp-results");
 
-    runButton.onclick = async () => {
-      results.replaceChildren(el("p", "rp-status", "Running…"));
-      const cards = [];
-      for (const chunking of chunkings.picked()) {
-        for (const ragType of ragTypes.picked()) {
-          cards.push(card(info, chunking, ragType, await python("run", chunking, ragType, question.value)));
-        }
-      }
-      results.replaceChildren(...cards.map((c) => c.box));
-      cards.forEach((c) => c.play());
+    const ready = `Ready: real ${info.model} replies and ${info.embed_model} vectors, `
+      + "replayed by the real rag-titan code running in your browser.";
+    mode.onchange = () => {
+      live.box.hidden = mode.value !== "live";
+      evalButton.hidden = mode.value === "live";   // live evaluation would ask the model ~50 times
+      status.textContent = mode.value === "live"
+        ? "Live: the real rag-titan code in your browser, asking your own Ollama." : ready;
     };
+    runButton.onclick = () => runAll(info, mode.value, live, question.value, chunkings.picked(),
+                                     ragTypes.picked(), results);
     evalButton.onclick = async () => {
       results.replaceChildren(el("p", "rp-status", "Running every question on every setup…"));
       results.replaceChildren(...reportTable(await python("evaluate", chunkings.picked(), ragTypes.picked())));
     };
-
-    status.textContent = `Ready: real ${info.model} replies and ${info.embed_model} vectors, `
-      + "replayed by the real rag-titan code running in your browser.";
+    mode.onchange();
     const controls = el("div", "rp-controls");
     controls.append(chunkings.box, ragTypes.box);
-    app.append(documentsBox(info.documents), el("label", "rp-label", "Question"), question,
-               controls, runButton, evalButton, results);
+    app.append(documentsBox(info.documents), el("label", "rp-label", "Mode"), mode, live.box,
+               el("label", "rp-label", "Question"), question, presets, controls,
+               runButton, evalButton, results);
     runButton.onclick();
+  }
+
+  async function runAll(info, mode, live, question, chunkings, ragTypes, results) {
+    const preset = info.questions.find((q) => q.question === question.trim());
+    if (mode === "recorded" && !preset) {
+      results.replaceChildren(el("p", "rp-status", "Recorded mode only knows the listed "
+        + "questions: pick one, or switch to Live with your Ollama to ask anything."));
+      return;
+    }
+    if (mode === "live" && !live.ready()) {
+      results.replaceChildren(el("p", "rp-status", "Connect to your Ollama first."));
+      return;
+    }
+    const cards = [];
+    try {
+      for (const chunking of chunkings) {
+        for (const ragType of ragTypes) {
+          results.replaceChildren(el("p", "rp-status", `Running ${ragType} + ${chunking}`
+            + `${mode === "live" ? " with your Ollama (this can take a while)" : ""}…`));
+          const run = mode === "live"
+            ? await python("live_run", ...live.settings(), chunking, ragType, question, live.documents())
+            : await python("run", chunking, ragType, preset.id);
+          cards.push(card(info.flows[ragType], `${ragType} + ${chunking}`, run));
+        }
+      }
+    } catch (error) {
+      results.replaceChildren(el("p", "rp-status", `Could not run: ${error.message}`));
+      return;
+    }
+    results.replaceChildren(...cards.map((c) => c.box));
+    cards.forEach((c) => c.play());
   }
 
   python("info").then(build).catch((error) => {

@@ -14,7 +14,8 @@ query, the evidence check).
 - The **real rag-titan code** runs in your browser with
   [Pyodide](https://pyodide.org) (Python compiled to WebAssembly). The first
   visit downloads about 10 MB; later visits use your browser's cache.
-- The model replies and embedding vectors are **real**, recorded once with
+- In the default **recorded** mode, the model replies and embedding vectors are
+  **real**, recorded once with
   `gemma3:4b` and `nomic-embed-text` on the three sample policies in
   `examples/sample_docs/`, then replayed. Search, reranking, the RAG types, the
   scores and the diagrams are all computed live.
@@ -38,5 +39,30 @@ query, the evidence check).
 4. **Compare everything.** Tick all chunkers and RAG types and press
    **Evaluate all questions**.
 
-Your own documents and questions, and live answers from your own Ollama, are
-coming next; see the [roadmap](roadmap.md).
+## Live mode: your Ollama, any question, your own text
+
+Switch **Mode** to *Live with your Ollama* to ask **any** question, on the sample
+documents or on text you paste, with the models on your own machine. The page
+talks to Ollama on your computer; nothing is sent anywhere else.
+
+1. Ollama must allow this page. Start it with:
+
+    ```bash
+    OLLAMA_ORIGINS=https://aion7891.github.io ollama serve
+    ```
+
+    With the Ollama app on a Mac, run
+    `launchctl setenv OLLAMA_ORIGINS https://aion7891.github.io` once, then quit
+    and reopen the app.
+
+2. Have a chat model and an embedding model, for example
+   `ollama pull gemma3:4b` and `ollama pull nomic-embed-text`. Cloud models
+   (`gpt-oss:20b-cloud`, ...) work too after `ollama signin`, if your Ollama
+   account has credits.
+3. Press **Connect**, pick the models, and **Run**.
+
+Your browser may ask whether this page may **access devices on your local
+network**: allow it, that is your own Ollama. Live runs take a few seconds per
+setup, and the evidence is only scored for the listed questions on the sample
+documents. **Evaluate all questions** is only offered for recorded runs: live it
+would ask your model about 50 times.

@@ -79,3 +79,11 @@
 .rp-report { font-size: 0.75rem; }
 .rp-report th, .rp-report td { text-align: left; padding-right: 1.2rem; }
 .rp-weak { font-size: 0.72rem; }
+.rp-input { font: inherit; font-size: 0.8rem; width: 100%; max-width: 40rem; padding: 0.25rem;
+            color: var(--rf-text); background: var(--md-code-bg-color, #f8fafc); box-sizing: border-box;
+            border: 1px solid var(--md-default-fg-color--lightest, #cbd5e1); border-radius: 6px; }
+.rp-live { border-left: 4px solid var(--rf-llm); padding: 0.2rem 0 0.4rem 0.8rem; margin: 0.4rem 0; }
+.rp-live .md-button { margin-top: 0.3rem; }
+.rp-own { min-height: 6rem; font-family: var(--md-code-font-family, monospace); }
+.rp-help { font-size: 0.72rem; color: var(--rf-muted); }
+#rag-playground-app [hidden] { display: none !important; }   /* the theme's button style would win */
