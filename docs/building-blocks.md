@@ -8,6 +8,10 @@ Indexing:   Loader -> Chunker -> Embedder -> VectorStore
 Answering:  Retriever -> Reranker -> Generator  (each uses the LLM / Embedder)
 ```
 
+![Swappable building blocks](assets/images/architecture.svg)
+
+![Indexing pipeline with example data](assets/images/indexing.svg)
+
 | Part      | Base class      | Ready-made classes              | Folder                |
 |-----------|-----------------|---------------------------------|-----------------------|
 | LLM       | `BaseLLM`       | `OllamaLLM`                     | `llm/`                |

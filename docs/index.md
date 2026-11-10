@@ -21,6 +21,8 @@ rag.index(["handbook.pdf"])
 print(rag.ask("How many leave days do I get?"))
 ```
 
+![rag-titan overview](assets/images/overview.svg)
+
 ## Where to go next
 
 | I want to...                         | Read                                   |

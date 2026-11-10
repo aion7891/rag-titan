@@ -3,6 +3,8 @@
 Settings are read from **environment variables** or a **`.env` file** in the
 folder where you run your code. Every setting has a default, so nothing is required.
 
+![Settings pick a class for every part](assets/images/architecture.svg)
+
 Copy the example file to start:
 
 ```bash

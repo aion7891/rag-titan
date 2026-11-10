@@ -42,6 +42,8 @@ What happens:
 
 The answer cites the chunks it used, for example `[chunk_0]`.
 
+![Indexing and answering](assets/images/overview.svg)
+
 ## 4. Try another RAG type
 
 ```python

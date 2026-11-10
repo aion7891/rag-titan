@@ -7,6 +7,8 @@ think (LLM) -> call tools -> send results back -> repeat
 until the LLM answers without calling a tool, or max_steps is reached
 ```
 
+![Agent loop with example trace](assets/images/agent.svg)
+
 ## The math agent
 
 ```python

@@ -11,6 +11,8 @@ Question -> Retrieve -> Rerank -> Generate
 
 The classic RAG. It searches once and answers once.
 
+![Simple RAG flow](assets/images/simple-rag.svg)
+
 - **Good for:** clear factual questions, fast answers, learning how RAG works.
 - **LLM calls per question:** 1
 - **Options:** `top_k` (chunks to retrieve, default 5), `top_n` (chunks to keep, default 2)
@@ -32,6 +34,8 @@ Question -> Choose route -> Retrieve -> Rerank -> Check evidence
 ```
 
 It decides how much work each question needs:
+
+![Adaptive RAG flow](assets/images/adaptive-rag.svg)
 
 | Route     | When                           | What it does                     |
 |-----------|--------------------------------|----------------------------------|

@@ -45,6 +45,8 @@ def build_chunker(settings):
 
 and set `CHUNKER=sentence` in `.env`.
 
+![Where your new class plugs in](assets/images/architecture.svg)
+
 ## What each base class needs
 
 | Base class      | Methods to write                                  |

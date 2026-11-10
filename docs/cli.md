@@ -2,6 +2,8 @@
 
 Installing the package adds a `rag-titan` command.
 
+![rag-titan command line demo](assets/images/cli.svg)
+
 ## Ask one question
 
 ```bash
