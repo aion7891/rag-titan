@@ -2,7 +2,7 @@
 
 import pytest
 
-from rag_titan.chunking import CharacterChunker, WordChunker, fixed_windows
+from rag_titan.chunking import CharacterChunker, WordChunker, count_windows, fixed_windows
 
 TEXT = "Fixed-length chunking cuts text into windows.\nEach window overlaps the last."
 
@@ -35,6 +35,24 @@ def test_fixed_windows_exact_sizes_and_lossless(size, overlap):
     assert all(windows)
     assert all(len(window) == size for window in windows[:-1])
     assert rebuild(windows, overlap) == TEXT
+
+
+@pytest.mark.parametrize("size, overlap", [(1, 0), (3, 1), (5, 4), (8, 0), (8, 3)])
+def test_count_windows_matches_fixed_windows(size, overlap):
+    for n in range(0, 40):
+        units = list(range(n))
+        assert count_windows(n, size, overlap) == len(fixed_windows(units, size, overlap))
+
+
+def test_count_windows_shows_overlap_cost():
+    # 1000 units in windows of 100: 10 without overlap, 13 with 20 overlap
+    assert count_windows(1000, 100, 0) == 10
+    assert count_windows(1000, 100, 20) == 13
+
+
+def test_count_windows_rejects_bad_n():
+    with pytest.raises(ValueError):
+        count_windows(-1, 3, 0)
 
 
 # --- character chunker ---

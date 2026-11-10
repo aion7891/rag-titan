@@ -45,6 +45,27 @@ def build_chunker(settings):
 
 and set `CHUNKER=sentence` in `.env`.
 
+### Where chunkers live
+
+Chunkers are grouped by family, one sub-folder each, following the chunking
+handbook. A new family gets its folder when its first chunker is added.
+
+```text
+chunking/
+├── base_chunker.py      # BaseChunker, shared by every family
+├── fixed_size/          # characters, words, tokens, recursive separators
+│   ├── fixed_windows.py # fixed_windows(), count_windows()
+│   ├── word_chunker.py
+│   ├── character_chunker.py
+│   ├── token_chunker.py
+│   └── recursive_chunker.py
+└── structure_aware/     # (planned) sentence, paragraph, heading, page
+```
+
+A sentence chunker like the one above would go in `chunking/structure_aware/`.
+Export it from that folder's `__init__.py` and from `chunking/__init__.py`,
+so users can write `from rag_titan.chunking import SentenceChunker`.
+
 ![Where your new class plugs in](assets/images/architecture.svg)
 
 ## What each base class needs

@@ -51,3 +51,33 @@ def fixed_windows(units, size, overlap=0):
             break
 
     return windows
+
+
+def count_windows(n, size, overlap=0):
+    """
+    Count the windows fixed_windows() makes for `n` units, without making them.
+
+    Overlap repeats text, so it grows the index (handbook 2.4 "index
+    amplification"). Compare count_windows(n, size, overlap) with
+    count_windows(n, size, 0) to see the cost before you index anything.
+    Formula for n > size: 1 + ceil((n - size) / (size - overlap)).
+
+    Args:
+        n: number of units (characters, words or tokens) in the text.
+        size: number of units in each window.
+        overlap: number of units shared by two neighbouring windows.
+
+    Returns:
+        The number of windows (0 for empty text).
+    """
+    check_window_size(size, overlap)
+
+    if not isinstance(n, int) or n < 0:
+        raise ValueError("n must be a whole number, 0 or more")
+
+    if n <= size:
+        return min(n, 1)
+
+    step = size - overlap
+    # whole-number ceiling of (n - size) / step
+    return 1 + (n - size + step - 1) // step

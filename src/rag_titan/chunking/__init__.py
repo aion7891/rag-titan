@@ -13,6 +13,7 @@ from rag_titan.chunking.fixed_size import (
     RecursiveChunker,
     TokenChunker,
     WordChunker,
+    count_windows,
     fixed_windows,
 )
 
@@ -22,5 +23,6 @@ __all__ = [
     "RecursiveChunker",
     "TokenChunker",
     "WordChunker",
+    "count_windows",
     "fixed_windows",
 ]

@@ -52,22 +52,53 @@ Each one cuts text into windows of the same size. With an overlap, each new
 chunk repeats the end of the previous one, so a sentence on a boundary is not
 lost. Example: size 4, overlap 1 on `"abcdefghij"` gives `"abcd"`, `"defg"`, `"ghij"`.
 
-| Chunker            | Counts     | Pick it with         | Good for                                |
-|--------------------|------------|----------------------|-----------------------------------------|
-| `WordChunker`      | words      | `CHUNKER=word`       | the default, easy to reason about       |
-| `CharacterChunker` | characters | `CHUNKER=character`  | any language, exact text kept           |
-| `TokenChunker`     | tokens     | `CHUNKER=token`      | staying under the embedding model limit |
+| Chunker            | Counts                 | Pick it with        | Good for                                |
+|--------------------|------------------------|---------------------|-----------------------------------------|
+| `WordChunker`      | words                  | `CHUNKER=word`      | the default, easy to reason about       |
+| `CharacterChunker` | characters             | `CHUNKER=character` | any language, exact text kept           |
+| `TokenChunker`     | tokens                 | `CHUNKER=token`     | staying under the embedding model limit |
+| `RecursiveChunker` | characters (or tokens) | `CHUNKER=recursive` | keeping paragraphs and sentences whole  |
 
 ```python
-from rag_titan.chunking import CharacterChunker, TokenChunker, WordChunker
+from rag_titan.chunking import CharacterChunker, RecursiveChunker, TokenChunker, WordChunker
 
 WordChunker(chunk_size=150, overlap=30).split_text(text)
 CharacterChunker(chunk_size=1000, overlap=200).split_text(text)
 TokenChunker(chunk_size=256, overlap=32).split_text(text)   # uses tiktoken
+RecursiveChunker(chunk_size=1000, overlap=200).split_text(text)
 ```
 
 An overlap of the chunk size or more raises `ValueError`, and blank text gives
 no chunks.
+
+### Recursive separators
+
+`RecursiveChunker` never cuts in the middle of a sentence when it does not have to.
+It splits on the biggest separator first and only uses a smaller one for a
+piece that is still too big:
+
+1. paragraphs (`"\n\n"`), then lines (`"\n"`), sentences (`". "`), words (`" "`)
+2. a hard cut, only for a single piece longer than `chunk_size`
+3. small pieces are packed together until the next one would not fit
+
+Overlap repeats whole pieces (for example the last sentence), so it is *up to*
+`overlap` and never cuts a sentence to reach it. Pass `separators=` to change
+the order, or `tokenizer=` to count tokens instead of characters.
+
+### Overlap costs space
+
+Overlap repeats text, so the index grows. Check the cost before indexing with
+`count_windows(n, size, overlap)`:
+
+```python
+from rag_titan.chunking import count_windows
+
+count_windows(1000, 100, 0)    # 10 chunks
+count_windows(1000, 100, 20)   # 13 chunks: 30% more to embed and store
+```
+
+The handbook suggests trying overlap 0 and 10-15% of the chunk size, then
+keeping whichever retrieves better on your own questions.
 
 ### Tokens: tiktoken or your own tokenizer
 
@@ -104,7 +135,7 @@ class HFTokenizer:
 chunker = TokenChunker(chunk_size=256, overlap=32, tokenizer=HFTokenizer("BAAI/bge-small-en-v1.5"))
 ```
 
-All three are built on one helper, `fixed_windows(units, size, overlap)`,
+All of them are built on one helper, `fixed_windows(units, size, overlap)`,
 which works on any string or list if you want to write your own.
 
 ## Building a RAG by hand

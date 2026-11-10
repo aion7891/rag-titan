@@ -5,7 +5,11 @@ also respects paragraphs and sentences while keeping the same size limit.
 """
 
 from rag_titan.chunking.fixed_size.character_chunker import CharacterChunker
-from rag_titan.chunking.fixed_size.fixed_windows import check_window_size, fixed_windows
+from rag_titan.chunking.fixed_size.fixed_windows import (
+    check_window_size,
+    count_windows,
+    fixed_windows,
+)
 from rag_titan.chunking.fixed_size.recursive_chunker import RecursiveChunker
 from rag_titan.chunking.fixed_size.token_chunker import TokenChunker
 from rag_titan.chunking.fixed_size.word_chunker import WordChunker
@@ -16,5 +20,6 @@ __all__ = [
     "TokenChunker",
     "WordChunker",
     "check_window_size",
+    "count_windows",
     "fixed_windows",
 ]
