@@ -31,8 +31,11 @@ plugins:
 
 markdown_extensions:
   - admonition
+  - pymdownx.arithmatex:
+      generic: true
   - pymdownx.highlight
   - pymdownx.superfences
+  - pymdownx.tasklist
   - tables
 
 nav:
@@ -40,6 +43,7 @@ nav:
   - Getting started: getting-started.md
   - RAG types: rag-types.md
   - Building blocks: building-blocks.md
+  - Chunking methods: chunking.md
   - Configuration: configuration.md
   - Command line: cli.md
   - Agents: agents.md
@@ -52,3 +56,8 @@ nav:
 
 extra_css:
   - assets/stylesheets/extra.css
+
+# formulas on the chunking page (pymdownx.arithmatex + MathJax)
+extra_javascript:
+  - assets/javascripts/mathjax.js
+  - https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js
