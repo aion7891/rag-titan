@@ -22,7 +22,7 @@ Type `exit` to quit.
 
 | Option        | Used by     | Meaning                                   |
 |---------------|-------------|-------------------------------------------|
-| `--files`     | ask, chat   | one or more PDF or DOCX files (required)  |
+| `--files`     | ask, chat   | PDF, DOCX, MD or TXT files (required)     |
 | `--rag-type`  | ask, chat   | `simple` (default) or `adaptive`          |
 | `--log-level` | ask, chat   | `DEBUG`, `INFO` or `WARNING` (default)    |
 | `--question`  | ask         | the question to answer (required)         |

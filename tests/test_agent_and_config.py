@@ -7,7 +7,15 @@ import pytest
 from rag_titan import get_settings
 from rag_titan.agents import BaseAgent
 from rag_titan.agents.tools.math_tools import add, divide
-from rag_titan.chunking import CharacterChunker, RecursiveChunker, WordChunker
+from rag_titan.chunking import (
+    CharacterChunker,
+    HeadingChunker,
+    PageChunker,
+    ParagraphChunker,
+    RecursiveChunker,
+    SentenceChunker,
+    WordChunker,
+)
 from rag_titan.factory import build_chunker, build_reranker
 from rag_titan.llm import BaseLLM
 
@@ -55,8 +63,12 @@ def test_settings_read_environment(monkeypatch):
     ("word", WordChunker),
     ("character", CharacterChunker),
     ("recursive", RecursiveChunker),
+    ("sentence", SentenceChunker),
+    ("paragraph", ParagraphChunker),
+    ("heading", HeadingChunker),
+    ("page", PageChunker),
 ])
-def test_factory_builds_fixed_chunkers(name, cls):
+def test_factory_builds_chunkers(name, cls):
     chunker = build_chunker(get_settings({"chunker": name, "chunk_size": 10, "chunk_overlap": 2}))
     assert isinstance(chunker, cls)
     assert chunker.chunk_size == 10

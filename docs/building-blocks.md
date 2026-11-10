@@ -15,8 +15,8 @@ Answering:  Retriever -> Reranker -> Generator  (each uses the LLM / Embedder)
 | Part      | Base class      | Ready-made classes                                | Folder                 |
 |-----------|-----------------|---------------------------------------------------|------------------------|
 | LLM       | `BaseLLM`       | `OllamaLLM`                                       | `llm/`                 |
-| Loader    | `BaseLoader`    | `PdfLoader`, `DocxLoader`                         | `loaders/`             |
-| Chunker   | `BaseChunker`   | `WordChunker`, `CharacterChunker`, `TokenChunker` | `chunking/`            |
+| Loader    | `BaseLoader`    | `PdfLoader`, `DocxLoader`, `TextLoader`           | `loaders/`             |
+| Chunker   | `BaseChunker`   | 8 chunkers, see [Chunking methods](chunking.md)   | `chunking/`            |
 | Embedder  | `BaseEmbedder`  | `OllamaEmbedder`                                  | `embeddings/`          |
 | Store     | `BaseStore`     | `MemoryStore`                                     | `vector_stores/`       |
 | Retriever | –               | `Retriever`                                       | `retrieval/`           |
@@ -54,6 +54,10 @@ Everything is a plain Python `dict`, so it is easy to print and inspect.
 | `CharacterChunker` | characters             | `CHUNKER=character` | any language, exact text kept           |
 | `TokenChunker`     | tokens                 | `CHUNKER=token`     | staying under the embedding model limit |
 | `RecursiveChunker` | characters (or tokens) | `CHUNKER=recursive` | keeping paragraphs and sentences whole  |
+| `SentenceChunker`  | characters (or tokens) | `CHUNKER=sentence`  | exact sentences (FAQs, chat logs)       |
+| `ParagraphChunker` | characters (or tokens) | `CHUNKER=paragraph` | reports and documentation               |
+| `HeadingChunker`   | characters (or tokens) | `CHUNKER=heading`   | Markdown and Word files with headings   |
+| `PageChunker`      | characters (or tokens) | `CHUNKER=page`      | PDFs where answers cite a page          |
 
 ```python
 from rag_titan.chunking import RecursiveChunker

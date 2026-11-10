@@ -6,6 +6,38 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-11-10
+
+### Added
+- Structure-aware chunking (chunking handbook section 3), in
+  `rag_titan.chunking.structure_aware`:
+  - `SentenceChunker`: packs whole sentences.
+  - `ParagraphChunker`: packs whole paragraphs; a long one falls back to
+    sentences, then words.
+  - `HeadingChunker`: never mixes two sections and starts each chunk with its
+    heading path, for example "Leave policy > Sick leave" (`include_path=False`
+    keeps the original heading lines instead).
+  - `PageChunker`: never puts two PDF pages in one chunk.
+  - `split_sentences()` and `split_paragraphs()`: no library needed; handle
+    abbreviations, initials, list numbers, decimals and CJK/Hindi end marks,
+    and never lose a character.
+- Settings: `CHUNKER=sentence`, `paragraph`, `heading` or `page`.
+- `TextLoader` for `.txt`, `.md` and `.markdown` files.
+- `rag_titan.chunking.packing.pack()`: the shared "whole pieces up to a size"
+  step, now also used by `RecursiveChunker` (same output as before).
+- Docs: a "Structure-aware chunkers" section on the Chunking methods page, and
+  sentence and paragraph modes in the chunk playground.
+
+### Changed
+- Loaders keep the document's structure. DOCX paragraphs are separated by a
+  blank line and Word headings become Markdown headings (`#`, `##`, ...); PDF
+  pages are separated by a page break (`\f`) instead of a space.
+  - `WordChunker` gives the same chunks as before, except that DOCX headings now
+    add `#` marks.
+  - `CharacterChunker`, `TokenChunker` and `RecursiveChunker` see the real
+    paragraphs, so their chunks of PDF and DOCX files differ from 0.2.x.
+    Re-index your files after upgrading.
+
 ## [0.2.1] - 2026-11-10
 
 ### Added

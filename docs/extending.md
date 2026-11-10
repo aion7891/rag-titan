@@ -12,20 +12,20 @@ Every part works the same way:
 from rag_titan.chunking import BaseChunker
 
 
-class SentenceChunker(BaseChunker):
-    """Splits text into groups of sentences."""
+class LineChunker(BaseChunker):
+    """Splits text into groups of lines (for logs, CSV-like text, poems)."""
 
-    def __init__(self, sentences_per_chunk=5):
-        self.sentences_per_chunk = sentences_per_chunk
+    def __init__(self, lines_per_chunk=20):
+        self.lines_per_chunk = lines_per_chunk
 
     def split_text(self, text):
-        """Return pieces of `sentences_per_chunk` sentences each."""
-        sentences = [s.strip() for s in text.split(".") if s.strip()]
+        """Return pieces of `lines_per_chunk` non-empty lines each."""
+        lines = [line for line in text.splitlines() if line.strip()]
         pieces = []
 
-        for start in range(0, len(sentences), self.sentences_per_chunk):
-            group = sentences[start:start + self.sentences_per_chunk]
-            pieces.append(". ".join(group) + ".")
+        for start in range(0, len(lines), self.lines_per_chunk):
+            group = lines[start:start + self.lines_per_chunk]
+            pieces.append("\n".join(group))
 
         return pieces
 ```
@@ -38,12 +38,12 @@ def build_chunker(settings):
 
     if name == "word":
         return WordChunker(settings["chunk_size"], settings["chunk_overlap"])
-    if name == "sentence":
-        return SentenceChunker()
+    if name == "line":
+        return LineChunker()
     ...
 ```
 
-and set `CHUNKER=sentence` in `.env`.
+and set `CHUNKER=line` in `.env`.
 
 ### Where chunkers live
 
@@ -52,19 +52,28 @@ handbook. A new family gets its folder when its first chunker is added.
 
 ```text
 chunking/
-├── base_chunker.py      # BaseChunker, shared by every family
-├── fixed_size/          # characters, words, tokens, recursive separators
-│   ├── fixed_windows.py # fixed_windows(), count_windows()
+├── base_chunker.py          # BaseChunker, shared by every family
+├── packing.py               # pack(): whole pieces up to a size, whole-piece overlap
+├── fixed_size/              # characters, words, tokens, recursive separators
+│   ├── fixed_windows.py     # fixed_windows(), count_windows()
 │   ├── word_chunker.py
 │   ├── character_chunker.py
 │   ├── token_chunker.py
 │   └── recursive_chunker.py
-└── structure_aware/     # (planned) sentence, paragraph, heading, page
+└── structure_aware/         # sentences, paragraphs, heading sections, pages
+    ├── base.py              # PieceChunker: cut into pieces, then pack()
+    ├── sentences.py         # split_sentences(), split_paragraphs()
+    ├── sentence_chunker.py
+    ├── paragraph_chunker.py
+    ├── heading_chunker.py
+    └── page_chunker.py
 ```
 
-A sentence chunker like the one above would go in `chunking/structure_aware/`.
-Export it from that folder's `__init__.py` and from `chunking/__init__.py`,
-so users can write `from rag_titan.chunking import SentenceChunker`.
+A chunker that keeps whole units can inherit `PieceChunker` and only write
+`pieces(text)`; size checks, packing and overlap come for free. The line chunker
+above is a structure-aware idea, so it would go in `chunking/structure_aware/`.
+Export it from that folder's `__init__.py` and from `chunking/__init__.py`, so
+users can write `from rag_titan.chunking import LineChunker`.
 
 ![Where your new class plugs in](assets/images/architecture.svg)
 
