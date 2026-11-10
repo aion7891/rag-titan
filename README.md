@@ -53,17 +53,61 @@ rag.index(["handbook.pdf", "policy.docx"])
 
 print(rag.ask("How many leave days do I get?"))
 # You get 20 paid leave days every year [chunk_0].
+
+print(rag.run("How many leave days do I get?")["log"])   # every step it took
+rag.evaluate("questions.json")                           # score it on your own test questions
 ```
 
 Or from the terminal:
 
 ```bash
 rag-titan ask --files handbook.pdf --question "How many leave days do I get?"
+rag-titan ask --files handbook.pdf --question "How many leave days do I get?" --trace
 ```
+
+## Evaluate on your own questions
+
+Which chunker and which RAG type work best **for your documents**? Write a few
+test questions, each naming the file (or page) that holds the answer, and compare
+every combination in one command:
+
+```bash
+rag-titan evaluate --files docs/*.md --questions questions.json \
+    --rag-type simple adaptive --chunker word paragraph
+```
+
+```text
+setup                   Recall       MRR      nDCG  Answered     Steps     p50 s     p95 s
+simple + word            1.000     1.000     1.000      100%       3.0      0.92      1.26
+adaptive + word          1.000     1.000     1.000      100%       5.0      1.67      2.02
+simple + paragraph       0.917     1.000     0.936      100%       3.0      0.64      0.81
+adaptive + paragraph     1.000     1.000     0.987      100%       6.3      0.96      2.91
+
+Questions to look at:
+  simple + paragraph: q_006  recall 0.50  found ['remote_work.md']
+```
+
+Then see **why** one question went wrong. Here search found the right file, so
+the problem is the answer step, not the chunker:
+
+```text
+$ rag-titan ask --files docs/*.md --question "Can I work from Spain for a month?" --trace
+1. retrieve     7.47 ms  -> 3 chunks: chunk_2 remote_work.md (0.615), chunk_0 expenses.md (0.540), ...
+2. rerank       0.04 ms  -> 2 chunks: chunk_2 remote_work.md (rerank 0.815), chunk_0 expenses.md (rerank 0.690)
+3. generate   567.39 ms  -> "I don't know based on the available documents."
+```
+
+<p align="center">
+  <a href="https://aion7891.github.io/rag-titan/evaluation/"><img src="https://cdn.jsdelivr.net/gh/aion7891/rag-titan@main/docs/assets/images/evaluation-flow.svg" alt="End-to-end evaluation: one index per chunker, every RAG type runs every question, the chunks given to the LLM are scored" width="100%"></a>
+</p>
+
+Real runs with `gemma3:4b` on the sample policies in `examples/sample_docs/`. Search-only scoring
+(`--retrieval-only`, no LLM) and the Python API are in **[Evaluating RAG →](https://aion7891.github.io/rag-titan/evaluation/)**
 
 ## Supported RAG types
 
-**rag-titan 0.1 supports 2 RAG types.** Pick one with `rag_type`:
+**rag-titan supports 2 RAG types.** Pick one with `rag_type`. Every type has `answer()`, and
+`run()` that also returns every step it took ([see the steps](https://aion7891.github.io/rag-titan/rag-types/#seeing-every-step-run)):
 
 | Status | RAG type | How it works | Best for | LLM calls |
 |---|---|---|---|---|
@@ -104,23 +148,30 @@ Click any picture to open its page.
   </tr>
   <tr>
     <td width="50%" valign="top">
-      <a href="https://aion7891.github.io/rag-titan/building-blocks/"><img src="https://cdn.jsdelivr.net/gh/aion7891/rag-titan@main/docs/assets/images/indexing.svg" alt="Indexing pipeline"></a>
-      <p><b><a href="https://aion7891.github.io/rag-titan/building-blocks/">Building blocks</a></b><br>Load → chunk → embed → store, with the data at every step.</p>
+      <a href="https://aion7891.github.io/rag-titan/evaluation/"><img src="https://cdn.jsdelivr.net/gh/aion7891/rag-titan@main/docs/assets/images/evaluation-flow.svg" alt="End-to-end evaluation flow"></a>
+      <p><b><a href="https://aion7891.github.io/rag-titan/evaluation/">Evaluating RAG</a></b><br>Compare any chunker with any RAG type on your own questions.</p>
     </td>
     <td width="50%" valign="top">
-      <a href="https://aion7891.github.io/rag-titan/extending/"><img src="https://cdn.jsdelivr.net/gh/aion7891/rag-titan@main/docs/assets/images/architecture.svg" alt="Swappable architecture"></a>
-      <p><b><a href="https://aion7891.github.io/rag-titan/extending/">Extending rag-titan</a></b><br>Add your own LLM, vector store, chunker or RAG type.</p>
+      <a href="https://aion7891.github.io/rag-titan/building-blocks/"><img src="https://cdn.jsdelivr.net/gh/aion7891/rag-titan@main/docs/assets/images/indexing.svg" alt="Indexing pipeline"></a>
+      <p><b><a href="https://aion7891.github.io/rag-titan/building-blocks/">Building blocks</a></b><br>Load → chunk → embed → store, with the data at every step.</p>
     </td>
   </tr>
   <tr>
     <td width="50%" valign="top">
+      <a href="https://aion7891.github.io/rag-titan/extending/"><img src="https://cdn.jsdelivr.net/gh/aion7891/rag-titan@main/docs/assets/images/architecture.svg" alt="Swappable architecture"></a>
+      <p><b><a href="https://aion7891.github.io/rag-titan/extending/">Extending rag-titan</a></b><br>Add your own LLM, vector store, chunker or RAG type.</p>
+    </td>
+    <td width="50%" valign="top">
       <a href="https://aion7891.github.io/rag-titan/agents/"><img src="https://cdn.jsdelivr.net/gh/aion7891/rag-titan@main/docs/assets/images/agent.svg" alt="Agent loop"></a>
       <p><b><a href="https://aion7891.github.io/rag-titan/agents/">Agents</a></b><br>Let the LLM call your Python functions as tools.</p>
     </td>
+  </tr>
+  <tr>
     <td width="50%" valign="top">
       <a href="https://aion7891.github.io/rag-titan/cli/"><img src="https://cdn.jsdelivr.net/gh/aion7891/rag-titan@main/docs/assets/images/cli.svg" alt="Command line demo"></a>
-      <p><b><a href="https://aion7891.github.io/rag-titan/cli/">Command line</a></b><br><code>rag-titan ask</code> and <code>rag-titan chat</code>.</p>
+      <p><b><a href="https://aion7891.github.io/rag-titan/cli/">Command line</a></b><br><code>rag-titan ask</code> (with <code>--trace</code>), <code>chat</code> and <code>evaluate</code>.</p>
     </td>
+    <td width="50%" valign="top"></td>
   </tr>
 </table>
 
@@ -130,6 +181,8 @@ Click any picture to open its page.
 | Pick the right RAG type | [RAG types](https://aion7891.github.io/rag-titan/rag-types/) |
 | Pick the right chunker | [Chunking methods](https://aion7891.github.io/rag-titan/chunking/) |
 | Try the chunkers on my own text | [Chunk playground](https://aion7891.github.io/rag-titan/playground/) |
+| Compare chunkers and RAG types on my questions | [Evaluating RAG](https://aion7891.github.io/rag-titan/evaluation/) |
+| See why an answer went wrong | [Seeing every step](https://aion7891.github.io/rag-titan/rag-types/#seeing-every-step-run) |
 | Change models, chunk size or reranker | [Configuration](https://aion7891.github.io/rag-titan/configuration/) |
 | See every class and method | [API reference](https://aion7891.github.io/rag-titan/api/core/) |
 
