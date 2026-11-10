@@ -8,6 +8,7 @@ still too big. Small pieces are then packed together up to chunk_size.
 
 from rag_titan.chunking.base_chunker import BaseChunker
 from rag_titan.chunking.fixed_size.fixed_windows import check_window_size, fixed_windows
+from rag_titan.chunking.packing import join_groups, pack
 
 # paragraph, line, sentence, word, then "" = hard cut
 SEPARATORS = ("\n\n", "\n", ". ", " ", "")
@@ -63,8 +64,9 @@ class RecursiveChunker(BaseChunker):
             return []
 
         pieces = self._split(text, self.separators)
-        chunks = [chunk.strip() for chunk in self._merge(pieces)]
-        return [chunk for chunk in chunks if chunk]
+        sizes = [self.length(piece) for piece in pieces]
+        chunks = join_groups(pieces, pack(sizes, self.chunk_size, self.overlap))
+        return [chunk.strip() for chunk in chunks if chunk.strip()]
 
     def _split(self, text, separators):
         """Break `text` into pieces that each fit in chunk_size."""
@@ -92,35 +94,3 @@ class RecursiveChunker(BaseChunker):
 
         ids = list(self.tokenizer.encode(text))
         return [self.tokenizer.decode(window) for window in fixed_windows(ids, self.chunk_size)]
-
-    def _merge(self, pieces):
-        """Pack pieces into chunks of at most chunk_size, repeating the overlap."""
-        sizes = [self.length(piece) for piece in pieces]
-        chunks, current = [], []
-
-        for index, size in enumerate(sizes):
-            if current and sum(sizes[i] for i in current) + size > self.chunk_size:
-                chunks.append("".join(pieces[i] for i in current))
-                current = self._tail(current, sizes)
-
-                # drop repeated pieces until the new piece fits
-                while current and sum(sizes[i] for i in current) + size > self.chunk_size:
-                    current.pop(0)
-
-            current.append(index)
-
-        if current:
-            chunks.append("".join(pieces[i] for i in current))
-        return chunks
-
-    def _tail(self, current, sizes):
-        """Return the last whole pieces of `current` whose total size is at most overlap."""
-        tail, total = [], 0
-
-        for index in reversed(current):
-            if total + sizes[index] > self.overlap:
-                break
-            tail.insert(0, index)
-            total += sizes[index]
-
-        return tail
