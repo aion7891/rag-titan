@@ -12,6 +12,7 @@ from rag_titan.chunking import WordChunker
 from rag_titan.embeddings import BaseEmbedder
 from rag_titan.generation import GroundedGenerator
 from rag_titan.llm import BaseLLM
+from rag_titan.prompts import EVIDENCE_CHECK_PROMPT, ROUTER_PROMPT
 from rag_titan.retrieval import Retriever
 from rag_titan.retrieval.rerankers import KeywordReranker
 from rag_titan.vector_stores import MemoryStore
@@ -40,6 +41,24 @@ class FakeLLM(BaseLLM):
     def tool_result_message(self, tool_call, result):
         """Build a simple tool message."""
         return {"role": "tool", "content": str(result)}
+
+
+class PromptLLM(BaseLLM):
+    """Replies by prompt: route "simple", evidence check `enough`, else an answer."""
+
+    def __init__(self, enough="yes"):
+        super().__init__("prompt-fake")
+        self.enough = enough
+
+    def chat(self, messages, tools=None):
+        system = messages[0]["content"]
+        if system == ROUTER_PROMPT:
+            reply = "simple"
+        elif system == EVIDENCE_CHECK_PROMPT:
+            reply = self.enough
+        else:
+            reply = "the answer"
+        return {"content": reply, "tool_calls": [], "message": {"role": "assistant"}}
 
 
 class FakeEmbedder(BaseEmbedder):

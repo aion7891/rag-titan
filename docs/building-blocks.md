@@ -19,7 +19,7 @@ Answering:  Retriever -> Reranker -> Generator  (each uses the LLM / Embedder)
 | Chunker   | `BaseChunker`   | 8 chunkers, see [Chunking methods](chunking.md)   | `chunking/`            |
 | Embedder  | `BaseEmbedder`  | `OllamaEmbedder`                                  | `embeddings/`          |
 | Store     | `BaseStore`     | `MemoryStore`                                     | `vector_stores/`       |
-| Retriever | –               | `Retriever`                                       | `retrieval/`           |
+| Retriever | `BaseRetriever` | `DenseRetriever` (old name: `Retriever`)          | `retrieval/`           |
 | Reranker  | `BaseReranker`  | `KeywordReranker`, `NoReranker`                   | `retrieval/rerankers/` |
 | Generator | `BaseGenerator` | `GroundedGenerator`                               | `generation/`          |
 
@@ -48,8 +48,19 @@ See [what every chunker returns](chunking.md#what-every-chunker-returns).
 ```python
 {"id": "chunk_0", "source": "handbook.pdf", "text": "...",
  "start_offset": 0, "end_offset": 912, "page_numbers": [1],
- "score": 0.82, "rerank_score": 0.97}
+ "score": 0.82,                                  # higher is better
+ "retriever": "dense",                           # which retriever found it
+ "score_trace": {"dense": 0.82},                 # how the score was made
+ "rerank_score": 0.97}                           # added by the reranker
 ```
+
+`score_trace` shows where a score comes from. With one retriever it holds one
+number; a hybrid retriever (planned) will show each part, for example
+`{"bm25": 7.1, "dense": 0.82, "rrf": 0.032}`. `id` and `source` are the chunk
+and source ids of the evidence.
+
+To check how well retrieval and RAG types work on your questions, see
+**[Evaluating RAG](evaluation.md)**.
 
 ## Chunkers
 
@@ -82,7 +93,7 @@ from rag_titan.embeddings import OllamaEmbedder
 from rag_titan.generation import GroundedGenerator
 from rag_titan.llm import OllamaLLM
 from rag_titan.pipelines import IndexingPipeline
-from rag_titan.retrieval import Retriever
+from rag_titan.retrieval import DenseRetriever
 from rag_titan.retrieval.rerankers import KeywordReranker
 from rag_titan.vector_stores import MemoryStore
 
@@ -92,7 +103,7 @@ store = MemoryStore()
 
 IndexingPipeline(WordChunker(200, 40), embedder, store).run(["handbook.pdf"])
 
-rag = SimpleRAG(Retriever(embedder, store), KeywordReranker(), GroundedGenerator(llm))
+rag = SimpleRAG(DenseRetriever(embedder, store), KeywordReranker(), GroundedGenerator(llm))
 print(rag.answer("How many leave days do I get?"))
 ```
 

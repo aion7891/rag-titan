@@ -29,6 +29,7 @@
 - **Grounded answers.** The model answers only from your files and cites the chunks it used.
 - **Chunking your way.** Eight chunkers: by words, characters or model tokens (tiktoken or your own tokenizer), recursive separators, and structure-aware chunkers that keep sentences, paragraphs, heading sections or pages whole. [Try them live in the chunk playground →](https://aion7891.github.io/rag-titan/playground/)
 - **PDF, Word, Markdown and text files**, with paragraphs, headings and pages kept for the chunkers.
+- **Measure, don't guess.** Compare any chunker with any RAG type on your own questions in one command (`rag-titan evaluate`): recall, MRR, nDCG, answered rate and p95 time, plus every step of a run with `--trace`. [Evaluating RAG →](https://aion7891.github.io/rag-titan/evaluation/)
 - **Easy to read, easy to change.** Short files, plain Python, and a docstring on every class. Swap any part by inheriting one base class.
 
 ## Install
