@@ -24,8 +24,13 @@ class CharacterChunker(BaseChunker):
 
     def split_text(self, text):
         """Return overlapping pieces of `chunk_size` characters each."""
+        return [chunk for chunk, _, _ in self.split_spans(text)]
+
+    def split_spans(self, text):
+        """(chunk, start, end) for each window; window k starts at k * (chunk_size - overlap)."""
         # blank text has nothing worth indexing, so it gives no chunks
         if not text.strip():
             return []
 
-        return fixed_windows(text, self.chunk_size, self.overlap)
+        windows = fixed_windows(range(len(text)), self.chunk_size, self.overlap)
+        return [(text[w[0]:w[-1] + 1], w[0], w[-1] + 1) for w in windows]

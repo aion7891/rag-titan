@@ -33,7 +33,8 @@ rag-titan ships eight chunkers in two families from the chunking handbook:
 
 Every chunker inherits from `BaseChunker`, so they all work the same way:
 `split_text(text)` returns a list of strings, and `chunk(documents)` turns
-document dicts into chunk dicts with an id and the source file.
+document dicts into chunk dicts: an id, the source file, the text, and **where
+the chunk is** in the document.
 
 ```python
 from rag_titan.chunking import WordChunker
@@ -41,8 +42,77 @@ from rag_titan.chunking import WordChunker
 WordChunker(chunk_size=4, overlap=0).chunk(
     [{"source": "policy.pdf", "text": "Staff get twenty days of paid leave."}]
 )
-# [{'id': 'chunk_0', 'source': 'policy.pdf', 'text': 'Staff get twenty days'},
-#  {'id': 'chunk_1', 'source': 'policy.pdf', 'text': 'of paid leave.'}]
+# [{'id': 'chunk_0', 'source': 'policy.pdf', 'text': 'Staff get twenty days',
+#   'start_offset': 0, 'end_offset': 21},
+#  {'id': 'chunk_1', 'source': 'policy.pdf', 'text': 'of paid leave.',
+#   'start_offset': 22, 'end_offset': 36}]
+```
+
+| Field          | When                         | Meaning                                                                    |
+|----------------|------------------------------|----------------------------------------------------------------------------|
+| `id`           | always                       | `chunk_0`, `chunk_1`, ... in order                                         |
+| `source`       | always                       | the file name                                                              |
+| `text`         | always                       | the text that is embedded and shown to the LLM                             |
+| `start_offset` | always                       | where the chunk starts in the document text                                |
+| `end_offset`   | always                       | where it ends: `document["text"][start:end]` is the chunk                  |
+| `page_numbers` | PDFs (text with page breaks) | the pages the chunk covers, for example `[3]` or `[3, 4]`                  |
+| `section_path` | documents with headings      | the headings above the chunk, for example `["Leave policy", "Sick leave"]` |
+
+### Offsets, pages and sections
+
+The offsets point at the chunk's own text in the document, so an answer can be
+traced back to the exact place in the file:
+
+```python
+from rag_titan.chunking import HeadingChunker, PageChunker
+
+text = "# Leave policy\n\nStaff get twenty days.\f## Sick leave\n\nTell your manager."
+chunks = PageChunker(chunk_size=60).chunk([{"source": "handbook.pdf", "text": text}])
+
+chunks[1]
+# {'id': 'chunk_1', 'source': 'handbook.pdf', 'text': '## Sick leave\n\nTell your manager.',
+#  'start_offset': 39, 'end_offset': 72,
+#  'page_numbers': [2], 'section_path': ['Leave policy', 'Sick leave']}
+
+text[chunks[1]["start_offset"]:chunks[1]["end_offset"]]
+# '## Sick leave\n\nTell your manager.'
+
+HeadingChunker(chunk_size=100).chunk(
+    [{"source": "handbook.md", "text": "# Leave policy\n\n## Sick leave\n\nTell your manager."}]
+)
+# [{'id': 'chunk_0', 'source': 'handbook.md',
+#   'text': 'Leave policy > Sick leave\n\nTell your manager.',
+#   'start_offset': 31, 'end_offset': 49, 'section_path': ['Leave policy', 'Sick leave']}]
+```
+
+- **Exact, not searched.** Every chunker except `TokenChunker` knows where each
+  chunk is while it cuts, so the offsets are exact, even in very repetitive
+  text. `TokenChunker` and chunkers you write yourself get offsets by searching
+  for each chunk in order; a chunk that cannot be found gets `None`.
+- **`WordChunker`** joins words with single spaces, so its `text` can differ
+  from the source in spacing; the offsets cover the original spacing.
+- **`HeadingChunker`** puts the heading path in front of the text; the offsets
+  point at the section text itself, without the path.
+- **Pages** come from the page breaks the PDF loader keeps (`\f`); empty pages
+  still count, so the numbers match the PDF.
+- **Section path** is the heading open where the chunk starts, with any chunker
+  (not only `HeadingChunker`); `[]` means before the first heading.
+
+### Citations in answers
+
+The answer context shows where each chunk comes from, and the prompt lets the
+LLM cite the page, such as `[chunk_1, page 2]`:
+
+```text
+[chunk_0] Source: handbook.pdf, page 1, section: Leave policy
+# Leave policy
+
+Staff get twenty days.
+
+[chunk_1] Source: handbook.pdf, page 2, section: Leave policy > Sick leave
+## Sick leave
+
+Tell your manager.
 ```
 
 ## Sliding windows: the maths behind fixed-size chunking

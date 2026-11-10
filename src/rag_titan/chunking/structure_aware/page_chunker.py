@@ -1,5 +1,6 @@
 """Chunker that keeps pages apart (handbook section 3.4)."""
 
+from rag_titan.chunking.offsets import shift
 from rag_titan.chunking.structure_aware.base import PieceChunker
 from rag_titan.chunking.structure_aware.paragraph_chunker import ParagraphChunker
 
@@ -26,7 +27,12 @@ class PageChunker(PieceChunker):
 
     def split_text(self, text):
         """Return chunks that each stay inside one page."""
-        chunks = []
+        return [chunk for chunk, _, _ in self.split_spans(text)]
+
+    def split_spans(self, text):
+        """(chunk, start, end) for every chunk; positions count from the start of `text`."""
+        spans, page_start = [], 0
         for page in text.split(PAGE_BREAK):
-            chunks.extend(self.paragraphs.split_text(page))
-        return chunks
+            spans.extend(shift(self.paragraphs.split_spans(page), page_start))
+            page_start += len(page) + len(PAGE_BREAK)
+        return spans
