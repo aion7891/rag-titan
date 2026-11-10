@@ -4,6 +4,9 @@ from pypdf import PdfReader
 
 from rag_titan.loaders.base_loader import BaseLoader
 
+# form feed: the classic "next page" character, kept so chunkers can find pages
+PAGE_BREAK = "\f"
+
 
 class PdfLoader(BaseLoader):
     """Reads the text of every page in a .pdf file."""
@@ -11,9 +14,9 @@ class PdfLoader(BaseLoader):
     extensions = [".pdf"]
 
     def extract_text(self, path):
-        """Return the text of all pages joined by spaces."""
+        """Return the text of all pages, separated by a page break ("\\f")."""
         reader = PdfReader(path)
 
         # some pages (for example scanned images) have no text, so use ""
         pages = [page.extract_text() or "" for page in reader.pages]
-        return " ".join(pages)
+        return PAGE_BREAK.join(pages)

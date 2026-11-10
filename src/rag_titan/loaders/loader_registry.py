@@ -7,10 +7,12 @@ import os
 
 from rag_titan.loaders.docx_loader import DocxLoader
 from rag_titan.loaders.pdf_loader import PdfLoader
+from rag_titan.loaders.text_loader import TextLoader
 
 LOADERS = [
     PdfLoader(),
     DocxLoader(),
+    TextLoader(),
 ]
 
 
