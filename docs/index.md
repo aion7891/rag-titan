@@ -32,7 +32,9 @@ print(rag.ask("How many leave days do I get?"))
 | I want to...                         | Read                                   |
 |--------------------------------------|----------------------------------------|
 | install it and ask my first question | [Getting started](getting-started.md)  |
+| run RAG types in my browser          | [RAG playground](rag-playground.md)    |
 | choose a RAG type                    | [RAG types](rag-types.md)              |
+| compare setups on my own questions   | [Evaluating RAG](evaluation.md)        |
 | understand each part                 | [Building blocks](building-blocks.md)  |
 | change models or chunk sizes         | [Configuration](configuration.md)      |
 | add my own vector store or LLM       | [Extending rag-titan](extending.md)    |

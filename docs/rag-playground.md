@@ -1,3 +1,8 @@
+---
+hide:
+  - toc
+---
+
 # RAG playground
 
 Run the RAG types **in your browser** and watch every step. Pick one or more
