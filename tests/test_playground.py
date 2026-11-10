@@ -10,6 +10,7 @@ from rag_titan.llm import BaseLLM, RecordingLLM
 from rag_titan.playground import (
     PRESET_CHUNKING,
     PRESET_KEYS,
+    Playground,
     build_parts,
     check_presets,
     index_documents,
@@ -92,3 +93,32 @@ def test_the_committed_recording_still_replays():
     assert check_presets(presets) == []
     parts = replay_parts(presets, "paragraph")
     assert parts["retriever"].has_documents()
+
+
+@pytest.mark.skipif(not PRESETS.exists(), reason="no recorded presets yet")
+def test_playground_session_gives_the_page_what_it_needs():
+    playground = Playground(json.loads(PRESETS.read_text(encoding="utf-8")))
+    info = playground.info()
+
+    assert info["rag_types"] == ["simple", "adaptive"]
+    assert info["flows"]["adaptive"]["nodes"][0]["id"] == "route"
+    assert set(info["chunkings"]) == set(PRESET_CHUNKING)
+
+    run = playground.run("paragraph", "simple", "q_001")
+    assert [step["step"] for step in run["steps"]] == ["retrieve", "rerank", "generate"]
+    assert run["answered"] and run["recall"] == 1.0
+    assert json.loads(json.dumps(run)) == run          # plain JSON for the browser
+
+    report = playground.evaluate(["word"], ["simple", "adaptive"])
+    assert [r["name"] for r in report["results"]] == ["simple + word", "adaptive + word"]
+    assert "steps" not in report["results"][0]["rows"][0]
+    assert report["report"].startswith("End-to-end report: 6 questions")
+
+
+def test_playground_session_bad_names():
+    playground = Playground(record_presets(DOCUMENTS, QUESTIONS, PRESET_CHUNKING,
+                                           MoodyLLM(), FakeEmbedder()))
+    with pytest.raises(ValueError, match="Unknown chunking"):
+        playground.run("lines", "simple", "q1")
+    with pytest.raises(ValueError, match="Unknown question"):
+        playground.run("word", "simple", "q9")

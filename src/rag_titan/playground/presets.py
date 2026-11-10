@@ -1,5 +1,5 @@
 """
-Presets for the browser playground: real model runs, recorded once, replayed anywhere.
+Playground presets: real model runs, recorded once, replayed anywhere.
 
     presets = record_presets(documents, questions, PRESET_CHUNKING, llm, embedder)
     problems = check_presets(presets)       # [] when a replay gives the same runs
