@@ -73,7 +73,8 @@ path = "src/rag_titan/__init__.py"
 packages = ["src/rag_titan"]
 
 [tool.hatch.build.targets.sdist]
-include = ["src/rag_titan", "tests", "README.md", "LICENSE", "CHANGELOG.md"]
+# a leading "/" means "only at the top", so tools/diagrams/README.md is not included
+include = ["/src/rag_titan", "/tests", "/README.md", "/LICENSE", "/CHANGELOG.md"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
