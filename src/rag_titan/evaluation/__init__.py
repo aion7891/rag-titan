@@ -1,5 +1,6 @@
 """Evaluation: measure how well retrieval finds the evidence for test questions."""
 
+from rag_titan.evaluation.benchmark import compare_retrievers, evaluate_retriever, format_report
 from rag_titan.evaluation.metrics import (
     matches_evidence,
     ndcg_at_k,
@@ -11,6 +12,9 @@ from rag_titan.evaluation.questions import check_questions, load_questions
 
 __all__ = [
     "check_questions",
+    "compare_retrievers",
+    "evaluate_retriever",
+    "format_report",
     "load_questions",
     "matches_evidence",
     "ndcg_at_k",
