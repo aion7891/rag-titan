@@ -25,9 +25,9 @@ from rag_titan.llm.ollama_llm import OllamaLLM
 from rag_titan.pipelines.indexing_pipeline import IndexingPipeline
 from rag_titan.rag_types.adaptive.adaptive_rag import AdaptiveRAG
 from rag_titan.rag_types.simple_rag import SimpleRAG
+from rag_titan.retrieval.dense_retriever import DenseRetriever
 from rag_titan.retrieval.rerankers.keyword_reranker import KeywordReranker
 from rag_titan.retrieval.rerankers.no_reranker import NoReranker
-from rag_titan.retrieval.retriever import Retriever
 from rag_titan.vector_stores.memory_store import MemoryStore
 
 # every RAG type the package can build, used by build_rag() and the CLI
@@ -145,7 +145,7 @@ def build_rag_parts(settings):
     return {
         "llm": llm,
         "pipeline": IndexingPipeline(build_chunker(settings), embedder, store),
-        "retriever": Retriever(embedder, store, dedupe_overlap=settings["dedupe_overlap"]),
+        "retriever": DenseRetriever(embedder, store, dedupe_overlap=settings["dedupe_overlap"]),
         "reranker": build_reranker(settings, llm),
         "generator": build_generator(settings, llm),
     }

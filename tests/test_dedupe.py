@@ -70,7 +70,9 @@ def test_retriever_returns_different_chunks_and_still_fills_top_k():
 def test_dedupe_off_is_the_old_behaviour():
     embedder, store = index(TEXT, WordChunker(chunk_size=6, overlap=4))
     old = store.search(embedder.embed("leave days"), top_k=3)
-    assert Retriever(embedder, store, dedupe_overlap=None).retrieve("leave days", top_k=3) == old
+    new = Retriever(embedder, store, dedupe_overlap=None).retrieve("leave days", top_k=3)
+    # same chunks, order and scores (0.6.0 only adds "retriever" and "score_trace")
+    assert [(m["id"], m["score"]) for m in new] == [(m["id"], m["score"]) for m in old]
 
 
 def test_setting_reads_share_or_off(monkeypatch):

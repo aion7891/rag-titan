@@ -13,7 +13,7 @@ class SimpleRAG:
     The classic RAG: one search, then one answer.
 
     Args:
-        retriever: a Retriever.
+        retriever: any BaseRetriever, for example a DenseRetriever.
         reranker: a BaseReranker.
         generator: a BaseGenerator.
         top_k: how many chunks to retrieve.

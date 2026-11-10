@@ -33,7 +33,7 @@ class AdaptiveRAG:
 
     Args:
         llm: any BaseLLM, used for routing, checking and rewriting.
-        retriever: a Retriever.
+        retriever: any BaseRetriever, for example a DenseRetriever.
         reranker: a BaseReranker.
         generator: a BaseGenerator.
         max_attempts: how many searches to try before giving up.
