@@ -1,9 +1,120 @@
-# Evaluating retrieval
+# Evaluating RAG
 
 A RAG answer can only be as good as the chunks it is given. Before you change
-the chunker, the retriever or the RAG type, **measure** how well retrieval finds
-the right evidence for your own questions, then compare. No method is best for
-every set of documents.
+the chunker, the retriever or the RAG type, **measure** how well it works on
+your own questions, then compare. No method is best for every set of documents.
+
+![End-to-end evaluation: any ingestion times any RAG type](assets/images/evaluation-flow.svg)
+
+## The easy way
+
+**1. Write a questions file.** For each question, name the file (or page) that
+holds the answer ([format](#the-questions-file)):
+
+```json
+[{"id": "q_001", "question": "How many paid leave days do I get each year?",
+  "required_evidence_ids": ["leave_policy.md"]}]
+```
+
+**2. Compare any ingestion with any RAG type**, end to end (uses the LLM):
+
+```bash
+rag-titan evaluate --files docs/*.md --questions questions.json \
+    --rag-type simple adaptive --chunker word paragraph
+```
+
+```text
+End-to-end report: 6 questions (evidence scored on the chunks given to the LLM)
+
+setup                   Recall       MRR      nDCG  Answered     Steps     p50 s     p95 s
+------------------------------------------------------------------------------------------
+simple + word            1.000     1.000     1.000      100%       3.0      0.92      1.26
+adaptive + word          1.000     1.000     1.000      100%       5.0      1.67      2.02
+simple + paragraph       0.917     1.000     0.936      100%       3.0      0.64      0.81
+adaptive + paragraph     1.000     1.000     0.987      100%       6.3      0.96      2.91
+
+Questions to look at:
+  simple + paragraph: q_006  recall 0.50  found ['remote_work.md']
+```
+
+Every `--rag-type` is tried with every `--chunker` (here 2 × 2 = 4 setups).
+Setups with the same chunker share one index, so the files are embedded once
+per chunker.
+
+**3. See why one question went wrong**, step by step:
+
+```bash
+rag-titan ask --files docs/*.md --trace \
+    --question "Can I work from Spain for a month?"
+```
+
+```text
+1. retrieve     7.47 ms  query='Can I work from Spain for a month?', top_k=5
+                         -> 3 chunks: chunk_2 remote_work.md (0.615), chunk_0 expenses.md (0.540), ...
+2. rerank       0.04 ms  query='Can I work from Spain for a month?', matches=3 chunks, top_n=2
+                         -> 2 chunks: chunk_2 remote_work.md (rerank 0.815), chunk_0 expenses.md (rerank 0.690)
+3. generate   567.39 ms  query='Can I work from Spain for a month?', chunks=2 chunks
+                         -> "I don't know based on the available documents."
+```
+
+Search **did** give the LLM `remote_work.md`, which allows 20 working days
+abroad, and the LLM still said it does not know: the problem is the answer
+step, not the search. Try a bigger model or another prompt, not another chunker.
+
+The same in Python:
+
+```python
+from rag_titan import RAGTitan
+
+rag = RAGTitan(rag_type="adaptive", settings={"chunker": "paragraph"})
+rag.index(["leave_policy.md", "remote_work.md", "expenses.md"])
+
+rag.evaluate("questions.json")                    # end to end, uses the LLM
+rag.evaluate_retrieval("questions.json", top_k=3) # search only: fast, no LLM
+print(rag.run("Can I work from Spain?")["log"])   # every step
+```
+
+All numbers on this page come from real runs with `gemma3:4b` and
+`nomic-embed-text` on the three sample policies in `examples/sample_docs/`.
+LLM replies change a little between runs, and 6 questions only show how the
+tools work: for a real decision, write 30 to 100 questions (see [tips](#tips)).
+
+## Comparing setups in Python
+
+```python
+from rag_titan.evaluation import compare_setups, format_rag_report
+
+results = compare_setups(
+    files=["leave_policy.md", "remote_work.md", "expenses.md"],
+    questions="questions.json",
+    setups=[
+        {"name": "simple + word", "rag_type": "simple", "settings": {"chunker": "word"}},
+        {"name": "adaptive + paragraph", "rag_type": "adaptive",
+         "settings": {"chunker": "paragraph", "chunk_size": 300, "chunk_overlap": 0}},
+    ],
+)
+print(format_rag_report(results))
+```
+
+`settings` can change any [setting](configuration.md): chunker, chunk size,
+models, reranker. Each result has the averages and one row per question with
+the answer, the files given to the LLM and every step of `run()`.
+
+| Column | Meaning |
+|---|---|
+| Recall, MRR, nDCG | scored on the chunks **given to the LLM** (`sources` of `run()`), see [the metrics](#the-metrics) |
+| Answered | share of questions not answered with "I don't know..." |
+| Steps | average number of steps per question: loops and retries cost time |
+| p50 s, p95 s | time per question, including the LLM |
+
+When a RAG type gives up (Adaptive RAG after a failed evidence check) no chunks
+reach the LLM, so that question scores 0 even if the search found the file.
+Grading whether the answer itself is **correct** is planned.
+
+## Search only (no LLM)
+
+Retrieval alone is much faster and does not depend on the LLM, so it is the
+quickest way to compare chunkers and retrievers:
 
 ```python
 from rag_titan.evaluation import compare_retrievers, format_report, load_questions
@@ -105,7 +216,7 @@ evidences (pages 4 and 5), so the score is capped at 1.
 Latency is reported as p50 and p95, not only an average: the average hides the
 few slow searches that users notice.
 
-## The results in Python
+## Retrieval results in Python
 
 `evaluate_retriever()` returns the averages and one row per question, so you
 can find the questions that fail:
@@ -134,5 +245,5 @@ result per retriever.
 - Use page labels (`#p4`) for long PDFs: a file label is too easy to match.
 - Compare under identical conditions: same files, chunker, embedder and `top_k`.
 
-What is measured today is **retrieval**. Scoring the final answers (correctness,
-citations) is planned; see the [roadmap](roadmap.md).
+Grading the answers themselves (correctness, citations) is planned; see the
+[roadmap](roadmap.md).

@@ -59,8 +59,8 @@ number; a hybrid retriever (planned) will show each part, for example
 `{"bm25": 7.1, "dense": 0.82, "rrf": 0.032}`. `id` and `source` are the chunk
 and source ids of the evidence.
 
-To check how well retrieval finds the right chunks for your questions, see
-**[Evaluating retrieval](evaluation.md)**.
+To check how well retrieval and RAG types work on your questions, see
+**[Evaluating RAG](evaluation.md)**.
 
 ## Chunkers
 
