@@ -26,4 +26,6 @@
 - [x] Chunkers: character, token, recursive (`"character"`, `"token"`, `"recursive"`), available since 0.2.0
 - [x] Chunkers: sentence, paragraph, heading, page (`"sentence"`, `"paragraph"`, `"heading"`, `"page"`), available since 0.3.0
 - [ ] Chunkers: element-aware (lists, tables, code), semantic
+- [x] Chunk offsets, page numbers and section paths, with page citations in answers, available since 0.4.0
+- [ ] Remove duplicate overlapping chunks from search results
 - [ ] Evaluation helpers

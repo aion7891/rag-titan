@@ -6,6 +6,30 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-11-11
+
+### Added
+- Chunk offsets (chunking handbook section 1): every chunk gets
+  `start_offset` and `end_offset`, so `document["text"][start:end]` is where it
+  comes from.
+  - Exact for the character, word, recursive, sentence, paragraph, heading and
+    page chunkers, even in very repetitive text.
+  - `TokenChunker` and chunkers you write yourself get offsets by searching for
+    each chunk in order (`None` when a chunk cannot be found).
+- `page_numbers` on chunks of documents with pages (PDFs), and `section_path`
+  on chunks of documents with headings, with any chunker.
+- The answer context shows where each chunk comes from, for example
+  `[chunk_4] Source: handbook.pdf, page 3, section: Leave policy > Sick leave`.
+- `BaseChunker.split_spans(text)`: override it in your own chunker to report
+  exact positions.
+- New modules: `rag_titan.chunking.offsets`, `rag_titan.chunking.locations` and
+  `rag_titan.chunking.headings`.
+
+### Changed
+- The answer prompt lets the LLM cite pages, such as `[chunk_0, page 3]`.
+- The Markdown heading rules moved to `rag_titan.chunking.headings`; importing
+  them from `heading_chunker` still works. Chunk text is unchanged.
+
 ## [0.3.1] - 2026-11-10
 
 ### Added
