@@ -1,9 +1,9 @@
 """Tests for page and section in the answer context, end to end through the pipeline."""
 
-from conftest import FakeEmbedder
+from conftest import FakeEmbedder, FakeLLM
 
 from rag_titan.chunking import HeadingChunker
-from rag_titan.generation import build_context
+from rag_titan.generation import GroundedGenerator, build_context
 from rag_titan.generation.context_builder import describe_source
 from rag_titan.pipelines import IndexingPipeline
 from rag_titan.retrieval import Retriever
@@ -42,3 +42,13 @@ def test_page_and_section_survive_index_search_rerank(tmp_path):
     assert best[0]["page_numbers"] == [2]
     assert best[0]["section_path"] == ["Leave", "Holiday"]
     assert "Source: handbook.txt, page 2, section: Leave > Holiday" in build_context(best)
+
+
+def test_generator_sends_page_citation_rule_and_page_to_the_llm():
+    llm = FakeLLM()
+    chunk = {"id": "chunk_0", "source": "h.pdf", "text": "20 leave days", "page_numbers": [3]}
+    GroundedGenerator(llm).generate("how many leave days?", [chunk])
+
+    system, user = llm.calls[-1][0]["content"], llm.calls[-1][1]["content"]
+    assert "you may add it, such as [chunk_0, page 3]" in system
+    assert "[chunk_0] Source: h.pdf, page 3" in user
