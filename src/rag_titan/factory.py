@@ -7,6 +7,8 @@ Adding a new provider or strategy:
     3. change the setting in .env (or pass it in `get_settings()`)
 """
 
+from rag_titan.chunking.character_chunker import CharacterChunker
+from rag_titan.chunking.token_chunker import TokenChunker
 from rag_titan.chunking.word_chunker import WordChunker
 from rag_titan.embeddings.ollama_embedder import OllamaEmbedder
 from rag_titan.generation.grounded_generator import GroundedGenerator
@@ -50,11 +52,22 @@ def build_embedder(settings):
 
 
 def build_chunker(settings):
-    """Create the chunker named in settings["chunker"]."""
+    """
+    Create the chunker named in settings["chunker"].
+    chunk_size and chunk_overlap count words, characters or tokens,
+    depending on the chunker.
+    """
     name = settings["chunker"]
+    size, overlap = settings["chunk_size"], settings["chunk_overlap"]
 
     if name == "word":
-        return WordChunker(settings["chunk_size"], settings["chunk_overlap"])
+        return WordChunker(size, overlap)
+
+    if name == "character":
+        return CharacterChunker(size, overlap)
+
+    if name == "token":
+        return TokenChunker(size, overlap, encoding=settings["chunk_encoding"])
 
     raise ValueError(f"Unknown chunker: {name}")
 

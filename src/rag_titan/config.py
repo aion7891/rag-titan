@@ -65,6 +65,7 @@ def get_settings(overrides=None):
         "chunker": os.getenv("CHUNKER", "word"),
         "chunk_size": _get_int("CHUNK_SIZE", 150),
         "chunk_overlap": _get_int("CHUNK_OVERLAP", 30),
+        "chunk_encoding": os.getenv("CHUNK_ENCODING", "cl100k_base"),  # token chunker only
 
         # Storage, retrieval and generation
         "vector_store": os.getenv("VECTOR_STORE", "memory"),

@@ -1,10 +1,13 @@
 """Tests for the agent loop, the math tools, settings and the factory."""
 
+import sys
+
 import pytest
 
 from rag_titan import get_settings
 from rag_titan.agents import BaseAgent
 from rag_titan.agents.tools.math_tools import add, divide
+from rag_titan.chunking import CharacterChunker, WordChunker
 from rag_titan.factory import build_chunker, build_reranker
 from rag_titan.llm import BaseLLM
 
@@ -46,6 +49,20 @@ def test_settings_overrides_win():
 def test_settings_read_environment(monkeypatch):
     monkeypatch.setenv("CHUNK_OVERLAP", "7")
     assert get_settings()["chunk_overlap"] == 7
+
+
+@pytest.mark.parametrize("name, cls", [("word", WordChunker), ("character", CharacterChunker)])
+def test_factory_builds_fixed_chunkers(name, cls):
+    chunker = build_chunker(get_settings({"chunker": name, "chunk_size": 10, "chunk_overlap": 2}))
+    assert isinstance(chunker, cls)
+    assert chunker.chunk_size == 10
+
+
+def test_factory_token_chunker_uses_tiktoken(monkeypatch):
+    # without tiktoken the token chunker explains how to install it
+    monkeypatch.setitem(sys.modules, "tiktoken", None)
+    with pytest.raises(ImportError, match="tokens"):
+        build_chunker(get_settings({"chunker": "token"}))
 
 
 def test_factory_rejects_unknown_names():
