@@ -10,12 +10,14 @@ It builds every part for you, so you only need two calls:
     print(rag.ask("How many leave days do I get?"))
 
     print(rag.run("How many leave days do I get?")["log"])   # every step
-    rag.evaluate_retrieval("questions.json")                 # how good is search?
+    rag.evaluate("questions.json")                           # end to end, uses the LLM
+    rag.evaluate_retrieval("questions.json")                 # search only, fast
 """
 
 from rag_titan.config import get_settings
 from rag_titan.evaluation.benchmark import evaluate_retriever, format_report
-from rag_titan.evaluation.questions import check_questions, load_questions
+from rag_titan.evaluation.end_to_end import evaluate_rag, format_rag_report
+from rag_titan.evaluation.questions import as_questions
 from rag_titan.factory import build_rag, build_rag_parts
 from rag_titan.rag_types.trace import describe_steps
 
@@ -77,6 +79,23 @@ class RAGTitan:
         result["log"] = describe_steps(result["steps"])
         return result
 
+    def evaluate(self, questions, show=True):
+        """
+        Answer every test question with this RAG type and score the runs (uses the LLM).
+
+        Args:
+            questions: path to a questions JSON file, or a list of question dicts.
+            show: print the report table.
+
+        Returns:
+            The dict from evaluate_rag(): evidence scores on the chunks given to
+            the LLM, answered share, steps, time, and one row per question.
+        """
+        result = evaluate_rag(self.rag, questions, name=self.rag_type)
+        if show:
+            print(format_rag_report([result]))
+        return result
+
     def evaluate_retrieval(self, questions, top_k=5, show=True):
         """
         Check how well search finds the evidence for test questions (no LLM used).
@@ -89,14 +108,8 @@ class RAGTitan:
         Returns:
             The dict from evaluate_retriever(): means, latency and one row per question.
         """
-        result = evaluate_retriever(self.parts["retriever"], _questions(questions), top_k)
+        result = evaluate_retriever(self.parts["retriever"], as_questions(questions), top_k)
         if show:
             print(format_report([result]))
         return result
 
-
-def _questions(questions):
-    """Load questions from a file path, or check a list that is already loaded."""
-    if isinstance(questions, list):
-        return check_questions(questions)
-    return load_questions(questions)

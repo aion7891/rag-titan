@@ -46,7 +46,7 @@ def evaluate_retriever(retriever, questions, top_k=5, name=None):
     rows = [_score_question(retriever, question, top_k) for question in questions]
 
     result = {"name": name or retriever.name, "top_k": top_k}
-    result.update(_summarize(rows))
+    result.update(summarize_rows(rows))
     result["rows"] = rows
     return result
 
@@ -74,14 +74,27 @@ def format_report(results):
         raise ValueError("There are no results to report")
 
     top_k = results[0]["top_k"]
-    width = max(len("retriever"), *(len(result["name"]) for result in results))
-    titles = [title.replace("@k", f"@{top_k}") for title, _, _ in COLUMNS]
-    header = f"{'retriever':<{width}}" + "".join(f"{title:>10}" for title in titles)
+    columns = [(title.replace("@k", f"@{top_k}"), key, fmt) for title, key, fmt in COLUMNS]
+    title = f"Retrieval report: {len(results[0]['rows'])} questions, top_k={top_k}"
+    return format_table(title, "retriever", results, columns)
 
-    lines = [f"Retrieval report: {len(results[0]['rows'])} questions, "
-             f"top_k={top_k}", "", header, "-" * len(header)]
+
+def format_table(title, first_column, results, columns):
+    """
+    Return a text table: a title, a header, then one line per result.
+
+    Args:
+        title: the first line, e.g. "Retrieval report: 6 questions".
+        first_column: header of the name column, e.g. "retriever".
+        results: dicts with a "name" and one value per column key.
+        columns: list of (title, key, number format) tuples.
+    """
+    width = max(len(first_column), *(len(result["name"]) for result in results))
+    header = f"{first_column:<{width}}" + "".join(f"{name:>10}" for name, _, _ in columns)
+
+    lines = [title, "", header, "-" * len(header)]
     for result in results:
-        cells = "".join(f"{fmt.format(result[key]):>10}" for _, key, fmt in COLUMNS)
+        cells = "".join(f"{fmt.format(result[key]):>10}" for _, key, fmt in columns)
         lines.append(f"{result['name']:<{width}}" + cells)
 
     return "\n".join(lines)
@@ -106,8 +119,11 @@ def _score_question(retriever, question, top_k):
     }
 
 
-def _summarize(rows):
-    """Mean of each metric, and the median (p50) and p95 latency."""
+def summarize_rows(rows):
+    """
+    Mean recall, MRR and nDCG of the rows, and the median (p50) and p95 of "ms".
+    Used by both the retrieval and the end-to-end evaluation.
+    """
     times = [row["ms"] for row in rows]
     return {
         "recall": float(np.mean([row["recall"] for row in rows])),

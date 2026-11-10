@@ -11,7 +11,7 @@ from rag_titan.evaluation import (
     format_report,
     load_questions,
 )
-from rag_titan.evaluation.benchmark import _summarize
+from rag_titan.evaluation.benchmark import summarize_rows
 from rag_titan.retrieval import BaseRetriever, DenseRetriever
 from rag_titan.vector_stores import MemoryStore
 
@@ -59,7 +59,7 @@ def test_compare_uses_the_same_questions_and_top_k(parts):
 
 def test_latency_percentiles():
     rows = [{"recall": 1, "reciprocal_rank": 1, "ndcg": 1, "ms": ms} for ms in range(1, 101)]
-    summary = _summarize(rows)
+    summary = summarize_rows(rows)
     assert summary["p50_ms"] == pytest.approx(50.5)
     assert summary["p95_ms"] == pytest.approx(95.05)
 

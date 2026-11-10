@@ -39,6 +39,16 @@ def load_questions(path):
     return check_questions(records)
 
 
+def as_questions(questions):
+    """
+    Accept a questions file path or an already loaded list, and return the checked list.
+    Lets every helper take either `"questions.json"` or `[{...}, ...]`.
+    """
+    if isinstance(questions, list):
+        return check_questions(questions)
+    return load_questions(questions)
+
+
 def check_questions(records):
     """
     Check a list of question dicts and return it.

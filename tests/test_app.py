@@ -35,6 +35,14 @@ def test_run_returns_the_steps_and_a_readable_log(titan):
     assert "chunk_0 hr.pdf" in result["log"]          # the log names the file
 
 
+def test_evaluate_runs_the_rag_end_to_end(titan, capsys):
+    result = titan.evaluate(QUESTIONS)
+
+    assert result["name"] == "simple" and result["answered"] == 1.0
+    assert [row["id"] for row in result["rows"]] == ["q1", "q2"]
+    assert "End-to-end report: 2 questions" in capsys.readouterr().out
+
+
 def test_evaluate_retrieval_from_a_file(titan, tmp_path, capsys):
     path = tmp_path / "questions.json"
     path.write_text(json.dumps(QUESTIONS), encoding="utf-8")
