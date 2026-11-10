@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 520" width="960" height="520" role="img" aria-labelledby="title desc">
+  <title id="title">Recursive separators</title>
+  <desc id="desc">RecursiveChunker with chunk size 50 and overlap 25. Step 1 splits on paragraphs; the second paragraph has 90 characters, more than 50, so it is split again on sentences into pieces of 23, 24, 21 and 23 characters. Step 2 packs whole pieces into chunks of at most 50 characters, and starts each new chunk by repeating the last sentence of the previous one, because it fits in the overlap of 25.</desc>
+  <defs>
+    <style>
+      .bg { fill: #ffffff; stroke: #e2e8f0; }
+      .title { font: 700 22px system-ui, -apple-system, "Segoe UI", sans-serif; fill: #0f172a; }
+      .sub { font: 400 13px system-ui, -apple-system, "Segoe UI", sans-serif; fill: #475569; }
+      .h { font: 700 15px system-ui, -apple-system, "Segoe UI", sans-serif; fill: #0f172a; }
+      .card { fill: #f8fafc; stroke: #cbd5e1; stroke-width: 1; }
+      .sep { font: 11.5px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #475569; white-space: pre; }
+      .para { fill: #ffffff; stroke: #94a3b8; stroke-width: 1.2; }
+      .big { fill: #fef2f2; stroke: #ef4444; stroke-width: 1.2; }
+      .piece { fill: #eff6ff; stroke: #3b82f6; stroke-width: 1.2; }
+      .repeat { fill: #fff7ed; stroke: #f97316; stroke-width: 1.5; }
+      .txt { font: 11.5px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #0f172a; white-space: pre; }
+      .size { font: 700 11px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #1d4ed8; }
+      .bad { font: 700 11px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #dc2626; }
+      .ok { font: 700 11px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #15803d; }
+      .label { font: 700 12px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #334155; }
+      .note { font: 12px system-ui, -apple-system, "Segoe UI", sans-serif; fill: #475569; }
+      .flow { fill: none; stroke: #64748b; stroke-width: 2; stroke-dasharray: 6 5; animation: dash 0.9s linear infinite; }
+      .hl { fill: none; stroke: #f97316; stroke-width: 3; opacity: 0; animation: glow 10s infinite; }
+      .c0 { animation: c0 10s infinite; } .c1 { animation: c1 10s infinite; }
+      .c2 { animation: c2 10s infinite; } .c3 { animation: c3 10s infinite; }
+      @keyframes dash { to { stroke-dashoffset: -11; } }
+      @keyframes glow { 0% { opacity: 0; } 3% { opacity: 1; } 28% { opacity: 1; } 32% { opacity: 0; } 100% { opacity: 0; } }
+      @keyframes c0 { 0%, 30% { opacity: .15; } 34%, 96% { opacity: 1; } 100% { opacity: .15; } }
+      @keyframes c1 { 0%, 45% { opacity: .15; } 49%, 96% { opacity: 1; } 100% { opacity: .15; } }
+      @keyframes c2 { 0%, 60% { opacity: .15; } 64%, 96% { opacity: 1; } 100% { opacity: .15; } }
+      @keyframes c3 { 0%, 75% { opacity: .15; } 79%, 96% { opacity: 1; } 100% { opacity: .15; } }
+      @media (prefers-reduced-motion: reduce) {
+        .flow, .hl, .c0, .c1, .c2, .c3 { animation: none; }
+        .c0, .c1, .c2, .c3 { opacity: 1; }
+      }
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#64748b"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" x="1" y="1" width="958" height="518" rx="14"/>
+  <text class="title" x="40" y="46">Recursive separators</text>
+  <text class="sub" x="40" y="70">RecursiveChunker(chunk_size=50, overlap=25): cut where the text already breaks, then pack whole pieces.</text>
+
+  <!-- step 1: split -->
+  <rect class="card" x="30" y="92" width="420" height="388" rx="12"/>
+  <text class="h" x="50" y="122">1. Split on the biggest separator</text>
+  <text class="sep" x="50" y="146">"\n\n" → "\n" → ". " → " " → "" (hard cut)</text>
+
+  <rect class="para" x="50" y="164" width="220" height="38" rx="8"/>
+  <text class="txt" x="62" y="188">Leave policy</text>
+  <text class="ok" x="290" y="188">14 ≤ 50  keep</text>
+
+  <rect class="big" x="50" y="214" width="380" height="58" rx="8"/>
+  <text class="txt" x="62" y="236">Staff get twenty days. Unused days carry</text>
+  <text class="txt" x="62" y="256">over. Ask HR for the form. Sick leave is…</text>
+  <text class="bad" x="204" y="293">90 &gt; 50  →  split on ". "</text>
+
+  <path class="flow" d="M190 276 V300" marker-end="url(#arrow)"/>
+
+  <rect class="piece" x="50" y="308" width="250" height="34" rx="8"/>
+  <text class="txt" x="62" y="330">Staff get twenty days.</text><text class="size" x="318" y="330">23</text>
+  <rect class="piece" x="50" y="350" width="250" height="34" rx="8"/>
+  <text class="txt" x="62" y="372">Unused days carry over.</text><text class="size" x="318" y="372">24</text>
+  <rect class="piece" x="50" y="392" width="250" height="34" rx="8"/>
+  <text class="txt" x="62" y="414">Ask HR for the form.</text><text class="size" x="318" y="414">21</text>
+  <rect class="piece" x="50" y="434" width="250" height="34" rx="8"/>
+  <text class="txt" x="62" y="456">Sick leave is separate.</text><text class="size" x="318" y="456">23</text>
+
+  <path class="flow" d="M452 286 H474" marker-end="url(#arrow)"/>
+
+  <!-- step 2: merge -->
+  <rect class="card" x="480" y="92" width="450" height="388" rx="12"/>
+  <text class="h" x="500" y="122">2. Pack up to 50, repeat up to 25</text>
+  <text class="sep" x="500" y="146">orange = last sentence repeated (overlap)</text>
+
+  <g class="c0">
+    <text class="label" x="500" y="186">C₀</text>
+    <rect class="para" x="528" y="166" width="104" height="30" rx="7"/><text class="txt" x="538" y="186">Leave policy</text>
+    <rect class="piece" x="638" y="166" width="174" height="30" rx="7"/><text class="txt" x="648" y="186">Staff get twenty days.</text>
+    <text class="size" x="824" y="186">= 37</text>
+  </g>
+  <g class="c1">
+    <text class="label" x="500" y="246">C₁</text>
+    <rect class="repeat" x="528" y="226" width="174" height="30" rx="7"/><text class="txt" x="538" y="246">Staff get twenty days.</text>
+    <rect class="piece" x="708" y="226" width="180" height="30" rx="7"/><text class="txt" x="718" y="246">Unused days carry over.</text>
+    <text class="size" x="894" y="246">= 47</text>
+  </g>
+  <g class="c2">
+    <text class="label" x="500" y="306">C₂</text>
+    <rect class="repeat" x="528" y="286" width="180" height="30" rx="7"/><text class="txt" x="538" y="306">Unused days carry over.</text>
+    <rect class="piece" x="714" y="286" width="164" height="30" rx="7"/><text class="txt" x="724" y="306">Ask HR for the form.</text>
+    <text class="size" x="884" y="306">= 45</text>
+  </g>
+  <g class="c3">
+    <text class="label" x="500" y="366">C₃</text>
+    <rect class="repeat" x="528" y="346" width="164" height="30" rx="7"/><text class="txt" x="538" y="366">Ask HR for the form.</text>
+    <rect class="piece" x="698" y="346" width="180" height="30" rx="7"/><text class="txt" x="708" y="366">Sick leave is separate.</text>
+    <text class="size" x="884" y="366">= 44</text>
+  </g>
+
+  <text class="note" x="500" y="414">Adding the next sentence would pass 50, so a new chunk</text>
+  <text class="note" x="500" y="432">starts. It repeats the last sentence because 23 or 24 ≤ 25.</text>
+  <text class="note" x="500" y="456">No sentence is ever cut in half.</text>
+
+  <rect class="hl" x="26" y="88" width="428" height="396" rx="14"/>
+</svg>

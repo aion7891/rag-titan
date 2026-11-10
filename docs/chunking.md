@@ -74,6 +74,8 @@ fixed_windows("abcdefghij", size=4, overlap=1)
 # ['abcd', 'defg', 'ghij']              S = 4, O = 1, H = 3
 ```
 
+![A window of 4 units slides 3 units at a time over a to j](assets/images/sliding-window.svg)
+
 !!! warning "Why overlap must be smaller than size"
     With $O \ge S$ the stride $H$ is zero or negative, so the window would never
     move forward. Every chunker raises `ValueError` for that, and for $S \le 0$
@@ -134,6 +136,13 @@ acceptance tests):
 - **Exact sizes.** Every chunk has $S$ units except the last one.
 - **Fast.** One pass over the text: time grows linearly with the text,
   $\mathcal{O}(N)$, plus $\mathcal{O}(K \cdot S)$ to copy the chunks out.
+
+### One sentence, three units
+
+The only difference between the three fixed-size chunkers is what they count.
+Here is the same sentence cut by each one (real output):
+
+![The same sentence chunked by characters, words and tokens](assets/images/fixed-chunkers.svg)
 
 ## WordChunker
 
@@ -329,7 +338,9 @@ RecursiveChunker(chunk_size=50, overlap=25).split_text(doc)
 
 The second paragraph is longer than 50 characters, so it falls back to
 sentences. No sentence is ever cut, and with overlap each chunk repeats the
-previous sentence.
+previous sentence:
+
+![RecursiveChunker splits on paragraphs, then sentences, then packs whole pieces](assets/images/recursive-chunker.svg)
 
 !!! note "Overlap is *up to* `overlap`"
     Only whole pieces are repeated. A piece longer than $O$ is never repeated,
