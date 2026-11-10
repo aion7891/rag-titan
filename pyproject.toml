@@ -47,6 +47,9 @@ dev = [
     "build>=1.2",
     "twine>=5.0",
 ]
+tokens = [
+    "tiktoken>=0.7",
+]
 docs = [
     "mkdocs-material>=9.5",
     "mkdocstrings[python]>=0.25",
