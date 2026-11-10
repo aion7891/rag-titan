@@ -4,8 +4,8 @@
 
 ## RAG types
 
-- [x] Simple RAG
-- [x] Adaptive RAG
+- [x] Simple RAG (`"simple"`), available since 0.1.0
+- [x] Adaptive RAG (`"adaptive"`), available since 0.1.0
 - [ ] Corrective RAG (CRAG): grade chunks, fall back to web search
 - [ ] Multi-query RAG: ask several versions of the question
 - [ ] HyDE: search with a hypothetical answer

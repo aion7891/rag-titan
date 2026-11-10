@@ -13,7 +13,7 @@
 <p align="center">
   <a href="https://aion7891.github.io/rag-titan/"><b>📖 Documentation</b></a> ·
   <a href="https://aion7891.github.io/rag-titan/getting-started/">Getting started</a> ·
-  <a href="https://aion7891.github.io/rag-titan/rag-types/">RAG types</a> ·
+  <a href="https://aion7891.github.io/rag-titan/rag-types/">Supported RAG types</a> ·
   <a href="https://aion7891.github.io/rag-titan/api/core/">API reference</a> ·
   <a href="https://pypi.org/project/rag-titan/">PyPI</a>
 </p>
@@ -24,7 +24,7 @@
 
 ## Why rag-titan?
 
-- **Many RAG types, one API.** Switch between them with one word: `rag_type="simple"` or `"adaptive"`.
+- **Many RAG types, one API.** Two today (`simple`, `adaptive`), with more on the way. Switch with one word: `rag_type="adaptive"`.
 - **Runs 100% locally** with [Ollama](https://ollama.com), so your documents never leave your machine.
 - **Grounded answers.** The model answers only from your files and cites the chunks it used.
 - **Easy to read, easy to change.** Short files, plain Python, and a docstring on every class. Swap any part by inheriting one base class.
@@ -56,14 +56,23 @@ Or from the terminal:
 rag-titan ask --files handbook.pdf --question "How many leave days do I get?"
 ```
 
-## RAG types
+## Supported RAG types
 
-| Type | Flow | Best for |
-|------|------|----------|
-| [`simple`](https://aion7891.github.io/rag-titan/rag-types/#simple-rag-simple) | Retrieve → Rerank → Generate | Fast answers to clear questions |
-| [`adaptive`](https://aion7891.github.io/rag-titan/rag-types/#adaptive-rag-adaptive) | Route → Retrieve → Check evidence → Retry | Mixed questions, fewer wrong answers |
+**rag-titan 0.1 supports 2 RAG types.** Pick one with `rag_type`:
 
-More are on the way: corrective, hybrid, multi-query, HyDE, graph and agentic RAG. → [Roadmap](https://aion7891.github.io/rag-titan/roadmap/)
+| Status | RAG type | How it works | Best for | LLM calls |
+|---|---|---|---|---|
+| ✅ Available | [**Simple RAG**](https://aion7891.github.io/rag-titan/rag-types/#simple-rag-simple)<br>`rag_type="simple"` | Retrieve → Rerank → Generate | Fast answers to clear questions | 1 |
+| ✅ Available | [**Adaptive RAG**](https://aion7891.github.io/rag-titan/rag-types/#adaptive-rag-adaptive)<br>`rag_type="adaptive"` | Route → Retrieve → Check evidence → Rewrite & retry | Mixed questions, fewer wrong answers | 2–5 |
+
+```python
+from rag_titan import RAG_TYPES
+print(RAG_TYPES)        # ['simple', 'adaptive']
+```
+
+**Coming next** (not available yet): Corrective RAG · Multi-query RAG · HyDE · Hybrid RAG · Self-RAG · Parent-document RAG · Graph RAG · Agentic RAG. → [Roadmap](https://aion7891.github.io/rag-titan/roadmap/)
+
+> Also included: a tool-calling [agent](https://aion7891.github.io/rag-titan/agents/) loop. It's a separate feature, not a `rag_type`.
 
 <p align="center">
   <a href="https://aion7891.github.io/rag-titan/rag-types/"><img src="https://cdn.jsdelivr.net/gh/aion7891/rag-titan@main/docs/assets/images/simple-rag.svg" alt="Simple RAG: retrieve, rerank, generate, with example scores" width="100%"></a>

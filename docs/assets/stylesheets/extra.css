@@ -7,3 +7,9 @@
 .md-typeset img[src$="banner.svg"] {
   border-radius: 12px;
 }
+
+/* Keep short code like rag_type="adaptive" on one line inside tables. */
+.md-typeset table:not([class]) code {
+  white-space: nowrap;
+  word-break: normal;
+}
