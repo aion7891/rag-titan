@@ -200,8 +200,38 @@ count_windows(10_000, 500, 200)   # 33 chunks  (40% overlap)
 ```
 
 Overlap helps when an answer sits on a boundary between two chunks. It also
-means neighbouring chunks are similar, so the retriever may return two chunks
-with mostly the same text. More overlap is not automatically better.
+means neighbouring chunks are similar, so a search can return two chunks with
+mostly the same text. More overlap is not automatically better.
+
+### Removing near-copies from search results
+
+The retriever removes those near-copies for you (handbook 2.4). It asks the
+vector store for twice as many results, walks them best first, and drops a
+result that overlaps a better one **from the same file** by at least half of
+the shorter chunk, using the chunk offsets:
+
+$$
+\text{overlap}(a, b) = \frac{\text{shared characters}}{\min(|a|, |b|)}
+$$
+
+```python
+from rag_titan.retrieval import overlap_fraction, remove_duplicates
+
+hits = [
+    {"id": "chunk_3", "source": "hr.pdf", "start_offset": 0, "end_offset": 100},
+    {"id": "chunk_4", "source": "hr.pdf", "start_offset": 50, "end_offset": 150},
+    {"id": "chunk_9", "source": "hr.pdf", "start_offset": 400, "end_offset": 500},
+]
+overlap_fraction(hits[0], hits[1])          # 0.5
+[hit["id"] for hit in remove_duplicates(hits)]
+# ['chunk_3', 'chunk_9']
+```
+
+So the answer context gets more *different* evidence instead of the same
+passage twice. Set `DEDUPE_OVERLAP` to a share between 0 and 1 (default `0.5`),
+or to `off` to keep every result. Chunks without offsets (from your own
+chunkers, when they cannot be found) only count as copies when their text is
+exactly the same.
 
 ### Guarantees
 

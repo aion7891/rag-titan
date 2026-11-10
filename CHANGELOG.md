@@ -6,6 +6,23 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-11-11
+
+### Added
+- Search results no longer hold near-copies (chunking handbook 2.4). With
+  overlap, neighbouring chunks share text, so a search could return the same
+  passage twice. The retriever now fetches twice as many results and drops one
+  that overlaps a better result from the same file by at least half of the
+  shorter chunk, using the chunk offsets.
+- Setting `DEDUPE_OVERLAP` (default `0.5`; `off` keeps every result), and
+  `Retriever(..., dedupe_overlap=0.5)`.
+- `rag_titan.retrieval.overlap_fraction()` and `remove_duplicates()`.
+
+### Changed
+- Retrieval returns different results than 0.4.x when chunks overlap: fewer
+  near-copies, more different passages. Set `DEDUPE_OVERLAP=off` for the old
+  behaviour.
+
 ### Fixed
 - Docs site: the 0.4.0 docs were not published, because a docstring
   (`BaseChunker.chunk`) was read as a broken link in the API reference.

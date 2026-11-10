@@ -13,24 +13,25 @@ cp .env.example .env
 
 ## All settings
 
-| Variable          | Settings key      | Default                  | Meaning                             |
-|-------------------|-------------------|--------------------------|-------------------------------------|
-| `LLM_PROVIDER`    | `llm_provider`    | `ollama`                 | Who runs the chat model             |
-| `LLM_MODEL`       | `llm_model`       | `gemma3:4b`              | Chat model for answers              |
-| `OLLAMA_HOST`     | `ollama_host`     | `http://localhost:11434` | Ollama server address               |
-| `AGENT_MODEL`     | `agent_model`     | `qwen3:4b`               | Model for agents (needs tools)      |
-| `AGENT_THINK`     | `agent_think`     | `true`                   | Turn on thinking for agents         |
-| `AGENT_MAX_STEPS` | `agent_max_steps` | `5`                      | Max agent think/tool rounds         |
-| `EMBED_PROVIDER`  | `embed_provider`  | `ollama`                 | Who runs the embedding model        |
-| `EMBED_MODEL`     | `embed_model`     | `nomic-embed-text`       | Embedding model                     |
-| `CHUNKER`         | `chunker`         | `word`                   | see [Chunking methods](chunking.md) |
-| `CHUNK_SIZE`      | `chunk_size`      | `150`                    | Units per chunk (see below)         |
-| `CHUNK_OVERLAP`   | `chunk_overlap`   | `30`                     | Units shared by neighbouring chunks |
-| `CHUNK_ENCODING`  | `chunk_encoding`  | `cl100k_base`            | tiktoken encoding (`token` only)    |
-| `VECTOR_STORE`    | `vector_store`    | `memory`                 | Where vectors are stored            |
-| `RERANKER`        | `reranker`        | `keyword`                | `keyword` or `none`                 |
-| `GENERATOR`       | `generator`       | `grounded`               | How answers are written             |
-| `LOG_LEVEL`       | –                 | `INFO`                   | Used by `setup_logging()`           |
+| Variable          | Settings key      | Default                  | Meaning                                        |
+|-------------------|-------------------|--------------------------|------------------------------------------------|
+| `LLM_PROVIDER`    | `llm_provider`    | `ollama`                 | Who runs the chat model                        |
+| `LLM_MODEL`       | `llm_model`       | `gemma3:4b`              | Chat model for answers                         |
+| `OLLAMA_HOST`     | `ollama_host`     | `http://localhost:11434` | Ollama server address                          |
+| `AGENT_MODEL`     | `agent_model`     | `qwen3:4b`               | Model for agents (needs tools)                 |
+| `AGENT_THINK`     | `agent_think`     | `true`                   | Turn on thinking for agents                    |
+| `AGENT_MAX_STEPS` | `agent_max_steps` | `5`                      | Max agent think/tool rounds                    |
+| `EMBED_PROVIDER`  | `embed_provider`  | `ollama`                 | Who runs the embedding model                   |
+| `EMBED_MODEL`     | `embed_model`     | `nomic-embed-text`       | Embedding model                                |
+| `CHUNKER`         | `chunker`         | `word`                   | see [Chunking methods](chunking.md)            |
+| `CHUNK_SIZE`      | `chunk_size`      | `150`                    | Units per chunk (see below)                    |
+| `CHUNK_OVERLAP`   | `chunk_overlap`   | `30`                     | Units shared by neighbouring chunks            |
+| `CHUNK_ENCODING`  | `chunk_encoding`  | `cl100k_base`            | tiktoken encoding (`token` only)               |
+| `VECTOR_STORE`    | `vector_store`    | `memory`                 | Where vectors are stored                       |
+| `DEDUPE_OVERLAP`  | `dedupe_overlap`  | `0.5`                    | Drop near-copy search results; `off` keeps all |
+| `RERANKER`        | `reranker`        | `keyword`                | `keyword` or `none`                            |
+| `GENERATOR`       | `generator`       | `grounded`               | How answers are written                        |
+| `LOG_LEVEL`       | –                 | `INFO`                   | Used by `setup_logging()`                      |
 
 `CHUNKER` is one of `word`, `character`, `token`, `recursive`, `sentence`,
 `paragraph`, `heading` or `page`. `CHUNK_SIZE` and `CHUNK_OVERLAP` count words
