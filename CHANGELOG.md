@@ -6,6 +6,21 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-11-10
+
+### Added
+- Docs: a "Chunking methods" page that explains every chunker with
+  formulas (stride, chunk count, overlap cost), runnable examples with real
+  output, three animated diagrams, and an interactive chunk playground that
+  runs in the browser.
+
+### Changed
+- Docs: "Building blocks" links to the new page instead of repeating it; the
+  docs site can now show maths.
+
+### Fixed
+- README: the PyPI version badge showed an old cached version.
+
 ## [0.2.0] - 2026-11-10
 
 ### Added

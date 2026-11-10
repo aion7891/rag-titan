@@ -37,7 +37,7 @@ cp .env.example .env
 when you switch: 150 words is roughly 200 tokens or 900 characters, so for
 `recursive` try `CHUNK_SIZE=1000` and `CHUNK_OVERLAP=200`. `CHUNKER=token` needs
 `pip install "rag-titan[tokens]"`; to use your own tokenizer, see
-[Fixed-length chunkers](building-blocks.md#fixed-length-chunkers).
+[Chunking methods](chunking.md#your-own-tokenizer).
 
 ## Changing settings in code
 
