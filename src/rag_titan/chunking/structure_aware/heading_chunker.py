@@ -11,6 +11,13 @@ HEADING = re.compile(r"^(#{1,6})[ \t]+(.+?)[ \t#]*$")
 FENCE = re.compile(r"^\s*(```|~~~)")
 
 
+def only_headings(lines):
+    """True when `lines` hold at least one heading and nothing else but blank lines."""
+    headings = [line for line in lines if HEADING.match(line.rstrip("\r\n"))]
+    others = [line for line in lines if line.strip() and line not in headings]
+    return bool(headings) and not others
+
+
 def split_sections(text, keep_heading_lines=False):
     """
     Cut Markdown text into sections at its headings.
@@ -31,12 +38,15 @@ def split_sections(text, keep_heading_lines=False):
         match = None if in_code else HEADING.match(line.rstrip("\r\n"))
 
         if match:
-            sections.append(([title for _, title in levels], "".join(body)))
+            # a kept heading line with no text under it moves into the next section
+            carry = body if keep_heading_lines and only_headings(body) else []
+            if not carry:
+                sections.append(([title for _, title in levels], "".join(body)))
             level = len(match.group(1))
             # a heading closes every open heading at its level or deeper
             levels = [(lvl, title) for lvl, title in levels if lvl < level]
             levels.append((level, match.group(2).strip()))
-            body = [line] if keep_heading_lines else []
+            body = carry + [line] if keep_heading_lines else []
         else:
             body.append(line)
 

@@ -27,7 +27,8 @@
 - **Many RAG types, one API.** Two today (`simple`, `adaptive`), with more on the way. Switch with one word: `rag_type="adaptive"`.
 - **Runs 100% locally** with [Ollama](https://ollama.com), so your documents never leave your machine.
 - **Grounded answers.** The model answers only from your files and cites the chunks it used.
-- **Fixed-length chunking your way.** Split by words, characters, model tokens (tiktoken or your own tokenizer) or recursive separators that keep paragraphs whole, with overlap.
+- **Chunking your way.** Eight chunkers: by words, characters or model tokens (tiktoken or your own tokenizer), recursive separators, and structure-aware chunkers that keep sentences, paragraphs, heading sections or pages whole.
+- **PDF, Word, Markdown and text files**, with paragraphs, headings and pages kept for the chunkers.
 - **Easy to read, easy to change.** Short files, plain Python, and a docstring on every class. Swap any part by inheriting one base class.
 
 ## Install

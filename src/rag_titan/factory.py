@@ -13,6 +13,12 @@ from rag_titan.chunking.fixed_size import (
     TokenChunker,
     WordChunker,
 )
+from rag_titan.chunking.structure_aware import (
+    HeadingChunker,
+    PageChunker,
+    ParagraphChunker,
+    SentenceChunker,
+)
 from rag_titan.embeddings.ollama_embedder import OllamaEmbedder
 from rag_titan.generation.grounded_generator import GroundedGenerator
 from rag_titan.llm.ollama_llm import OllamaLLM
@@ -74,6 +80,16 @@ def build_chunker(settings):
 
     if name == "recursive":
         return RecursiveChunker(size, overlap)
+
+    # structure-aware chunkers: whole sentences, paragraphs, sections or pages
+    structure_aware = {
+        "sentence": SentenceChunker,
+        "paragraph": ParagraphChunker,
+        "heading": HeadingChunker,
+        "page": PageChunker,
+    }
+    if name in structure_aware:
+        return structure_aware[name](size, overlap)
 
     raise ValueError(f"Unknown chunker: {name}")
 

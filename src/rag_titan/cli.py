@@ -29,7 +29,7 @@ def build_parser():
 
     # both commands share the same options
     for command in (ask, chat):
-        command.add_argument("--files", nargs="+", required=True, help="PDF or DOCX files")
+        command.add_argument("--files", nargs="+", required=True, help="PDF, DOCX, MD or TXT files")
         command.add_argument("--rag-type", default="simple", choices=RAG_TYPES)
         command.add_argument("--log-level", default="WARNING", help="DEBUG, INFO or WARNING")
 

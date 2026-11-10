@@ -9,16 +9,21 @@ the retriever can find, so chunking is one of the settings that matters most.
 - Chunks that are **too small** lose context. "It is 20 days" means nothing
   without the sentence before it.
 
-rag-titan ships four chunkers today, all from the *fixed-size* family
-(section 2 of the chunking handbook). More families are on the
+rag-titan ships eight chunkers in two families from the chunking handbook:
+**fixed-size** (section 2) cuts by counting units, and **structure-aware**
+(section 3) keeps the document's own units whole. More families are on the
 [roadmap](roadmap.md).
 
-| Chunker            | Counts                 | Setting             | Keeps text exact | Respects sentences |
-|--------------------|------------------------|---------------------|------------------|--------------------|
-| `WordChunker`      | words                  | `CHUNKER=word`      | spaces joined    | no                 |
-| `CharacterChunker` | characters             | `CHUNKER=character` | yes              | no                 |
-| `TokenChunker`     | model tokens           | `CHUNKER=token`     | yes (decoded)    | no                 |
-| `RecursiveChunker` | characters (or tokens) | `CHUNKER=recursive` | edges trimmed    | yes, when possible |
+| Chunker            | Family          | Counts                 | Setting             | Keeps whole                                |
+|--------------------|-----------------|------------------------|---------------------|--------------------------------------------|
+| `WordChunker`      | fixed-size      | words                  | `CHUNKER=word`      | words                                      |
+| `CharacterChunker` | fixed-size      | characters             | `CHUNKER=character` | nothing (exact text)                       |
+| `TokenChunker`     | fixed-size      | model tokens           | `CHUNKER=token`     | tokens                                     |
+| `RecursiveChunker` | fixed-size      | characters (or tokens) | `CHUNKER=recursive` | paragraphs, lines, sentences when they fit |
+| `SentenceChunker`  | structure-aware | characters (or tokens) | `CHUNKER=sentence`  | sentences                                  |
+| `ParagraphChunker` | structure-aware | characters (or tokens) | `CHUNKER=paragraph` | paragraphs                                 |
+| `HeadingChunker`   | structure-aware | characters (or tokens) | `CHUNKER=heading`   | sections (never mixes two)                 |
+| `PageChunker`      | structure-aware | characters (or tokens) | `CHUNKER=page`      | pages (never spans two)                    |
 
 ## Try it: chunk playground
 
@@ -379,6 +384,157 @@ so headings start new chunks.
 | **Good for** | a strong general default for reports, docs and policies |
 | **Watch out** | spaces at the edges of chunks are trimmed; with a tokenizer, piece token counts are added up, which can differ from encoding the whole chunk by about a token |
 
+## Structure-aware chunkers
+
+Fixed-size chunkers count units. Structure-aware chunkers (handbook section 3)
+first cut the text into the units the author wrote: sentences, paragraphs,
+sections or pages. Then they pack whole units into chunks of at most
+`chunk_size`, with the same packing step as `RecursiveChunker`:
+
+$$
+C_j = (u_a, \dots, u_b) \qquad \text{with} \qquad \sum_{i=a}^{b} \ell(u_i) \le S
+$$
+
+A unit is only cut when it is bigger than $S$ on its own: a paragraph falls
+back to sentences, and a sentence falls back to words. Overlap repeats whole
+units, up to $O$. Sizes count characters, or tokens with `tokenizer=`.
+
+### What the loaders keep
+
+These chunkers need the document's structure, so the loaders keep it:
+
+| File          | Paragraphs                | Headings                                  | Pages                          |
+|---------------|---------------------------|-------------------------------------------|--------------------------------|
+| `.docx`       | separated by a blank line | Word "Heading 1-6" become `#` to `######` | no pages in Word files         |
+| `.pdf`        | lines as pypdf reads them | none                                      | separated by `\f` (page break) |
+| `.md`, `.txt` | as written                | Markdown `#` headings                     | none                           |
+
+### SentenceChunker
+
+Packs whole sentences (handbook 3.1). The sentence splitter needs no library
+and knows the common traps: abbreviations (`Dr.`, `Mr.`, `etc.`, `Fig.`),
+dotted forms (`e.g.`, `U.S.`), initials (`J. K.`), list numbers (`1.`),
+decimals (`3.5`), quotes, `...`, and the end marks `。！？।` used in Japanese,
+Chinese and Hindi.
+
+```python
+from rag_titan.chunking import SentenceChunker
+from rag_titan.chunking.structure_aware import split_sentences
+
+split_sentences("Dr. Smith said it takes 3.5 days. Ask HR, e.g. Ann. Done!")
+# ['Dr. Smith said it takes 3.5 days. ', 'Ask HR, e.g. Ann. ', 'Done!']
+
+doc = (
+    "# Leave policy\n\n"
+    "Staff get twenty days. Unused days carry over. Ask HR for the form.\n\n"
+    "Sick leave is separate. Tell your manager before nine."
+)
+SentenceChunker(chunk_size=50, overlap=25).split_text(doc)
+# ['# Leave policy\n\nStaff get twenty days.',
+#  'Staff get twenty days. Unused days carry over.',
+#  'Unused days carry over. Ask HR for the form.',
+#  'Ask HR for the form.\n\nSick leave is separate.',
+#  'Tell your manager before nine.']
+```
+
+!!! note "One trade-off"
+    A single letter before a full stop is read as an initial, like `J. K.`
+    So `"Plan B. Then we go."` stays one sentence. That is the safer mistake:
+    gluing two sentences together loses nothing, while cutting a name in two
+    would.
+
+| | |
+|---|---|
+| **Settings** | `CHUNKER=sentence`, for example `CHUNK_SIZE=500`, `CHUNK_OVERLAP=100` (defaults) |
+| **Good for** | FAQs, chat logs, short answers: retrieving the exact sentences |
+| **Watch out** | a chunk can join the end of one paragraph with the start of the next |
+
+### ParagraphChunker
+
+Packs whole paragraphs, separated by a blank line (handbook 3.2). The handbook
+calls paragraph grouping "frequently a strong general baseline for reports and
+documentation".
+
+```python
+from rag_titan.chunking import ParagraphChunker
+
+ParagraphChunker(chunk_size=60, overlap=0).split_text(doc)
+# ['# Leave policy\n\nStaff get twenty days.',
+#  'Unused days carry over. Ask HR for the form.',
+#  'Sick leave is separate. Tell your manager before nine.']
+```
+
+The middle paragraph has 69 characters, more than 60, so it falls back to
+sentences. The last paragraph fits, so it stays whole.
+
+| | |
+|---|---|
+| **Settings** | `CHUNKER=paragraph`, for example `CHUNK_SIZE=1000`, `CHUNK_OVERLAP=0` (defaults) |
+| **Good for** | reports, policies, documentation, Word files |
+| **Watch out** | PDFs give lines, not paragraphs, so on PDFs it packs lines |
+
+### HeadingChunker
+
+Splits at headings, so **a chunk never mixes two sections**, and starts each
+chunk with its **heading path** (handbook 3.3). A heading closes every open
+heading at its level or deeper, which builds the path:
+
+$$
+C_i = (h_1, \dots, h_d,\ \text{body}_i)
+$$
+
+```python
+from rag_titan.chunking import HeadingChunker
+
+md = (
+    "# Leave policy\n\n## Annual leave\n\nStaff get twenty days.\n\n"
+    "## Sick leave\n\nTell your manager.\n\n# Travel\n\nBook trips early."
+)
+HeadingChunker(chunk_size=200).split_text(md)
+# ['Leave policy > Annual leave\n\nStaff get twenty days.',
+#  'Leave policy > Sick leave\n\nTell your manager.',
+#  'Travel\n\nBook trips early.']
+
+HeadingChunker(chunk_size=200, include_path=False).split_text(md)
+# ['# Leave policy\n\n## Annual leave\n\nStaff get twenty days.',
+#  '## Sick leave\n\nTell your manager.',
+#  '# Travel\n\nBook trips early.']
+```
+
+- The path tells the retriever and the LLM *where* a chunk comes from: "20
+  days" means little until you know it is under *Annual leave*.
+- The path counts toward `chunk_size`. If it would take more than half of
+  a chunk, it is left out.
+- `#` lines inside code blocks (```` ``` ````) are code, not headings.
+- Inside a section, paragraphs are packed like `ParagraphChunker`.
+
+| | |
+|---|---|
+| **Settings** | `CHUNKER=heading`, for example `CHUNK_SIZE=1000`, `CHUNK_OVERLAP=0` (defaults) |
+| **Good for** | Markdown docs, Word files with headings, handbooks, wikis |
+| **Watch out** | text with no headings becomes one section; very short sections make very short chunks |
+
+### PageChunker
+
+Chunks each page on its own, so **a chunk never spans two pages**
+(handbook 3.4). A page that fits is one chunk; a bigger page is cut into
+paragraphs, then sentences. Empty pages are skipped.
+
+```python
+from rag_titan.chunking import PageChunker
+
+PageChunker(chunk_size=30).split_text(
+    "Page one text.\fPage two is longer and has more words in it.\f\fLast page."
+)
+# ['Page one text.', 'Page two is longer and has', 'more words in it.', 'Last page.']
+```
+
+| | |
+|---|---|
+| **Settings** | `CHUNKER=page`, for example `CHUNK_SIZE=2000`, `CHUNK_OVERLAP=0` (defaults) |
+| **Good for** | PDFs where answers should cite a page, such as contracts or manuals |
+| **Watch out** | a table or sentence that runs across a page break is cut there; files without pages are one page |
+
 ## Choosing a chunker
 
 | If you need...                                  | Use                |
@@ -387,6 +543,10 @@ so headings start new chunks.
 | exact text, any language, code or logs          | `CharacterChunker` |
 | to stay under the embedding model's token limit | `TokenChunker`     |
 | readable chunks that keep sentences together    | `RecursiveChunker` |
+| retrieving exact sentences (FAQs, chat logs)    | `SentenceChunker`  |
+| a strong baseline for reports and documents     | `ParagraphChunker` |
+| chunks that know their section (docs, wikis)    | `HeadingChunker`   |
+| answers that cite a page (PDF contracts)        | `PageChunker`      |
 
 There is no size that is best for every dataset. The handbook suggests treating
 these as experiments, not answers:
@@ -442,6 +602,7 @@ The handbook groups chunking methods into families. rag-titan adds them one
 family at a time, each in its own folder under `rag_titan/chunking/`:
 
 - [x] **Fixed-size** (`fixed_size/`): word, character, token, recursive
-- [ ] **Structure-aware**: sentence, paragraph, heading, page
+- [x] **Structure-aware** (`structure_aware/`): sentence, paragraph, heading, page
+- [ ] **Element-aware**: keep lists, tables and code blocks whole (handbook 3.5-3.7)
 - [ ] **Semantic**: split where the meaning changes, using embeddings
 - [ ] **Hierarchical**: small chunks for search, big chunks for answers

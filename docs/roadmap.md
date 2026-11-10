@@ -21,7 +21,9 @@
 - [ ] Embedders: OpenAI, sentence-transformers
 - [ ] Vector stores: Chroma, Qdrant, FAISS, pgvector
 - [ ] Rerankers: cross-encoder, LLM reranker
-- [ ] Loaders: TXT, Markdown, HTML, CSV
+- [x] Loaders: TXT and Markdown (`TextLoader`), available since 0.3.0
+- [ ] Loaders: HTML, CSV
 - [x] Chunkers: character, token, recursive (`"character"`, `"token"`, `"recursive"`), available since 0.2.0
-- [ ] Chunkers: sentence, paragraph, semantic
+- [x] Chunkers: sentence, paragraph, heading, page (`"sentence"`, `"paragraph"`, `"heading"`, `"page"`), available since 0.3.0
+- [ ] Chunkers: element-aware (lists, tables, code), semantic
 - [ ] Evaluation helpers
