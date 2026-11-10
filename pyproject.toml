@@ -11,7 +11,7 @@ name = "rag-titan"
 dynamic = ["version"]
 description = "A Swiss Army knife for RAG: simple, adaptive and more RAG types in one beginner-friendly package."
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license = { file = "LICENSE" }
 authors = [{ name = "Kumar Nishant" }]
 keywords = ["rag", "retrieval-augmented-generation", "llm", "ollama", "embeddings", "vector-search"]
@@ -72,7 +72,7 @@ testpaths = ["tests"]
 
 [tool.ruff]
 line-length = 100
-target-version = "py39"
+target-version = "py310"
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I"]

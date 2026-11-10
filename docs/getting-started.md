@@ -6,7 +6,7 @@
 pip install rag-titan
 ```
 
-Python 3.9 or newer is required.
+Python 3.10 or newer is required.
 
 ## 2. Install Ollama and pull the models
 
