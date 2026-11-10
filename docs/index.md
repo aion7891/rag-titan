@@ -1,6 +1,10 @@
-# rag-titan
+---
+title: Home
+hide:
+  - toc
+---
 
-**A Swiss Army knife for RAG (Retrieval-Augmented Generation).**
+![rag-titan: a Swiss Army knife for RAG](assets/images/banner.svg)
 
 RAG lets a language model answer questions about *your* documents. It first
 **finds** the most relevant pieces of text, then asks the model to **answer

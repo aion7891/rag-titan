@@ -1,147 +1,116 @@
-# rag-titan
+<p align="center">
+  <a href="https://aion7891.github.io/rag-titan/"><img src="https://cdn.jsdelivr.net/gh/aion7891/rag-titan@main/docs/assets/images/banner.svg" alt="rag-titan: a Swiss Army knife for RAG. Many RAG types, one simple API, runs locally." width="100%"></a>
+</p>
 
-**A Swiss Army knife for RAG (Retrieval-Augmented Generation).**
+<p align="center">
+  <a href="https://pypi.org/project/rag-titan/"><img src="https://img.shields.io/pypi/v/rag-titan" alt="PyPI version"></a>
+  <a href="https://pypi.org/project/rag-titan/"><img src="https://img.shields.io/pypi/pyversions/rag-titan" alt="Python versions"></a>
+  <a href="https://github.com/aion7891/rag-titan/actions/workflows/tests.yml"><img src="https://github.com/aion7891/rag-titan/actions/workflows/tests.yml/badge.svg" alt="Tests"></a>
+  <a href="https://aion7891.github.io/rag-titan/"><img src="https://img.shields.io/badge/docs-GitHub%20Pages-blue.svg" alt="Documentation"></a>
+  <a href="https://github.com/aion7891/rag-titan/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License: MIT"></a>
+</p>
 
-`rag-titan` puts many types of RAG in one small, beginner-friendly Python
-package. Every part (loader, chunker, embedder, vector store, reranker,
-generator) is a small class you can read in a minute and replace with your own.
+<p align="center">
+  <a href="https://aion7891.github.io/rag-titan/"><b>📖 Documentation</b></a> ·
+  <a href="https://aion7891.github.io/rag-titan/getting-started/">Getting started</a> ·
+  <a href="https://aion7891.github.io/rag-titan/rag-types/">RAG types</a> ·
+  <a href="https://aion7891.github.io/rag-titan/api/core/">API reference</a> ·
+  <a href="https://pypi.org/project/rag-titan/">PyPI</a>
+</p>
 
-[![PyPI](https://img.shields.io/pypi/v/rag-titan.svg)](https://pypi.org/project/rag-titan/)
-[![Python](https://img.shields.io/pypi/pyversions/rag-titan.svg)](https://pypi.org/project/rag-titan/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/aion7891/rag-titan/blob/main/LICENSE)
+<p align="center">
+  <a href="https://aion7891.github.io/rag-titan/"><img src="https://cdn.jsdelivr.net/gh/aion7891/rag-titan@main/docs/assets/images/overview.svg" alt="rag-titan overview: index your files once, then ask questions" width="100%"></a>
+</p>
 
-<p align="center"><img src="https://cdn.jsdelivr.net/gh/aion7891/rag-titan@main/docs/assets/images/overview.svg" alt="rag-titan overview: indexing and answering" width="100%"></p>
+## Why rag-titan?
 
-## Features
+- **Many RAG types, one API.** Switch between them with one word: `rag_type="simple"` or `"adaptive"`.
+- **Runs 100% locally** with [Ollama](https://ollama.com), so your documents never leave your machine.
+- **Grounded answers.** The model answers only from your files and cites the chunks it used.
+- **Easy to read, easy to change.** Short files, plain Python, and a docstring on every class. Swap any part by inheriting one base class.
 
-| RAG type   | How it works                                                        |
-|------------|---------------------------------------------------------------------|
-| `simple`   | Retrieve → Rerank → Generate                                        |
-| `adaptive` | Route the question → Retrieve → Check evidence → Rewrite and retry  |
-
-More RAG types (corrective, hybrid, multi-query, graph, agentic, ...) are
-planned. See the [roadmap](https://github.com/aion7891/rag-titan/blob/main/docs/roadmap.md).
-
-- Runs **100% locally** with [Ollama](https://ollama.com), so your data stays on your machine.
-- Reads **PDF** and **DOCX** files.
-- Answers are **grounded** in your documents and **cite** the chunks they used.
-- Every part is swappable. You only need to inherit from one base class.
-- Includes a `rag-titan` command line tool.
-
-### Simple RAG
-
-<p align="center"><img src="https://cdn.jsdelivr.net/gh/aion7891/rag-titan@main/docs/assets/images/simple-rag.svg" alt="Simple RAG flow with example scores" width="100%"></p>
-
-### Adaptive RAG
-
-<p align="center"><img src="https://cdn.jsdelivr.net/gh/aion7891/rag-titan@main/docs/assets/images/adaptive-rag.svg" alt="Adaptive RAG flow with routes and retries" width="100%"></p>
-
-## Installation
+## Install
 
 ```bash
 pip install rag-titan
+ollama pull gemma3:4b && ollama pull nomic-embed-text
 ```
 
-Then install [Ollama](https://ollama.com/download) and pull the default models:
-
-```bash
-ollama pull gemma3:4b          # chat model
-ollama pull nomic-embed-text   # embedding model
-```
+Needs Python 3.10+ and [Ollama](https://ollama.com/download). → [Full setup guide](https://aion7891.github.io/rag-titan/getting-started/)
 
 ## Quick start
 
 ```python
 from rag_titan import RAGTitan
 
-rag = RAGTitan(rag_type="simple")        # or "adaptive"
+rag = RAGTitan(rag_type="simple")            # or "adaptive"
 rag.index(["handbook.pdf", "policy.docx"])
 
 print(rag.ask("How many leave days do I get?"))
-# You get 20 leave days every year [chunk_0].
+# You get 20 paid leave days every year [chunk_0].
 ```
 
-Change any setting in code:
-
-```python
-rag = RAGTitan(
-    rag_type="adaptive",
-    settings={"llm_model": "llama3.2", "chunk_size": 200, "reranker": "none"},
-)
-```
-
-## Command line
+Or from the terminal:
 
 ```bash
-rag-titan ask  --files handbook.pdf --question "How many leave days?"
-rag-titan chat --files handbook.pdf policy.docx --rag-type adaptive
+rag-titan ask --files handbook.pdf --question "How many leave days do I get?"
 ```
 
-<p align="center"><img src="https://cdn.jsdelivr.net/gh/aion7891/rag-titan@main/docs/assets/images/cli.svg" alt="rag-titan command line demo" width="100%"></p>
+## RAG types
 
-## Configuration
+| Type | Flow | Best for |
+|------|------|----------|
+| [`simple`](https://aion7891.github.io/rag-titan/rag-types/#simple-rag-simple) | Retrieve → Rerank → Generate | Fast answers to clear questions |
+| [`adaptive`](https://aion7891.github.io/rag-titan/rag-types/#adaptive-rag-adaptive) | Route → Retrieve → Check evidence → Retry | Mixed questions, fewer wrong answers |
 
-Settings come from environment variables or a `.env` file. Copy
-[`.env.example`](https://github.com/aion7891/rag-titan/blob/main/.env.example) to get started. Every setting has a default.
+More are on the way: corrective, hybrid, multi-query, HyDE, graph and agentic RAG. → [Roadmap](https://aion7891.github.io/rag-titan/roadmap/)
 
-| Variable        | Default                  | Meaning                      |
-|-----------------|--------------------------|------------------------------|
-| `LLM_MODEL`     | `gemma3:4b`              | Chat model used for answers  |
-| `EMBED_MODEL`   | `nomic-embed-text`       | Embedding model              |
-| `OLLAMA_HOST`   | `http://localhost:11434` | Ollama server address        |
-| `CHUNK_SIZE`    | `150`                    | Words per chunk              |
-| `CHUNK_OVERLAP` | `30`                     | Words shared between chunks  |
-| `RERANKER`      | `keyword`                | `keyword` or `none`          |
+<p align="center">
+  <a href="https://aion7891.github.io/rag-titan/rag-types/"><img src="https://cdn.jsdelivr.net/gh/aion7891/rag-titan@main/docs/assets/images/simple-rag.svg" alt="Simple RAG: retrieve, rerank, generate, with example scores" width="100%"></a>
+</p>
 
-See the [configuration docs](https://github.com/aion7891/rag-titan/blob/main/docs/configuration.md) for the full list.
+<p align="center">
+  <a href="https://aion7891.github.io/rag-titan/rag-types/"><img src="https://cdn.jsdelivr.net/gh/aion7891/rag-titan@main/docs/assets/images/adaptive-rag.svg" alt="Adaptive RAG: route, check evidence, rewrite and retry" width="100%"></a>
+</p>
 
-## How it works
+## Explore the docs
 
-<p align="center"><img src="https://cdn.jsdelivr.net/gh/aion7891/rag-titan@main/docs/assets/images/indexing.svg" alt="Indexing pipeline: load, chunk, embed, store" width="100%"></p>
+Click any picture to open its page.
 
-<p align="center"><img src="https://cdn.jsdelivr.net/gh/aion7891/rag-titan@main/docs/assets/images/architecture.svg" alt="Every building block is swappable" width="100%"></p>
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <a href="https://aion7891.github.io/rag-titan/building-blocks/"><img src="https://cdn.jsdelivr.net/gh/aion7891/rag-titan@main/docs/assets/images/indexing.svg" alt="Indexing pipeline"></a>
+      <p><b><a href="https://aion7891.github.io/rag-titan/building-blocks/">Building blocks</a></b><br>Load → chunk → embed → store, with the data at every step.</p>
+    </td>
+    <td width="50%" valign="top">
+      <a href="https://aion7891.github.io/rag-titan/extending/"><img src="https://cdn.jsdelivr.net/gh/aion7891/rag-titan@main/docs/assets/images/architecture.svg" alt="Swappable architecture"></a>
+      <p><b><a href="https://aion7891.github.io/rag-titan/extending/">Extending rag-titan</a></b><br>Add your own LLM, vector store, chunker or RAG type.</p>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <a href="https://aion7891.github.io/rag-titan/agents/"><img src="https://cdn.jsdelivr.net/gh/aion7891/rag-titan@main/docs/assets/images/agent.svg" alt="Agent loop"></a>
+      <p><b><a href="https://aion7891.github.io/rag-titan/agents/">Agents</a></b><br>Let the LLM call your Python functions as tools.</p>
+    </td>
+    <td width="50%" valign="top">
+      <a href="https://aion7891.github.io/rag-titan/cli/"><img src="https://cdn.jsdelivr.net/gh/aion7891/rag-titan@main/docs/assets/images/cli.svg" alt="Command line demo"></a>
+      <p><b><a href="https://aion7891.github.io/rag-titan/cli/">Command line</a></b><br><code>rag-titan ask</code> and <code>rag-titan chat</code>.</p>
+    </td>
+  </tr>
+</table>
 
-## Agents
-
-A small tool-calling agent loop is included. See the [agents docs](https://github.com/aion7891/rag-titan/blob/main/docs/agents.md).
-
-<p align="center"><img src="https://cdn.jsdelivr.net/gh/aion7891/rag-titan@main/docs/assets/images/agent.svg" alt="Agent loop with an example trace" width="100%"></p>
-
-## Project layout
-
-```
-src/rag_titan/
-├── app.py            RAGTitan: the easy, all-in-one class
-├── cli.py            the `rag-titan` command
-├── config.py         settings from .env / environment
-├── factory.py        builds the right class for each setting
-├── prompts.py        every RAG prompt in one place
-├── llm/              chat models (Ollama)
-├── loaders/          PDF and DOCX readers
-├── chunking/         split text into chunks
-├── embeddings/       text -> vectors
-├── vector_stores/    save and search vectors
-├── retrieval/        retriever + rerankers
-├── generation/       write the final answer
-├── pipelines/        indexing pipeline
-├── rag_types/        simple and adaptive RAG
-├── agents/           tool-calling agents
-└── utils/            logging
-```
-
-## Documentation
-
-Full docs live in [`docs/`](https://github.com/aion7891/rag-titan/blob/main/docs/index.md). To view them locally:
-
-```bash
-pip install -e ".[docs]"
-mkdocs serve
-```
+| I want to... | Read |
+|---|---|
+| Install it and ask my first question | [Getting started](https://aion7891.github.io/rag-titan/getting-started/) |
+| Pick the right RAG type | [RAG types](https://aion7891.github.io/rag-titan/rag-types/) |
+| Change models, chunk size or reranker | [Configuration](https://aion7891.github.io/rag-titan/configuration/) |
+| See every class and method | [API reference](https://aion7891.github.io/rag-titan/api/core/) |
 
 ## Contributing
 
-Contributions are welcome. Please read [CONTRIBUTING.md](https://github.com/aion7891/rag-titan/blob/main/CONTRIBUTING.md).
+Contributions are welcome! Read [CONTRIBUTING.md](https://github.com/aion7891/rag-titan/blob/main/CONTRIBUTING.md) to get set up. The tests run without Ollama.
 
 ## License
 
-[MIT](https://github.com/aion7891/rag-titan/blob/main/LICENSE)
+[MIT](https://github.com/aion7891/rag-titan/blob/main/LICENSE) © Kumar Nishant
