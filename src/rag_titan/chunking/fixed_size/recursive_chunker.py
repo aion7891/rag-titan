@@ -68,6 +68,14 @@ class RecursiveChunker(BaseChunker):
         chunks = join_groups(pieces, pack(sizes, self.chunk_size, self.overlap))
         return [chunk.strip() for chunk in chunks if chunk.strip()]
 
+    def split_pieces(self, text):
+        """
+        Cut `text` into pieces that each fit in chunk_size, without packing them.
+        Joining the pieces gives back `text` exactly. Other chunkers use this
+        as a fallback for pieces that are too big.
+        """
+        return self._split(text, self.separators)
+
     def _split(self, text, separators):
         """Break `text` into pieces that each fit in chunk_size."""
         if self.length(text) <= self.chunk_size:
