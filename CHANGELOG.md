@@ -6,6 +6,21 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-11-10
+
+### Added
+- Docs: a "Chunk playground" page. Try the chunkers on your own text in the
+  browser, load example texts with one click, and follow "things to try".
+- Docs: an animated diagram for each of the 8 chunkers, showing it run on a
+  real text one chunk at a time, with the overlap highlighted.
+- `tools/diagrams/`: draws those diagrams from the chunkers' real output, and
+  `--check` fails when a diagram no longer matches the code. Not part of the
+  package.
+
+### Changed
+- README: links to the chunk playground and the chunking guide.
+- Docs: the chunking page links to the playground instead of embedding it.
+
 ## [0.3.0] - 2026-11-10
 
 ### Added
