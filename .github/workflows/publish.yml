@@ -1,10 +1,15 @@
-# Builds the package and uploads it to PyPI when a GitHub Release is published.
-# Uses PyPI trusted publishing, see docs/publishing.md for the one-time setup.
-name: Publish to PyPI
+# Builds the package and uploads it with PyPI trusted publishing (no tokens).
+#
+#   Run manually (Actions -> Publish -> Run workflow)  -> TestPyPI only
+#   Publish a GitHub Release                           -> TestPyPI, then PyPI
+#
+# One-time setup is described in docs/publishing.md.
+name: Publish
 
 on:
   release:
     types: [published]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -15,6 +20,7 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -e ".[dev]"
+      - run: ruff check .
       - run: pytest
       - run: python -m build
       - run: twine check dist/*
@@ -23,8 +29,27 @@ jobs:
           name: dist
           path: dist/
 
-  publish:
+  publish-testpypi:
     needs: build
+    runs-on: ubuntu-latest
+    environment: testpypi
+    permissions:
+      id-token: write   # needed for trusted publishing
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          # a version can be uploaded only once, so a re-run should not fail
+          skip-existing: true
+
+  publish-pypi:
+    needs: publish-testpypi
+    # the real PyPI is only used for GitHub Releases, never for manual runs
+    if: github.event_name == 'release'
     runs-on: ubuntu-latest
     environment: pypi
     permissions:
