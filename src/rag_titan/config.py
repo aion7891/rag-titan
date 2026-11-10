@@ -32,6 +32,21 @@ def _get_bool(name, default):
     return value in ("1", "true", "yes", "on")
 
 
+def _get_overlap(name, default):
+    """Read a share between 0 and 1 (like 0.5), or "off" for None."""
+    value = os.getenv(name, str(default)).strip().lower()
+    if value in ("off", "none", "false", "no"):
+        return None
+
+    try:
+        share = float(value)
+    except ValueError:
+        raise ValueError(f"Setting {name} must be a number like 0.5, or off; got '{value}'")
+    if not 0 < share <= 1:
+        raise ValueError(f"Setting {name} must be more than 0 and at most 1, or off")
+    return share
+
+
 def get_settings(overrides=None):
     """
     Build the settings dictionary.
@@ -69,6 +84,8 @@ def get_settings(overrides=None):
 
         # Storage, retrieval and generation
         "vector_store": os.getenv("VECTOR_STORE", "memory"),
+        # drop a search result that overlaps a better one by this share ("off" keeps all)
+        "dedupe_overlap": _get_overlap("DEDUPE_OVERLAP", 0.5),
         "reranker": os.getenv("RERANKER", "keyword"),
         "generator": os.getenv("GENERATOR", "grounded"),
     }

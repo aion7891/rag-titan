@@ -145,7 +145,7 @@ def build_rag_parts(settings):
     return {
         "llm": llm,
         "pipeline": IndexingPipeline(build_chunker(settings), embedder, store),
-        "retriever": Retriever(embedder, store),
+        "retriever": Retriever(embedder, store, dedupe_overlap=settings["dedupe_overlap"]),
         "reranker": build_reranker(settings, llm),
         "generator": build_generator(settings, llm),
     }
