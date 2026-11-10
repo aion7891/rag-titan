@@ -107,6 +107,12 @@ def test_trace_record_returns_the_output_and_saves_the_step():
     assert trace.steps[0]["step"] == "add" and trace.steps[0]["output"] == 5
 
 
+def test_one_chunk_is_singular():
+    steps = [{"step": "retrieve", "input": {"top_k": 1}, "ms": 0.0,
+              "output": [{"id": "chunk_2", "score": 1.0}]}]
+    assert describe_steps(steps).splitlines()[1].strip() == "-> 1 chunk: chunk_2 (1.000)"
+
+
 def test_base_rag_run_must_be_written():
     with pytest.raises(NotImplementedError):
         BaseRAG().answer("question")

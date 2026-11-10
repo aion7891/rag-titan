@@ -75,7 +75,7 @@ def describe_steps(steps):
 def _short(value, brief=False):
     """Describe a value in a few words: chunk lists by id and score, long text cut."""
     if isinstance(value, list) and all(isinstance(item, dict) and "id" in item for item in value):
-        return f"{len(value)} chunks" if brief else _describe_chunks(value)
+        return _count(value) if brief else _describe_chunks(value)
 
     text = repr(value)
     if len(text) > SHORT_TEXT:
@@ -98,4 +98,9 @@ def _describe_chunks(chunks):
             parts.append(chunk["id"])
 
     more = ", ..." if len(chunks) > 4 else ""
-    return f"{len(chunks)} chunks: " + ", ".join(parts) + more
+    return f"{_count(chunks)}: " + ", ".join(parts) + more
+
+
+def _count(chunks):
+    """Return "1 chunk" or "3 chunks"."""
+    return "1 chunk" if len(chunks) == 1 else f"{len(chunks)} chunks"

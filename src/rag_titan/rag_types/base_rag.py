@@ -29,8 +29,9 @@ class BaseRAG:
         Answer the question and show how.
 
         Returns:
-            {"answer": "...", "sources": [chunks used for the answer],
-             "steps": [{"step", "input", "output", "ms"}, ...]}
+            A dict with "answer" (the text), "sources" (the chunks used for
+            the answer) and "steps" (one {"step", "input", "output", "ms"}
+            dict per step, in order).
         """
         raise NotImplementedError
 
