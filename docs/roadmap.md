@@ -27,5 +27,5 @@
 - [x] Chunkers: sentence, paragraph, heading, page (`"sentence"`, `"paragraph"`, `"heading"`, `"page"`), available since 0.3.0
 - [ ] Chunkers: element-aware (lists, tables, code), semantic
 - [x] Chunk offsets, page numbers and section paths, with page citations in answers, available since 0.4.0
-- [ ] Remove duplicate overlapping chunks from search results
+- [x] Remove duplicate overlapping chunks from search results (`DEDUPE_OVERLAP`), available since 0.5.0
 - [ ] Evaluation helpers
