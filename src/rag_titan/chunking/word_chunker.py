@@ -1,6 +1,7 @@
 """Chunker that splits text by counting words."""
 
 from rag_titan.chunking.base_chunker import BaseChunker
+from rag_titan.chunking.fixed_windows import fixed_windows
 
 
 class WordChunker(BaseChunker):
@@ -26,15 +27,5 @@ class WordChunker(BaseChunker):
     def split_text(self, text):
         """Return overlapping pieces of `chunk_size` words each."""
         words = text.split()
-        step = self.chunk_size - self.overlap
-        pieces = []
-
-        for start in range(0, len(words), step):
-            end = start + self.chunk_size
-            pieces.append(" ".join(words[start:end]))
-
-            # stop once this window reached the end of the text
-            if end >= len(words):
-                break
-
-        return pieces
+        windows = fixed_windows(words, self.chunk_size, self.overlap)
+        return [" ".join(window) for window in windows]
