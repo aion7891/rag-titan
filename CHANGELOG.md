@@ -4,6 +4,15 @@ All notable changes to this project are written here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 and the project uses [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Changed
+- README: banner header, a short summary, and links to the docs site.
+- README and docs: a clear "Supported RAG types" table (simple, adaptive) and a
+  separate list of planned RAG types.
+- Docs: logo and favicon, banner on the home page.
+- Fixed the number of LLM calls for adaptive RAG in the docs and diagram (2 to 5).
+
 ## [0.1.0] - 2026-11-10
 
 ### Added

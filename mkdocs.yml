@@ -6,6 +6,8 @@ repo_name: aion7891/rag-titan
 
 theme:
   name: material
+  logo: assets/images/logo.svg
+  favicon: assets/images/logo.svg
   features:
     - navigation.sections
     - content.code.copy
@@ -47,3 +49,6 @@ nav:
       - RAG types: api/rag-types.md
       - Building blocks: api/building-blocks.md
   - Roadmap: roadmap.md
+
+extra_css:
+  - assets/stylesheets/extra.css

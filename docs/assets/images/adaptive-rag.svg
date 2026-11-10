@@ -44,7 +44,7 @@
   <text class="note" x="54" y="135">search</text>
   <rect class="out" x="30" y="148" width="16" height="16" rx="4"/>
   <text class="note" x="54" y="161">reply / answer</text>
-  <text class="note" x="30" y="190">1 to 6 LLM calls per question</text>
+  <text class="note" x="30" y="190">2 to 5 LLM calls per question</text>
 
   <!-- question and router -->
   <rect class="neutral" x="370" y="84" width="220" height="44" rx="10"/>

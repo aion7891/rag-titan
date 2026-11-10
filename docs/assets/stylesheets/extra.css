@@ -1,0 +1,15 @@
+/* The home page uses the banner image as its header, so hide the page title there. */
+.md-content__inner:has(img[src$="banner.svg"]) > h1 {
+  display: none;
+}
+
+/* Give the banner the same rounded look as the other diagrams. */
+.md-typeset img[src$="banner.svg"] {
+  border-radius: 12px;
+}
+
+/* Keep short code like rag_type="adaptive" on one line inside tables. */
+.md-typeset table:not([class]) code {
+  white-space: nowrap;
+  word-break: normal;
+}

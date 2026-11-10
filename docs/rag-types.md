@@ -1,7 +1,29 @@
 # RAG types
 
-Every RAG type has the same method: `answer(question)` returns the answer text.
-With `RAGTitan` you choose one using `rag_type`.
+## Supported RAG types
+
+rag-titan **0.1** supports **2 RAG types**. Every one has the same method,
+`answer(question)`, and with `RAGTitan` you pick one using `rag_type`.
+
+| Status | RAG type | How it works | Best for | LLM calls |
+|---|---|---|---|---|
+| ✅ Available | [**Simple RAG**](#simple-rag-simple)<br>`rag_type="simple"` | Retrieve → Rerank → Generate | Fast answers to clear questions | 1 |
+| ✅ Available | [**Adaptive RAG**](#adaptive-rag-adaptive)<br>`rag_type="adaptive"` | Route → Retrieve → Check evidence → Rewrite & retry | Mixed questions, fewer wrong answers | 2–5 |
+
+```python
+from rag_titan import RAG_TYPES, RAGTitan
+
+print(RAG_TYPES)                      # ['simple', 'adaptive']
+rag = RAGTitan(rag_type="adaptive")   # any value from RAG_TYPES
+```
+
+Asking for a type that does not exist yet raises a clear error:
+
+```text
+ValueError: Unknown RAG type: graph. Choose from ['simple', 'adaptive']
+```
+
+See [Planned RAG types](#planned-rag-types) for what is coming next.
 
 ## Simple RAG (`"simple"`)
 
@@ -48,7 +70,7 @@ not, the question is rewritten into a better search query and the search is
 made wider. After `max_attempts` (default 2) it says it does not know.
 
 - **Good for:** mixed questions, avoiding wrong answers.
-- **LLM calls per question:** 2 to 6
+- **LLM calls per question:** 2 (greeting) to 5 (one retry), with the default `max_attempts=2`
 - **Parts:** `Router`, `EvidenceChecker`, `QueryRewriter`
 
 ## Comparing RAG types
@@ -65,4 +87,19 @@ for rag_type in RAG_TYPES:
 
 ## Planned RAG types
 
-See the [roadmap](roadmap.md).
+These are **not available yet**. They will be added as new `rag_type` values,
+so code that uses `RAGTitan` keeps working.
+
+| Status | RAG type | Idea |
+|---|---|---|
+| 🔜 Planned | Corrective RAG (CRAG) | Grade each chunk and fall back to web search when they are weak |
+| 🔜 Planned | Multi-query RAG | Ask several versions of the question and merge the results |
+| 🔜 Planned | HyDE | Write a hypothetical answer first, then search with it |
+| 🔜 Planned | Hybrid RAG | Combine keyword (BM25) and vector search |
+| 🔜 Planned | Self-RAG | The model checks and improves its own answer |
+| 🔜 Planned | Parent-document RAG | Search small chunks, answer with the bigger section around them |
+| 🔜 Planned | Graph RAG | Search a knowledge graph built from your documents |
+| 🔜 Planned | Agentic RAG | An agent decides when and what to search |
+
+Want one sooner? Open an issue or read [Extending rag-titan](extending.md#adding-a-new-rag-type).
+See the full [roadmap](roadmap.md).
