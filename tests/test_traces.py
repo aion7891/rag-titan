@@ -123,17 +123,17 @@ EXPECTED_LOG = """\
 1. route        0.00 ms  query='how many leave days?'
                          -> 'simple'
 2. retrieve     0.00 ms  query='how many leave days?', top_k=4
-                         -> 3 chunks: chunk_0 (0.707), chunk_1 (0.000), chunk_2 (0.000)
+                         -> 3 chunks: chunk_0 hr.pdf (0.707), chunk_1 hr.pdf (0.000), chunk_2 it.pdf (0.000)
 3. rerank       0.00 ms  query='how many leave days?', matches=3 chunks, top_n=2
-                         -> 2 chunks: chunk_0 (rerank 0.807), chunk_1 (rerank 0.000)
+                         -> 2 chunks: chunk_0 hr.pdf (rerank 0.807), chunk_1 hr.pdf (rerank 0.000)
 4. check        0.00 ms  query='how many leave days?', chunks=2 chunks
                          -> False
 5. rewrite      0.00 ms  query='how many leave days?'
                          -> 'annual leave days per year'
 6. retrieve     0.00 ms  query='annual leave days per year', top_k=8
-                         -> 3 chunks: chunk_0 (1.000), chunk_1 (0.000), chunk_2 (0.000)
+                         -> 3 chunks: chunk_0 hr.pdf (1.000), chunk_1 hr.pdf (0.000), chunk_2 it.pdf (0.000)
 7. rerank       0.00 ms  query='how many leave days?', matches=3 chunks, top_n=4
-                         -> 3 chunks: chunk_0 (rerank 1.100), chunk_1 (rerank 0.000), chunk_2 (rerank 0.000)
+                         -> 3 chunks: chunk_0 hr.pdf (rerank 1.100), chunk_1 hr.pdf (rerank 0.000), chunk_2 it.pdf (rerank 0.000)
 8. check        0.00 ms  query='how many leave days?', chunks=3 chunks
                          -> True
 9. generate     0.00 ms  query='how many leave days?', chunks=3 chunks

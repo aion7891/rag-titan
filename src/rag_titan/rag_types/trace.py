@@ -52,7 +52,7 @@ def describe_steps(steps):
 
     Example line:
         2. retrieve   0.21 ms  query='how many leave days?', top_k=4
-                               -> 3 chunks: chunk_0 (0.894), chunk_2 (0.000), ...
+                               -> 3 chunks: chunk_0 hr.pdf (0.894), chunk_2 it.pdf (0.000), ...
     """
     if not steps:
         return "(no steps: the question was not searched)"
@@ -84,18 +84,20 @@ def _short(value, brief=False):
 
 
 def _describe_chunks(chunks):
-    """Return e.g. "2 chunks: chunk_0 (0.894), chunk_1 (rerank 0.500)"."""
+    """Return e.g. "2 chunks: chunk_0 hr.pdf (0.894), chunk_1 hr.pdf (0.500)"."""
     if not chunks:
         return "0 chunks"
 
     parts = []
     for chunk in chunks[:4]:
+        # "chunk_8 remote_work.md": the file tells a reader more than the id
+        name = f"{chunk['id']} {chunk['source']}" if chunk.get("source") else chunk["id"]
         if "rerank_score" in chunk:
-            parts.append(f"{chunk['id']} (rerank {chunk['rerank_score']:.3f})")
+            parts.append(f"{name} (rerank {chunk['rerank_score']:.3f})")
         elif "score" in chunk:
-            parts.append(f"{chunk['id']} ({chunk['score']:.3f})")
+            parts.append(f"{name} ({chunk['score']:.3f})")
         else:
-            parts.append(chunk["id"])
+            parts.append(name)
 
     more = ", ..." if len(chunks) > 4 else ""
     return f"{_count(chunks)}: " + ", ".join(parts) + more

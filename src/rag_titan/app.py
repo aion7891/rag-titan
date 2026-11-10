@@ -8,10 +8,16 @@ It builds every part for you, so you only need two calls:
     rag = RAGTitan(rag_type="simple")
     rag.index(["handbook.pdf", "policy.docx"])
     print(rag.ask("How many leave days do I get?"))
+
+    print(rag.run("How many leave days do I get?")["log"])   # every step
+    rag.evaluate_retrieval("questions.json")                 # how good is search?
 """
 
 from rag_titan.config import get_settings
+from rag_titan.evaluation.benchmark import evaluate_retriever, format_report
+from rag_titan.evaluation.questions import check_questions, load_questions
 from rag_titan.factory import build_rag, build_rag_parts
+from rag_titan.rag_types.trace import describe_steps
 
 
 class RAGTitan:
@@ -58,3 +64,39 @@ class RAGTitan:
             The answer text.
         """
         return self.rag.answer(question)
+
+    def run(self, question):
+        """
+        Answer a question and show every step taken.
+
+        Returns:
+            The dict from the RAG type's run() ("answer", "sources", "steps"),
+            plus "log": the steps as readable text (see describe_steps).
+        """
+        result = self.rag.run(question)
+        result["log"] = describe_steps(result["steps"])
+        return result
+
+    def evaluate_retrieval(self, questions, top_k=5, show=True):
+        """
+        Check how well search finds the evidence for test questions (no LLM used).
+
+        Args:
+            questions: path to a questions JSON file, or a list of question dicts.
+            top_k: how many chunks to retrieve per question.
+            show: print the report table.
+
+        Returns:
+            The dict from evaluate_retriever(): means, latency and one row per question.
+        """
+        result = evaluate_retriever(self.parts["retriever"], _questions(questions), top_k)
+        if show:
+            print(format_report([result]))
+        return result
+
+
+def _questions(questions):
+    """Load questions from a file path, or check a list that is already loaded."""
+    if isinstance(questions, list):
+        return check_questions(questions)
+    return load_questions(questions)
