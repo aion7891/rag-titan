@@ -2,8 +2,10 @@
 Base class for every chunking strategy.
 
 To add a new strategy (sentence, semantic, recursive, ...), inherit from
-BaseChunker and implement split_text(). The id/source handling is shared.
+BaseChunker and implement split_text(). The id/source/offset handling is shared.
 """
+
+from rag_titan.chunking.offsets import located_spans
 
 
 class BaseChunker:
@@ -17,19 +19,32 @@ class BaseChunker:
             documents: list of {"source": ..., "text": ...} dicts.
 
         Returns:
-            List of {"id": "chunk_0", "source": ..., "text": ...} dicts.
+            List of {"id": "chunk_0", "source": ..., "text": ...,
+            "start_offset": 0, "end_offset": 120} dicts. document["text"][start:end]
+            is where the chunk comes from (offsets are None if it cannot be found).
         """
         chunks = []
 
         for document in documents:
-            for text in self.split_text(document["text"]):
+            for text, start, end in self.split_spans(document["text"]):
                 chunks.append({
                     "id": f"chunk_{len(chunks)}",
                     "source": document["source"],
                     "text": text,
+                    "start_offset": start,
+                    "end_offset": end,
                 })
 
         return chunks
+
+    def split_spans(self, text):
+        """
+        Return (chunk_text, start, end) for every chunk of `text`.
+
+        This default searches for each chunk from split_text() in the text.
+        Chunkers that know their exact positions override it.
+        """
+        return located_spans(text, self.split_text(text))
 
     def split_text(self, text):
         """Return a list of text pieces."""

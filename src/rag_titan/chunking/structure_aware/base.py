@@ -9,6 +9,7 @@ trims spaces at the edges of each chunk.
 from rag_titan.chunking.base_chunker import BaseChunker
 from rag_titan.chunking.fixed_size.fixed_windows import check_window_size
 from rag_titan.chunking.fixed_size.recursive_chunker import RecursiveChunker
+from rag_titan.chunking.offsets import group_spans, located_spans
 from rag_titan.chunking.packing import join_groups, pack
 
 
@@ -55,11 +56,18 @@ class PieceChunker(BaseChunker):
 
     def split_text(self, text):
         """Return chunks of whole pieces, each at most chunk_size."""
+        return [chunk for chunk, _, _ in self.split_spans(text)]
+
+    def split_spans(self, text):
+        """(chunk, start, end) for every chunk; exact, because the pieces join back into text."""
         # blank text has nothing worth indexing, so it gives no chunks
         if not text.strip():
             return []
 
         pieces = self.pieces(text)
-        sizes = [self.length(piece) for piece in pieces]
-        chunks = join_groups(pieces, pack(sizes, self.chunk_size, self.overlap))
-        return [chunk.strip() for chunk in chunks if chunk.strip()]
+        groups = pack([self.length(piece) for piece in pieces], self.chunk_size, self.overlap)
+        spans = group_spans(text, pieces, groups)
+        if spans is None:   # a tokenizer changed the text, so search for the chunks instead
+            chunks = [chunk.strip() for chunk in join_groups(pieces, groups) if chunk.strip()]
+            return located_spans(text, chunks)
+        return spans
