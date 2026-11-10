@@ -20,6 +20,16 @@ rag-titan ships four chunkers today, all from the *fixed-size* family
 | `TokenChunker`     | model tokens           | `CHUNKER=token`     | yes (decoded)    | no                 |
 | `RecursiveChunker` | characters (or tokens) | `CHUNKER=recursive` | edges trimmed    | yes, when possible |
 
+## Try it: chunk playground
+
+Change the text, the chunker, the size and the overlap, and watch the chunks
+change. The <mark>highlighted</mark> start of a chunk is the overlap repeated from
+the chunk before. It runs in your browser with the same rules as the Python
+package (checked against it on 3,000 random texts). Token counting needs
+tiktoken, so it is not in the playground.
+
+<div id="chunk-playground"><p><em>The playground needs JavaScript.</em></p></div>
+
 ## What every chunker returns
 
 Every chunker inherits from `BaseChunker`, so they all work the same way:
