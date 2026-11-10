@@ -27,6 +27,7 @@
 - **Many RAG types, one API.** Two today (`simple`, `adaptive`), with more on the way. Switch with one word: `rag_type="adaptive"`.
 - **Runs 100% locally** with [Ollama](https://ollama.com), so your documents never leave your machine.
 - **Grounded answers.** The model answers only from your files and cites the chunks it used.
+- **Fixed-length chunking your way.** Split by words, characters or model tokens (tiktoken or your own tokenizer), with overlap.
 - **Easy to read, easy to change.** Short files, plain Python, and a docstring on every class. Swap any part by inheriting one base class.
 
 ## Install
@@ -35,6 +36,8 @@
 pip install rag-titan
 ollama pull gemma3:4b && ollama pull nomic-embed-text
 ```
+
+For token-based chunking, add the extra: `pip install "rag-titan[tokens]"`.
 
 Needs Python 3.10+ and [Ollama](https://ollama.com/download). → [Full setup guide](https://aion7891.github.io/rag-titan/getting-started/)
 

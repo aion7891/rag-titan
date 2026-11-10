@@ -12,16 +12,16 @@ Answering:  Retriever -> Reranker -> Generator  (each uses the LLM / Embedder)
 
 ![Indexing pipeline with example data](assets/images/indexing.svg)
 
-| Part      | Base class      | Ready-made classes              | Folder                |
-|-----------|-----------------|---------------------------------|-----------------------|
-| LLM       | `BaseLLM`       | `OllamaLLM`                     | `llm/`                |
-| Loader    | `BaseLoader`    | `PdfLoader`, `DocxLoader`       | `loaders/`            |
-| Chunker   | `BaseChunker`   | `WordChunker`                   | `chunking/`           |
-| Embedder  | `BaseEmbedder`  | `OllamaEmbedder`                | `embeddings/`         |
-| Store     | `BaseStore`     | `MemoryStore`                   | `vector_stores/`      |
-| Retriever | –               | `Retriever`                     | `retrieval/`          |
-| Reranker  | `BaseReranker`  | `KeywordReranker`, `NoReranker` | `retrieval/rerankers/`|
-| Generator | `BaseGenerator` | `GroundedGenerator`             | `generation/`         |
+| Part      | Base class      | Ready-made classes                                | Folder                 |
+|-----------|-----------------|---------------------------------------------------|------------------------|
+| LLM       | `BaseLLM`       | `OllamaLLM`                                       | `llm/`                 |
+| Loader    | `BaseLoader`    | `PdfLoader`, `DocxLoader`                         | `loaders/`             |
+| Chunker   | `BaseChunker`   | `WordChunker`, `CharacterChunker`, `TokenChunker` | `chunking/`            |
+| Embedder  | `BaseEmbedder`  | `OllamaEmbedder`                                  | `embeddings/`          |
+| Store     | `BaseStore`     | `MemoryStore`                                     | `vector_stores/`       |
+| Retriever | –               | `Retriever`                                       | `retrieval/`           |
+| Reranker  | `BaseReranker`  | `KeywordReranker`, `NoReranker`                   | `retrieval/rerankers/` |
+| Generator | `BaseGenerator` | `GroundedGenerator`                               | `generation/`          |
 
 ## The data passed between parts
 
@@ -45,6 +45,67 @@ Everything is a plain Python `dict`, so it is easy to print and inspect.
 {"id": "chunk_0", "source": "handbook.pdf", "text": "...",
  "score": 0.82, "rerank_score": 0.97}
 ```
+
+## Fixed-length chunkers
+
+Each one cuts text into windows of the same size. With an overlap, each new
+chunk repeats the end of the previous one, so a sentence on a boundary is not
+lost. Example: size 4, overlap 1 on `"abcdefghij"` gives `"abcd"`, `"defg"`, `"ghij"`.
+
+| Chunker            | Counts     | Pick it with         | Good for                                |
+|--------------------|------------|----------------------|-----------------------------------------|
+| `WordChunker`      | words      | `CHUNKER=word`       | the default, easy to reason about       |
+| `CharacterChunker` | characters | `CHUNKER=character`  | any language, exact text kept           |
+| `TokenChunker`     | tokens     | `CHUNKER=token`      | staying under the embedding model limit |
+
+```python
+from rag_titan.chunking import CharacterChunker, TokenChunker, WordChunker
+
+WordChunker(chunk_size=150, overlap=30).split_text(text)
+CharacterChunker(chunk_size=1000, overlap=200).split_text(text)
+TokenChunker(chunk_size=256, overlap=32).split_text(text)   # uses tiktoken
+```
+
+An overlap of the chunk size or more raises `ValueError`, and blank text gives
+no chunks.
+
+### Tokens: tiktoken or your own tokenizer
+
+`TokenChunker` uses [tiktoken](https://github.com/openai/tiktoken) by default.
+It is an optional extra, so install it first:
+
+```bash
+pip install "rag-titan[tokens]"
+```
+
+Pick the encoding with `encoding="cl100k_base"` (or `CHUNK_ENCODING` in `.env`).
+
+To count tokens exactly like your embedding model, pass your own tokenizer:
+any object with `encode(text)` returning ids and `decode(ids)` returning text.
+For a Hugging Face tokenizer, wrap it so no special tokens are added:
+
+```python
+from transformers import AutoTokenizer
+
+from rag_titan.chunking import TokenChunker
+
+
+class HFTokenizer:
+    def __init__(self, name):
+        self.tokenizer = AutoTokenizer.from_pretrained(name)
+
+    def encode(self, text):
+        return self.tokenizer.encode(text, add_special_tokens=False)
+
+    def decode(self, ids):
+        return self.tokenizer.decode(ids)
+
+
+chunker = TokenChunker(chunk_size=256, overlap=32, tokenizer=HFTokenizer("BAAI/bge-small-en-v1.5"))
+```
+
+All three are built on one helper, `fixed_windows(units, size, overlap)`,
+which works on any string or list if you want to write your own.
 
 ## Building a RAG by hand
 

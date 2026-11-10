@@ -23,13 +23,20 @@ cp .env.example .env
 | `AGENT_MAX_STEPS` | `agent_max_steps` | `5`                      | Max agent think/tool rounds        |
 | `EMBED_PROVIDER`  | `embed_provider`  | `ollama`                 | Who runs the embedding model       |
 | `EMBED_MODEL`     | `embed_model`     | `nomic-embed-text`       | Embedding model                    |
-| `CHUNKER`         | `chunker`         | `word`                   | Chunking strategy                  |
-| `CHUNK_SIZE`      | `chunk_size`      | `150`                    | Words per chunk                    |
-| `CHUNK_OVERLAP`   | `chunk_overlap`   | `30`                     | Words shared by neighbouring chunks|
+| `CHUNKER`         | `chunker`         | `word`                   | `word`, `character` or `token`     |
+| `CHUNK_SIZE`      | `chunk_size`      | `150`                    | Units per chunk (see below)        |
+| `CHUNK_OVERLAP`   | `chunk_overlap`   | `30`                     | Units shared by neighbouring chunks|
+| `CHUNK_ENCODING`  | `chunk_encoding`  | `cl100k_base`            | tiktoken encoding (`token` only)   |
 | `VECTOR_STORE`    | `vector_store`    | `memory`                 | Where vectors are stored           |
 | `RERANKER`        | `reranker`        | `keyword`                | `keyword` or `none`                |
 | `GENERATOR`       | `generator`       | `grounded`               | How answers are written            |
 | `LOG_LEVEL`       | –                 | `INFO`                   | Used by `setup_logging()`          |
+
+`CHUNK_SIZE` and `CHUNK_OVERLAP` count words for `word`, characters for
+`character` and model tokens for `token`. Change them together when you switch:
+150 words is roughly 200 tokens or 900 characters. `CHUNKER=token` needs
+`pip install "rag-titan[tokens]"`; to use your own tokenizer, see
+[Fixed-length chunkers](building-blocks.md#fixed-length-chunkers).
 
 ## Changing settings in code
 
