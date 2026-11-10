@@ -6,6 +6,43 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-11-11
+
+### Added
+- End-to-end evaluation (RAG handbook step 0): compare any ingestion with any
+  RAG type on your own test questions.
+  - `rag-titan evaluate --files ... --questions questions.json --rag-type simple
+    adaptive --chunker word paragraph` runs every combination and prints a
+    report (Recall, MRR, nDCG, answered rate, steps, p50/p95 time) and the
+    questions that went wrong. `--retrieval-only --top-k 5` scores search alone.
+  - `compare_setups(files, questions, setups)`, `evaluate_rag()` and
+    `format_rag_report()`. Evidence is scored on the chunks given to the LLM;
+    setups with the same settings share one index.
+  - Retrieval metrics: `recall_at_k()`, `reciprocal_rank()`, `ndcg_at_k()`,
+    `evaluate_retriever()`, `compare_retrievers()`, `format_report()`.
+  - Questions file loader `load_questions()`. Evidence ids name a file
+    (`"hr.pdf"`) or a page (`"hr.pdf#p4"`), so labels keep working when the
+    chunker changes; each evidence counts once.
+- `run(question)` on every RAG type: the answer, the chunks used (`sources`) and
+  every step with its input, output and time. `describe_steps()` prints them as
+  a readable log; `rag-titan ask ... --trace` shows it in the terminal.
+- `FLOW` on every RAG type: its steps and the arrows between them, for flow
+  diagrams. A test checks that every run follows its FLOW.
+- `RAGTitan.run()`, `RAGTitan.evaluate()` and `RAGTitan.evaluate_retrieval()`.
+- `BaseRetriever`, so any retriever can be used by every RAG type, and
+  `DenseRetriever` (the retriever from before; `Retriever` still works).
+  Results also say which retriever found them: `"retriever"` and
+  `"score_trace"`, e.g. `{"dense": 0.82}`.
+- `BaseRAG` and `Trace` for writing new RAG types; `CHUNKERS` in the factory.
+- Example `examples/evaluate_retrieval.py` with sample policies and questions.
+- Docs: "Evaluating RAG" page with an animated end-to-end flow diagram.
+
+### Changed
+- `retrieve()` raises `ValueError` for a `top_k` that is not a whole number of
+  at least 1 (it returned an empty list for 0 before).
+- Search results have two more keys, `"retriever"` and `"score_trace"`. Code
+  that compares whole result dicts must ignore them.
+
 ## [0.5.0] - 2026-11-11
 
 ### Added
