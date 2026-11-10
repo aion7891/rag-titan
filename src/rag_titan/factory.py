@@ -33,6 +33,9 @@ from rag_titan.vector_stores.memory_store import MemoryStore
 # every RAG type the package can build, used by build_rag() and the CLI
 RAG_TYPES = ["simple", "adaptive"]
 
+# every chunker build_chunker() knows, used by the CLI
+CHUNKERS = ["word", "character", "token", "recursive", "sentence", "paragraph", "heading", "page"]
+
 
 def build_llm(settings, model=None, think=False):
     """Create the chat model named in settings["llm_provider"]."""

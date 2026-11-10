@@ -1,16 +1,15 @@
 """Tests for end-to-end evaluation: evaluate_rag, compare_setups, format_rag_report."""
 
 import pytest
-from conftest import FakeEmbedder
+from conftest import FakeEmbedder, PromptLLM
 
 import rag_titan.evaluation.end_to_end as end_to_end
 from rag_titan import AdaptiveRAG, SimpleRAG
 from rag_titan.chunking import WordChunker
 from rag_titan.evaluation import compare_setups, evaluate_rag, format_rag_report
 from rag_titan.generation import GroundedGenerator
-from rag_titan.llm import BaseLLM
 from rag_titan.pipelines import IndexingPipeline
-from rag_titan.prompts import EVIDENCE_CHECK_PROMPT, NO_ANSWER, ROUTER_PROMPT
+from rag_titan.prompts import NO_ANSWER
 from rag_titan.retrieval import Retriever
 from rag_titan.retrieval.rerankers import KeywordReranker
 from rag_titan.vector_stores import MemoryStore
@@ -19,24 +18,6 @@ QUESTIONS = [
     {"id": "q1", "question": "leave days", "required_evidence_ids": ["hr.pdf"]},
     {"id": "q2", "question": "remote work", "required_evidence_ids": ["it.pdf"]},
 ]
-
-
-class PromptLLM(BaseLLM):
-    """Replies by prompt: route "simple", evidence check `enough`, else an answer."""
-
-    def __init__(self, enough="yes"):
-        super().__init__("prompt-fake")
-        self.enough = enough
-
-    def chat(self, messages, tools=None):
-        system = messages[0]["content"]
-        if system == ROUTER_PROMPT:
-            reply = "simple"
-        elif system == EVIDENCE_CHECK_PROMPT:
-            reply = self.enough
-        else:
-            reply = "the answer"
-        return {"content": reply, "tool_calls": [], "message": {"role": "assistant"}}
 
 
 def test_evaluate_rag_scores_the_sources(parts):
