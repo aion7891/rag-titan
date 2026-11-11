@@ -19,6 +19,7 @@ from rag_titan.evaluation.metrics import (
 )
 from rag_titan.evaluation.questions import as_questions, check_questions, load_questions
 from rag_titan.evaluation.rag_evaluator import RAGEvaluator
+from rag_titan.evaluation.reports import ReportManager
 from rag_titan.evaluation.root_cause import RootCauseAnalyzer
 from rag_titan.evaluation.scoring import ScoreAggregator
 from rag_titan.evaluation.stages import (
@@ -38,6 +39,7 @@ __all__ = [
     "EndToEndEvaluator",
     "GenerationEvaluator",
     "RAGEvaluator",
+    "ReportManager",
     "RerankingEvaluator",
     "RetrievalEvaluator",
     "RootCauseAnalyzer",
