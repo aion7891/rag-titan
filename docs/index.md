@@ -10,12 +10,21 @@ RAG lets a language model answer questions about *your* documents. It first
 **finds** the most relevant pieces of text, then asks the model to **answer
 using only those pieces**.
 
-`rag-titan` gives you many types of RAG in one small package. The code is
-written so a beginner can read every file:
+With `rag-titan` you get:
 
-- small classes, short functions, plain Python, no type hints
-- every class and function has a docstring
-- every part can be replaced by inheriting from one base class
+- **Many RAG types, one API.** Switch with one word (`rag_type="adaptive"`), and
+  see every step a type took with `run()`. → [RAG types](rag-types.md)
+- **Answers grounded in your files.** The model answers only from your documents
+  and cites the chunks and pages it used, running locally with Ollama.
+- **Chunking your way.** Eight chunkers, from fixed word windows to whole
+  sentences, paragraphs, heading sections or pages. → [Chunking methods](chunking.md)
+- **Measure, don't guess.** Compare any chunker with any RAG type on your own
+  questions in one command. → [Evaluating RAG](evaluation.md)
+- **Watch it work in your browser.** The [RAG playground](rag-playground.md) lights
+  up every step on a live flow diagram; the [chunk playground](playground.md)
+  shows how text is cut.
+- **Easy to change.** Swap the LLM, embedder, vector store, chunker or RAG type by
+  inheriting one base class. → [Extending rag-titan](extending.md)
 
 ```python
 from rag_titan import RAGTitan
