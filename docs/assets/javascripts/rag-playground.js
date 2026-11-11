@@ -38,7 +38,8 @@
     const model = el("select", "rp-input"), embedModel = el("select", "rp-input");
     const own = Object.assign(el("textarea", "rp-input rp-own"),
       { placeholder: "Optional: paste your own text here. Empty = the sample documents." });
-    const help = el("p", "rp-help", "Start Ollama so this page may use it: OLLAMA_ORIGINS="
+    const help = el("p", "rp-help", "Work in progress: on the public website your browser may block "
+      + "access to your Ollama. Start Ollama so this page may use it: OLLAMA_ORIGINS="
       + `${location.origin} ollama serve (on a Mac with the Ollama app: launchctl setenv `
       + `OLLAMA_ORIGINS ${location.origin}, then restart the app).`);
     const base = () => address.value.trim().replace(/\/$/, "");
@@ -64,7 +65,7 @@
   function build(info) {
     const mode = el("select", "rp-input rp-mode");
     mode.append(Object.assign(el("option", "", `Recorded runs (${info.model}, instant)`), { value: "recorded" }),
-      Object.assign(el("option", "", "Live with your Ollama (any question, your own text)"), { value: "live" }));
+      Object.assign(el("option", "", "Live with your Ollama (work in progress)"), { value: "live" }));
     const live = liveControls();
     const question = Object.assign(el("input", "rp-input rp-question"),
       { value: info.questions[0].question, placeholder: "Ask a question" });
