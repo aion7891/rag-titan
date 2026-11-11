@@ -68,6 +68,37 @@ def test_collected_dataset_evaluates_every_stage(rag_and_files):
     assert report["scorecard"]["overall"]["evaluated_stages"] == 7
 
 
+def test_file_and_page_labels_are_a_fallback(rag_and_files):
+    rag, files = rag_and_files
+    golden = [
+        {"id": "q1", "question": "leave days", "required_evidence_ids": ["hr.md"]},
+        {"id": "q2", "question": "remote work", "required_evidence_ids": ["it.md#p9"]},
+        {"id": "q3", "question": "leave days", "required_evidence_ids": ["it.md"],
+         "expected_evidence": ["20 leave days"]},                    # quotes win over labels
+        {"id": "q4", "question": "leave days", "required_evidence_ids": ["hr.md"],
+         "expected_chunk_ids": ["chunk_1"]},                         # own chunk labels win
+        {"id": "q5", "question": "leave days"},                      # no evidence labels
+    ]
+    queries = collect_dataset(rag, files, golden)["queries"]
+
+    assert queries[0]["expected_chunk_ids"] == ["chunk_0"]           # every chunk of hr.md
+    assert queries[1]["expected_chunk_ids"] == []                    # it.md has no page 9
+    assert queries[2]["expected_chunk_ids"] == ["chunk_0"]
+    assert queries[3]["expected_chunk_ids"] == ["chunk_1"]
+    assert "expected_chunk_ids" not in queries[4]
+
+    report = RAGEvaluator(k=2).evaluate(**collect_dataset(rag, files, golden[:1]))
+    assert report["retrieval"]["summary"]["hit_at_k"] == 1
+
+
+def test_existing_questions_file_works_with_the_bridge(rag_and_files):
+    rag, _ = rag_and_files
+    files = sorted(str(path) for path in (EXAMPLES / "sample_docs").glob("*.md"))
+    dataset = collect_dataset(rag, files, EXAMPLES / "questions.json")
+
+    assert all(query["expected_chunk_ids"] for query in dataset["queries"])
+
+
 def test_split_citations():
     answer = "You get 20 days [chunk_1, page 1]. Sick pay is full [chunk_12] [chunk_1]."
     text, cited = split_citations(answer, ["chunk_1", "chunk_12", "chunk_2"])

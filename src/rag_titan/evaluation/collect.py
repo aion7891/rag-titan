@@ -9,50 +9,17 @@ It indexes the files, asks every golden question, and records what each stage
 really produced: the chunks, the retrieved and reranked ids, the context given
 to the LLM, the answer and the timings.
 
-A golden question is a dict with "id", "question" and the gold labels you have:
-    {"id": "q1", "question": "How many leave days do I get?",
-     "expected_evidence": ["gets 20 paid leave days per calendar year"],   # exact quotes
-     "expected_answer": "20 paid leave days per calendar year.",
-     "required_facts": ["20"]}
-Quotes do not depend on the chunker: the chunks that hold them become the
-gold chunks, whatever chunk size you try.
+Golden questions and their gold labels are described in golden.py.
 """
 
-import json
 import re
 import time
-from pathlib import Path
 
 from rag_titan.evaluation.end_to_end import NOT_ANSWERED
-from rag_titan.evaluation.stages.queries import check_queries
-from rag_titan.evaluation.stages.spans import evidence_spans
+from rag_titan.evaluation.golden import GOLD_KEYS, gold_chunk_ids, load_golden
 
-# gold labels copied from a golden question to the query, when present
 # a citation marker in an answer, e.g. "[chunk_3]" or "[chunk_3, page 2]"
 MARKER = re.compile(r"\s*\[([^\[\]]*)\]")
-
-GOLD_KEYS = ["expected_evidence", "expected_chunk_ids", "relevance", "expected_answer",
-             "required_facts", "expected_citations", "answerable", "max_context_tokens"]
-
-
-def load_golden(questions):
-    """Return the golden questions from a JSON file path or a list, after checking them."""
-    if not isinstance(questions, list):
-        path = Path(questions)
-        if not path.is_file():
-            raise FileNotFoundError(f"Golden questions file not found: {path}")
-        try:
-            questions = json.loads(path.read_text(encoding="utf-8"))
-        except json.JSONDecodeError as error:
-            raise ValueError(f"{path} is not valid JSON (line {error.lineno}): {error.msg}")
-
-    if not isinstance(questions, list) or not questions:
-        raise ValueError("Golden questions must be a non-empty list of records")
-    check_queries(questions)
-    for record in questions:
-        if not isinstance(record.get("question"), str) or not record["question"].strip():
-            raise ValueError(f"Question {record['id']!r}: 'question' must be a non-empty text")
-    return questions
 
 
 def collect_dataset(rag, files, questions, include_embeddings=False):
@@ -80,8 +47,10 @@ def collect_dataset(rag, files, questions, include_embeddings=False):
         raise ValueError("Two files have the same name: rename one of them")
     rag.index(files)
 
-    chunks = [_as_eval_chunk(chunk, documents) for chunk in rag.pipeline.chunker.chunk(loaded)]
-    queries = [_run_question(rag, record, chunks, documents) for record in questions]
+    raw_chunks = rag.pipeline.chunker.chunk(loaded)
+    chunks = [_as_eval_chunk(chunk, documents) for chunk in raw_chunks]
+    queries = [_run_question(rag, record, gold_chunk_ids(record, raw_chunks, documents))
+               for record in questions]
 
     dataset = {"documents": documents, "chunks": chunks, "queries": queries}
     if include_embeddings:
@@ -104,16 +73,7 @@ def _as_eval_chunk(chunk, documents):
     return item
 
 
-def _gold_chunk_ids(record, chunks, documents):
-    """Return the ids of the chunks that hold (part of) the gold evidence quotes."""
-    spans = evidence_spans(record.get("expected_evidence"), documents)
-    return [chunk["id"] for chunk in chunks
-            if "start" in chunk and any(
-                doc_id == chunk["doc_id"] and chunk["start"] < end and chunk["end"] > start
-                for doc_id, start, end in spans)]
-
-
-def _run_question(rag, record, chunks, documents):
+def _run_question(rag, record, gold_ids):
     """Ask one golden question and record what every stage produced."""
     start = time.perf_counter()
     result = rag.rag.run(record["question"])
@@ -121,8 +81,8 @@ def _run_question(rag, record, chunks, documents):
 
     query = {"id": record["id"], "text": record["question"]}
     query.update({key: record[key] for key in GOLD_KEYS if key in record})
-    if "expected_evidence" in record and "expected_chunk_ids" not in record:
-        query["expected_chunk_ids"] = _gold_chunk_ids(record, chunks, documents)
+    if gold_ids is not None:
+        query["expected_chunk_ids"] = gold_ids
 
     for step, key in (("retrieve", "retrieved_ids"), ("rerank", "reranked_ids")):
         outputs = [item["output"] for item in result["steps"] if item["step"] == step]
