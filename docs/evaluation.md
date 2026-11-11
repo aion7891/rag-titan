@@ -6,6 +6,11 @@ your own questions, then compare. No method is best for every set of documents.
 
 ![End-to-end evaluation: any ingestion times any RAG type](assets/images/evaluation-flow.svg)
 
+This page compares **setups** (chunkers and RAG types). To score each stage
+of one pipeline (chunking, embedding, retrieval, reranking, context and
+answers), or to evaluate a RAG system that is not built with rag-titan, see
+[Evaluating every stage](stage-evaluation.md).
+
 ## The easy way
 
 **1. Write a questions file.** For each question, name the file (or page) that
@@ -109,7 +114,8 @@ the answer, the files given to the LLM and every step of `run()`.
 
 When a RAG type gives up (Adaptive RAG after a failed evidence check) no chunks
 reach the LLM, so that question scores 0 even if the search found the file.
-Grading whether the answer itself is **correct** is planned.
+To grade whether the answer itself is **correct** (answer F1, required facts,
+citations), use [Evaluating every stage](stage-evaluation.md).
 
 ## Search only (no LLM)
 
@@ -245,5 +251,5 @@ result per retriever.
 - Use page labels (`#p4`) for long PDFs: a file label is too easy to match.
 - Compare under identical conditions: same files, chunker, embedder and `top_k`.
 
-Grading the answers themselves (correctness, citations) is planned; see the
-[roadmap](roadmap.md).
+To grade the answers themselves (correctness, citations, grounding) and get a
+0 to 100 scorecard, continue with [Evaluating every stage](stage-evaluation.md).

@@ -39,20 +39,39 @@ report, then the questions that missed evidence or got no answer. Add
 `--retrieval-only` to score search alone (fast, no LLM). See
 [Evaluating RAG](evaluation.md).
 
+## Evaluate logged data
+
+```bash
+rag-titan evaluate --input data.json --output report.json --k 5 \
+    --baseline last_report.json --fail-on-regression
+```
+
+Scores the logged outputs of **any** RAG system, stage by stage: chunking,
+embedding, retrieval, reranking, context, answers and end to end. It saves
+`report.json` and `report.md` and prints the overall score. With `--baseline`
+it lists the metrics that got worse, and `--fail-on-regression` then exits
+with code 1, for scheduled runs. No model is needed. See
+[Evaluating every stage](stage-evaluation.md).
+
 ## Options
 
 | Option        | Used by     | Meaning                                   |
 |---------------|-------------|-------------------------------------------|
-| `--files`     | ask, chat, evaluate | PDF, DOCX, MD or TXT files (required) |
+| `--files`     | ask, chat, evaluate | PDF, DOCX, MD or TXT files (required, except with `--input`) |
 | `--rag-type`  | ask, chat, evaluate | `simple` (default) or `adaptive`; evaluate takes several |
 | `--log-level` | ask, chat, evaluate | `DEBUG`, `INFO` or `WARNING` (default) |
 | `--question`  | ask         | the question to answer (required)         |
 | `--trace`     | ask         | also print every step taken               |
-| `--questions` | evaluate    | questions JSON file (required)            |
+| `--questions` | evaluate    | questions JSON file (required with `--files`) |
 | `--chunker`   | evaluate    | one or more chunkers to compare           |
 | `--chunk-size`, `--chunk-overlap` | evaluate | used by every setup  |
 | `--retrieval-only` | evaluate | score search only, no LLM             |
 | `--top-k`     | evaluate    | chunks per search with `--retrieval-only` (default 5) |
+| `--input`     | evaluate    | JSON data file to score, instead of `--files` and `--questions` |
+| `--output`    | evaluate    | JSON report path with `--input` (default `rag_report.json`); a `.md` is saved next to it |
+| `--k`         | evaluate    | results scored per query with `--input` (default 5) |
+| `--baseline`  | evaluate    | an earlier JSON report: list what got worse |
+| `--fail-on-regression` | evaluate | exit with code 1 when a metric got worse than the baseline |
 | `--version`   | –           | print the version                         |
 
 The CLI also reads your `.env` file, see [Configuration](configuration.md).

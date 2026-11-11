@@ -16,6 +16,12 @@
 
 ::: rag_titan.evaluation
 
+::: rag_titan.evaluation.stages
+
+::: rag_titan.evaluation.scoring
+
+::: rag_titan.evaluation.reports
+
 ::: rag_titan.generation
 
 ::: rag_titan.pipelines
