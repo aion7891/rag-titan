@@ -83,3 +83,61 @@ def _touches(chunk, spans):
         return False
     return any(doc_id == chunk["source"] and start < span_end and end > span_start
                for doc_id, span_start, span_end in spans)
+
+
+def check_golden(questions, documents=None):
+    """
+    Check a golden set before you trust the scores made with it.
+
+    Args:
+        questions: path to a golden questions JSON file, or a list of dicts.
+        documents: {doc_id: text}; when given, every quote must be found in them.
+
+    Returns:
+        {"question_count", "validated_count", "validated_share",
+         "problems": [{"id", "problem"}], "ready"}.
+        A person marks a question as checked with "validated": true.
+        "ready" is True when there is no problem and every question is validated.
+    """
+    questions = load_golden(questions)
+    problems = []
+    for record in questions:
+        problems += [{"id": record["id"], "problem": problem}
+                     for problem in _record_problems(record, documents)]
+
+    validated = sum(record.get("validated") is True for record in questions)
+    return {
+        "question_count": len(questions),
+        "validated_count": validated,
+        "validated_share": validated / len(questions),
+        "problems": problems,
+        "ready": not problems and validated == len(questions),
+    }
+
+
+def _record_problems(record, documents):
+    """Return the problems of one golden question as a list of sentences."""
+    problems = []
+    answerable = record.get("answerable", True)
+    evidence_keys = ("expected_evidence", "expected_chunk_ids", "relevance",
+                     "required_evidence_ids")
+    has_evidence = any(record.get(key) for key in evidence_keys)
+
+    if answerable and not has_evidence:
+        problems.append("no gold evidence: add expected_evidence quotes")
+    if answerable and not record.get("expected_answer"):
+        problems.append("no expected_answer")
+    if not answerable and has_evidence:
+        problems.append("marked unanswerable but has gold evidence")
+
+    answer = (record.get("expected_answer") or "").lower()
+    for fact in record.get("required_facts") or []:
+        if answer and fact.lower() not in answer:
+            problems.append(f"required fact {fact!r} is not in the expected_answer")
+
+    for quote in (record.get("expected_evidence") or []) if documents else []:
+        try:
+            evidence_spans([quote], documents)
+        except ValueError:
+            problems.append(f"quote {str(quote)[:40]!r} is not found exactly once")
+    return problems

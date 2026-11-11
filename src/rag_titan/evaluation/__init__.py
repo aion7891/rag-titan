@@ -11,6 +11,7 @@ Two ways to use it:
 from rag_titan.evaluation.benchmark import compare_retrievers, evaluate_retriever, format_report
 from rag_titan.evaluation.collect import collect_dataset
 from rag_titan.evaluation.end_to_end import compare_setups, evaluate_rag, format_rag_report
+from rag_titan.evaluation.golden import check_golden, load_golden
 from rag_titan.evaluation.metrics import (
     matches_evidence,
     ndcg_at_k,
@@ -18,10 +19,12 @@ from rag_titan.evaluation.metrics import (
     recall_at_k,
     reciprocal_rank,
 )
+from rag_titan.evaluation.profiling import profile_documents
 from rag_titan.evaluation.questions import as_questions, check_questions, load_questions
 from rag_titan.evaluation.rag_evaluator import RAGEvaluator
 from rag_titan.evaluation.reports import ReportManager, evaluate_file
 from rag_titan.evaluation.root_cause import RootCauseAnalyzer
+from rag_titan.evaluation.sampling import sample_documents
 from rag_titan.evaluation.scoring import ScoreAggregator
 from rag_titan.evaluation.stages import (
     AugmentationEvaluator,
@@ -46,6 +49,7 @@ __all__ = [
     "RootCauseAnalyzer",
     "ScoreAggregator",
     "as_questions",
+    "check_golden",
     "collect_dataset",
     "compare_setups",
     "evaluate_file",
@@ -55,10 +59,13 @@ __all__ = [
     "compare_retrievers",
     "evaluate_retriever",
     "format_report",
+    "load_golden",
     "load_questions",
     "matches_evidence",
     "ndcg_at_k",
     "parse_evidence_id",
+    "profile_documents",
     "recall_at_k",
     "reciprocal_rank",
+    "sample_documents",
 ]
