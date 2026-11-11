@@ -46,6 +46,13 @@ query, the evidence check).
 
 ## Live mode: your Ollama, any question, your own text
 
+!!! warning "Work in progress"
+    Live mode does not work on this website yet: Chrome blocks a public
+    website from reaching the Ollama on your computer (its new *local network
+    access* protection), and the fix is still being made. It does work when you
+    run the docs on your own machine (`mkdocs serve`). The recorded runs above
+    work everywhere.
+
 Switch **Mode** to *Live with your Ollama* to ask **any** question, on the sample
 documents or on text you paste, with the models on your own machine. The page
 talks to Ollama on your computer; nothing is sent anywhere else.
