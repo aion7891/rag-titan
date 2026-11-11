@@ -13,7 +13,12 @@ Example:
 
 import os
 
-from dotenv import load_dotenv
+try:
+    from dotenv import load_dotenv
+except ImportError:
+    # python-dotenv is missing in the browser (Pyodide): settings then come only
+    # from environment variables and overrides
+    load_dotenv = None
 
 
 def _get_int(name, default):
@@ -59,7 +64,8 @@ def get_settings(overrides=None):
         A dict with every setting the package uses.
     """
     # read the .env file only when settings are requested, not on import
-    load_dotenv()
+    if load_dotenv is not None:
+        load_dotenv()
 
     settings = {
         # LLM used by RAG

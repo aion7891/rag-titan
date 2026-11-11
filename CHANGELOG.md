@@ -6,6 +6,35 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-11-11
+
+### Added
+- **RAG playground** on the docs site: the real package runs in your browser
+  (Pyodide 314.0.7 in a Web Worker). Pick chunkers and RAG types, ask a question,
+  and every setup runs side by side on its own live flow diagram: steps light up
+  in order with step numbers, loops are drawn, and clicking a step shows its input
+  and output (chunks with files and scores, rewritten queries, evidence checks).
+  - Recorded mode: real `gemma3:4b` replies and `nomic-embed-text` vectors,
+    replayed instantly; "Evaluate all questions" gives the same report as
+    `rag-titan evaluate`.
+  - Live mode: your own Ollama (`OLLAMA_ORIGINS`), any question, the sample
+    documents or your own pasted text.
+- `rag-flow.js`: draws any RAG type from its `FLOW` (automatic layout, loops),
+  so new RAG types get a diagram without JavaScript.
+- `HashEmbedder` (`EMBED_PROVIDER=hash`): word-hash vectors, no model needed.
+- `FunctionLLM` and `FunctionEmbedder`: any function becomes a model.
+- `RecordingLLM` / `ReplayLLM` and `RecordingEmbedder` / `ReplayEmbedder`:
+  record real model replies and vectors once, replay them anywhere.
+- `rag_titan.playground`: `Playground`, `LivePlayground`, `record_presets()`,
+  `check_presets()`; `tools/playground/record_traces.py` records the examples
+  (`--check` replays them, and a test fails when they are out of date).
+- Docs: Ollama Cloud setup (`OLLAMA_HOST=https://ollama.com` + `OLLAMA_API_KEY`).
+
+### Changed
+- `ollama`, `pypdf`, `python-docx` and `python-dotenv` are imported only when
+  used, so the package also loads without them (for example in the browser).
+  Nothing changes when they are installed.
+
 ## [0.6.1] - 2026-11-11
 
 ### Fixed

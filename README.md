@@ -28,6 +28,7 @@
 - **Runs 100% locally** with [Ollama](https://ollama.com), so your documents never leave your machine.
 - **Grounded answers.** The model answers only from your files and cites the chunks it used.
 - **Chunking your way.** Eight chunkers: by words, characters or model tokens (tiktoken or your own tokenizer), recursive separators, and structure-aware chunkers that keep sentences, paragraphs, heading sections or pages whole. [Try them live in the chunk playground →](https://aion7891.github.io/rag-titan/playground/)
+- **Watch every step, in your browser.** The [RAG playground →](https://aion7891.github.io/rag-titan/rag-playground/) runs the real package (Pyodide) side by side for any chunker and RAG type, and lights up each step on a live flow diagram: click a step to see the chunks it found. Recorded answers work instantly; switch to live mode to ask your own Ollama anything about your own text.
 - **PDF, Word, Markdown and text files**, with paragraphs, headings and pages kept for the chunkers.
 - **Measure, don't guess.** Compare any chunker with any RAG type on your own questions in one command (`rag-titan evaluate`): recall, MRR, nDCG, answered rate and p95 time, plus every step of a run with `--trace`. [Evaluating RAG →](https://aion7891.github.io/rag-titan/evaluation/)
 - **Easy to read, easy to change.** Short files, plain Python, and a docstring on every class. Swap any part by inheriting one base class.
@@ -138,8 +139,8 @@ Click any picture to open its page.
 <table>
   <tr>
     <td width="50%" valign="top">
-      <a href="https://aion7891.github.io/rag-titan/chunking/"><img src="https://cdn.jsdelivr.net/gh/aion7891/rag-titan@main/docs/assets/images/fixed-chunkers.svg" alt="One sentence chunked by characters, words and tokens"></a>
-      <p><b><a href="https://aion7891.github.io/rag-titan/chunking/">Chunking methods</a></b><br>All 8 chunkers explained, with formulas and animated diagrams.</p>
+      <a href="https://aion7891.github.io/rag-titan/rag-playground/"><img src="https://cdn.jsdelivr.net/gh/aion7891/rag-titan@main/docs/assets/images/rag-playground.png" alt="RAG playground: the same question with paragraph and word chunks, side by side, on live flow diagrams"></a>
+      <p><b><a href="https://aion7891.github.io/rag-titan/rag-playground/">RAG playground</a></b><br>Run the RAG types in your browser and watch every step light up.</p>
     </td>
     <td width="50%" valign="top">
       <a href="https://aion7891.github.io/rag-titan/playground/"><img src="https://cdn.jsdelivr.net/gh/aion7891/rag-titan@main/docs/assets/images/playground.png" alt="Chunk playground: tricky sentences split by the sentence chunker"></a>
@@ -152,26 +153,29 @@ Click any picture to open its page.
       <p><b><a href="https://aion7891.github.io/rag-titan/evaluation/">Evaluating RAG</a></b><br>Compare any chunker with any RAG type on your own questions.</p>
     </td>
     <td width="50%" valign="top">
-      <a href="https://aion7891.github.io/rag-titan/building-blocks/"><img src="https://cdn.jsdelivr.net/gh/aion7891/rag-titan@main/docs/assets/images/indexing.svg" alt="Indexing pipeline"></a>
-      <p><b><a href="https://aion7891.github.io/rag-titan/building-blocks/">Building blocks</a></b><br>Load → chunk → embed → store, with the data at every step.</p>
+      <a href="https://aion7891.github.io/rag-titan/chunking/"><img src="https://cdn.jsdelivr.net/gh/aion7891/rag-titan@main/docs/assets/images/fixed-chunkers.svg" alt="One sentence chunked by characters, words and tokens"></a>
+      <p><b><a href="https://aion7891.github.io/rag-titan/chunking/">Chunking methods</a></b><br>All 8 chunkers explained, with formulas and animated diagrams.</p>
     </td>
   </tr>
   <tr>
+    <td width="50%" valign="top">
+      <a href="https://aion7891.github.io/rag-titan/building-blocks/"><img src="https://cdn.jsdelivr.net/gh/aion7891/rag-titan@main/docs/assets/images/indexing.svg" alt="Indexing pipeline"></a>
+      <p><b><a href="https://aion7891.github.io/rag-titan/building-blocks/">Building blocks</a></b><br>Load → chunk → embed → store, with the data at every step.</p>
+    </td>
     <td width="50%" valign="top">
       <a href="https://aion7891.github.io/rag-titan/extending/"><img src="https://cdn.jsdelivr.net/gh/aion7891/rag-titan@main/docs/assets/images/architecture.svg" alt="Swappable architecture"></a>
       <p><b><a href="https://aion7891.github.io/rag-titan/extending/">Extending rag-titan</a></b><br>Add your own LLM, vector store, chunker or RAG type.</p>
     </td>
+  </tr>
+  <tr>
     <td width="50%" valign="top">
       <a href="https://aion7891.github.io/rag-titan/agents/"><img src="https://cdn.jsdelivr.net/gh/aion7891/rag-titan@main/docs/assets/images/agent.svg" alt="Agent loop"></a>
       <p><b><a href="https://aion7891.github.io/rag-titan/agents/">Agents</a></b><br>Let the LLM call your Python functions as tools.</p>
     </td>
-  </tr>
-  <tr>
     <td width="50%" valign="top">
       <a href="https://aion7891.github.io/rag-titan/cli/"><img src="https://cdn.jsdelivr.net/gh/aion7891/rag-titan@main/docs/assets/images/cli.svg" alt="Command line demo"></a>
       <p><b><a href="https://aion7891.github.io/rag-titan/cli/">Command line</a></b><br><code>rag-titan ask</code> (with <code>--trace</code>), <code>chat</code> and <code>evaluate</code>.</p>
     </td>
-    <td width="50%" valign="top"></td>
   </tr>
 </table>
 
@@ -180,6 +184,7 @@ Click any picture to open its page.
 | Install it and ask my first question | [Getting started](https://aion7891.github.io/rag-titan/getting-started/) |
 | Pick the right RAG type | [RAG types](https://aion7891.github.io/rag-titan/rag-types/) |
 | Pick the right chunker | [Chunking methods](https://aion7891.github.io/rag-titan/chunking/) |
+| Run RAG types in my browser and watch each step | [RAG playground](https://aion7891.github.io/rag-titan/rag-playground/) |
 | Try the chunkers on my own text | [Chunk playground](https://aion7891.github.io/rag-titan/playground/) |
 | Compare chunkers and RAG types on my questions | [Evaluating RAG](https://aion7891.github.io/rag-titan/evaluation/) |
 | See why an answer went wrong | [Seeing every step](https://aion7891.github.io/rag-titan/rag-types/#seeing-every-step-run) |

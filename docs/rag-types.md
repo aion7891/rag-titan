@@ -142,8 +142,9 @@ AdaptiveRAG.FLOW["nodes"][0]   # {"id": "route", "label": "Choose route", "kind"
 AdaptiveRAG.FLOW["edges"][:2]  # [["route", "direct_reply"], ["route", "retrieve"]]
 ```
 
-`kind` is `search`, `llm` or `output`. A RAG playground with live flow diagrams
-is planned; see the [roadmap](roadmap.md).
+`kind` is `search`, `llm` or `output`. The [RAG playground](rag-playground.md)
+draws every RAG type from its `FLOW` and lights it up with a real run, in your
+browser.
 
 ## Planned RAG types
 

@@ -97,6 +97,31 @@ is exact even in very repetitive text.
 | `BaseGenerator` | `generate(query, chunks)`                         |
 | `BaseRAG`       | `FLOW`, `run(query)` (`answer()` comes for free)  |
 
+## Example: any function as a model
+
+`FunctionLLM` and `FunctionEmbedder` turn a plain function into a model, so any
+API works without writing a class. The RAG playground uses them to talk to your
+local Ollama from the browser.
+
+```python
+from rag_titan.embeddings import FunctionEmbedder
+from rag_titan.llm import FunctionLLM
+
+
+def reply(messages):
+    """messages: [{"role": ..., "content": ...}, ...] -> the reply text"""
+    return my_api.chat(messages)
+
+
+def embed(texts):
+    """texts: list of strings -> one list of numbers per text"""
+    return my_api.embed(texts)
+
+
+llm = FunctionLLM(reply, model="my-api")
+embedder = FunctionEmbedder(embed, model="my-api-embed")
+```
+
 ## Example: a new retriever
 
 A retriever returns chunk dicts with a `score`, best first. Call
@@ -147,8 +172,16 @@ others with [`compare_retrievers()`](evaluation.md).
    `tests/test_traces.py` already checks every type in `RAG_TYPES`: it fails
    when `FLOW` is missing or a run takes a step that has no arrow
 7. measure it against the other RAG types with [evaluation](evaluation.md)
-8. document it in `docs/rag-types.md` (the playground preset arrives with the
-   planned RAG playground)
+8. document it in `docs/rag-types.md`
+9. record the [RAG playground](rag-playground.md) examples again, so your type
+   shows up there with its diagram (no JavaScript to write):
+
+    ```bash
+    python tools/playground/record_traces.py          # needs Ollama, about a minute
+    ```
+
+    `tests/test_playground.py` replays the recording and fails until you do this.
+    Do the same after changing a prompt, a chunker or a RAG type.
 
 ```python
 from rag_titan.rag_types import BaseRAG, Trace

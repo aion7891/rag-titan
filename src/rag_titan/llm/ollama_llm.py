@@ -3,9 +3,10 @@ Chat model that runs locally with Ollama (https://ollama.com).
 
 Before using it, install Ollama and pull a model:
     ollama pull gemma3:4b
-"""
 
-import ollama
+Ollama Cloud works too: host="https://ollama.com" and the OLLAMA_API_KEY
+environment variable (the ollama client sends it for you).
+"""
 
 from rag_titan.llm.base_llm import BaseLLM
 from rag_titan.utils.logger import get_logger
@@ -24,6 +25,9 @@ class OllamaLLM(BaseLLM):
     """
 
     def __init__(self, model, host=None, think=False):
+        # imported here, so the package also loads where ollama is missing (the browser)
+        import ollama
+
         super().__init__(model)
         self.think = think
         self.client = ollama.Client(host=host)

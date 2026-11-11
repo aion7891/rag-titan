@@ -3,7 +3,7 @@
 from docx import Document
 
 from rag_titan.chunking import WordChunker
-from rag_titan.loaders import DocxLoader, PdfLoader, TextLoader, get_loader, pdf_loader
+from rag_titan.loaders import DocxLoader, PdfLoader, TextLoader, get_loader
 from rag_titan.loaders.docx_loader import heading_level
 
 
@@ -47,7 +47,8 @@ def test_pdf_separates_pages_with_page_break(monkeypatch, tmp_path):
     path.write_bytes(b"%PDF fake")
     pages = [FakePage("Page one."), FakePage(None), FakePage("Three.")]
     fake_reader = type("FakeReader", (), {"pages": pages})
-    monkeypatch.setattr(pdf_loader, "PdfReader", lambda _path: fake_reader)
+    # pypdf is imported when a file is read, so patch it in the pypdf module
+    monkeypatch.setattr("pypdf.PdfReader", lambda _path: fake_reader)
 
     assert PdfLoader().load(path)["text"] == "Page one.\f\fThree."
 

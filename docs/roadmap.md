@@ -31,5 +31,5 @@
 - [x] Evaluation helpers: retrieval and end-to-end (`rag-titan evaluate`), available since 0.6.0
 - [x] Step traces and flows for every RAG type (`run()`, `FLOW`, `ask --trace`), available since 0.6.0
 - [x] Swappable retrievers (`BaseRetriever`, `DenseRetriever`), available since 0.6.0
-- [ ] RAG playground: run RAG types in the browser with live flow diagrams
+- [x] RAG playground: run RAG types in the browser with live flow diagrams, recorded or live with your Ollama, available since 0.7.0
 - [ ] Answer grading (correctness and citations with an LLM grader)

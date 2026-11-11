@@ -14,14 +14,23 @@ Answering:  Retriever -> Reranker -> Generator  (each uses the LLM / Embedder)
 
 | Part      | Base class      | Ready-made classes                                | Folder                 |
 |-----------|-----------------|---------------------------------------------------|------------------------|
-| LLM       | `BaseLLM`       | `OllamaLLM`                                       | `llm/`                 |
+| LLM       | `BaseLLM`       | `OllamaLLM`, `FunctionLLM`, `ReplayLLM`           | `llm/`                 |
 | Loader    | `BaseLoader`    | `PdfLoader`, `DocxLoader`, `TextLoader`           | `loaders/`             |
 | Chunker   | `BaseChunker`   | 8 chunkers, see [Chunking methods](chunking.md)   | `chunking/`            |
-| Embedder  | `BaseEmbedder`  | `OllamaEmbedder`                                  | `embeddings/`          |
+| Embedder  | `BaseEmbedder`  | `OllamaEmbedder`, `HashEmbedder`, `FunctionEmbedder`, `ReplayEmbedder` | `embeddings/` |
 | Store     | `BaseStore`     | `MemoryStore`                                     | `vector_stores/`       |
 | Retriever | `BaseRetriever` | `DenseRetriever` (old name: `Retriever`)          | `retrieval/`           |
 | Reranker  | `BaseReranker`  | `KeywordReranker`, `NoReranker`                   | `retrieval/rerankers/` |
 | Generator | `BaseGenerator` | `GroundedGenerator`                               | `generation/`          |
+
+## Models without a server
+
+| Class | What it does | Use it for |
+|---|---|---|
+| `HashEmbedder` | hashes words into vectors, no model (`EMBED_PROVIDER=hash`) | trying rag-titan offline, tests |
+| `FunctionLLM`, `FunctionEmbedder` | any function becomes the model | any API, [see the example](extending.md#example-any-function-as-a-model) |
+| `RecordingLLM`, `RecordingEmbedder` | wrap a real model and save every reply or vector | recording examples once |
+| `ReplayLLM`, `ReplayEmbedder` | answer from a recording, no model needed | the [RAG playground](rag-playground.md), repeatable tests |
 
 ## The data passed between parts
 

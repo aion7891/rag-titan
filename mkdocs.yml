@@ -46,6 +46,7 @@ nav:
   - Evaluating RAG: evaluation.md
   - Chunking methods: chunking.md
   - Chunk playground: playground.md
+  - RAG playground: rag-playground.md
   - Configuration: configuration.md
   - Command line: cli.md
   - Agents: agents.md
@@ -58,13 +59,19 @@ nav:
 
 hooks:
   - hooks/cache_bust.py   # adds ?v=<version> to our CSS/JS so browsers get new copies
+  - hooks/playground_bundle.py   # zips src/rag_titan into the site for the RAG playground
 
 extra_css:
   - assets/stylesheets/extra.css
+  - assets/stylesheets/rag-flow.css
 
 # chunking page: formulas (pymdownx.arithmatex + MathJax) and the chunk playground
 extra_javascript:
   - assets/javascripts/mathjax.js
   - assets/javascripts/chunk-core.js
   - assets/javascripts/chunk-playground.js
+  - assets/javascripts/rag-steps.js
+  - assets/javascripts/rag-flow.js
+  - assets/javascripts/rag-cards.js
+  - assets/javascripts/rag-playground.js
   - https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js

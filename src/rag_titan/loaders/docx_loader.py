@@ -1,7 +1,5 @@
 """Loader for Word files, using the python-docx library."""
 
-from docx import Document
-
 from rag_titan.loaders.base_loader import BaseLoader
 
 
@@ -31,8 +29,10 @@ class DocxLoader(BaseLoader):
 
     def extract_text(self, path):
         """Return all non-empty paragraphs, separated by blank lines."""
-        blocks = []
+        # imported here, so the package also loads where python-docx is missing (the browser)
+        from docx import Document
 
+        blocks = []
         for para in Document(path).paragraphs:
             text = para.text.strip()
             if not text:
