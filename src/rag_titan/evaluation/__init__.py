@@ -20,6 +20,7 @@ from rag_titan.evaluation.metrics import (
 from rag_titan.evaluation.questions import as_questions, check_questions, load_questions
 from rag_titan.evaluation.rag_evaluator import RAGEvaluator
 from rag_titan.evaluation.root_cause import RootCauseAnalyzer
+from rag_titan.evaluation.scoring import ScoreAggregator
 from rag_titan.evaluation.stages import (
     AugmentationEvaluator,
     ChunkEvaluator,
@@ -40,6 +41,7 @@ __all__ = [
     "RerankingEvaluator",
     "RetrievalEvaluator",
     "RootCauseAnalyzer",
+    "ScoreAggregator",
     "as_questions",
     "compare_setups",
     "evaluate_rag",

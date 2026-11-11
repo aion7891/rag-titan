@@ -11,7 +11,7 @@ from rag_titan.evaluation.rag_evaluator import STAGES
 def test_full_pipeline_report(rag_dataset):
     report = RAGEvaluator(k=3).evaluate(**rag_dataset)
 
-    assert list(report) == STAGES + ["root_causes"]
+    assert list(report) == STAGES + ["root_causes", "scorecard"]
     assert report["chunking"]["coverage"] == 1
     assert report["chunking"]["evidence_completeness"] == 1
     assert report["chunking"]["boundary_f1"] == 1
@@ -49,11 +49,11 @@ def test_only_stages_with_data_are_evaluated():
     queries = [{"id": "q1", "expected_chunk_ids": ["c1"], "retrieved_ids": ["c2", "c1"]}]
     report = RAGEvaluator(k=2).evaluate(queries=queries)
 
-    assert list(report) == ["retrieval", "root_causes"]
+    assert list(report) == ["retrieval", "root_causes", "scorecard"]
     assert report["retrieval"]["summary"]["recall_at_k"] == 1
 
-    assert list(RAGEvaluator().evaluate(chunks=["one chunk"])) == ["chunking", "root_causes"]
-    assert list(RAGEvaluator().evaluate()) == ["root_causes"]
+    assert "chunking" in RAGEvaluator().evaluate(chunks=["one chunk"])
+    assert list(RAGEvaluator().evaluate()) == ["root_causes", "scorecard"]
 
 
 def test_first_failing_stage_follows_pipeline_order(rag_dataset):

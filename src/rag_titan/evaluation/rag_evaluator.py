@@ -8,6 +8,7 @@ RAGEvaluator: evaluate every stage of a RAG pipeline with one call.
     )
     print(report["retrieval"]["summary"]["recall_at_k"])
     print(report["root_causes"]["first_failing_stage"])
+    print(report["scorecard"]["overall"]["score"])           # 0 to 100
 
 It does not run your RAG system: you pass what it already produced. A stage
 is evaluated only when its data is there, so you can start with retrieval
@@ -15,6 +16,7 @@ alone and add the other stages later.
 """
 
 from rag_titan.evaluation.root_cause import RootCauseAnalyzer
+from rag_titan.evaluation.scoring import ScoreAggregator
 from rag_titan.evaluation.stages import (
     AugmentationEvaluator,
     ChunkEvaluator,
@@ -40,16 +42,18 @@ EMBEDDING_KEYS = ["vectors", "query_vectors", "relevant_ids", "indexed_ids", "in
 
 
 class RAGEvaluator:
-    """Runs the stage evaluators that have data and adds root-cause hints."""
+    """Runs the stage evaluators that have data, adds root-cause hints and a scorecard."""
 
-    def __init__(self, k=5, thresholds=None):
+    def __init__(self, k=5, thresholds=None, scorer=None):
         """
         Args:
             k: how many results to score in the ranking metrics (Recall@K, ...).
             thresholds: {metric: minimum} for the root-cause hints.
+            scorer: a ScoreAggregator with your own weights, targets or stages.
         """
         self.k = check_k(k)
         self.analyzer = RootCauseAnalyzer(thresholds)
+        self.scorer = scorer or ScoreAggregator()
 
     def evaluate(self, chunks=None, queries=None, document_text=None, documents=None,
                  embeddings=None, max_context_tokens=None, **chunk_options):
@@ -69,7 +73,8 @@ class RAGEvaluator:
                 expected_evidence=[...], size_limits=(50, 300).
 
         Returns:
-            A report dict: one entry per evaluated stage, plus "root_causes".
+            A report dict: one entry per evaluated stage, plus "root_causes"
+            and "scorecard".
         """
         unknown = sorted(set(chunk_options) - set(CHUNK_OPTIONS))
         if unknown:
@@ -87,6 +92,7 @@ class RAGEvaluator:
 
         report.update(self._query_stages(chunks or [], queries, source, max_context_tokens))
         report["root_causes"] = self.analyzer.evaluate(report)
+        report["scorecard"] = self.scorer.evaluate(report)
         return report
 
     def _embedding(self, embeddings):
