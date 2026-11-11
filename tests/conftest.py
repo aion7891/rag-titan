@@ -104,3 +104,55 @@ def parts():
         "reranker": KeywordReranker(),
         "generator": GroundedGenerator(llm),
     }
+
+
+# four sentences of a small handbook: each one becomes a chunk (c1 .. c4)
+HANDBOOK = ["Employees get 25 days of annual leave. ", "Sick pay is full salary for 10 days. ",
+            "Travel needs manager approval. ", "Remote work is allowed 3 days a week."]
+
+
+def make_query(number, gold, retrieved, reranked, answer):
+    """Return one fully logged query: gold labels plus what every stage produced."""
+    return {
+        "id": f"q{number}", "expected_chunk_ids": [gold], "expected_evidence": [answer],
+        "retrieved_ids": retrieved, "reranked_ids": reranked, "context_ids": reranked[:2],
+        "answer": answer, "expected_answer": answer, "required_facts": ["days"],
+        "citations": [gold], "expected_citations": [gold],
+        "verified_claims": [{"text": answer, "supported": True}],
+        "answerable": True, "abstained": False, "task_success": True,
+        "retrieval_latency_ms": 20 * number, "generation_latency_ms": 400 * number,
+        "latency_ms": 450 * number, "cost_usd": 0.002, "total_tokens": 800,
+    }
+
+
+@pytest.fixture
+def rag_dataset():
+    """A small, healthy dataset for RAGEvaluator: every stage has data and scores well."""
+    chunks, start = [], 0
+    for number, text in enumerate(HANDBOOK, start=1):
+        chunks.append({"id": f"c{number}", "text": text, "start": start,
+                       "end": start + len(text), "metadata": {"source": "handbook.md", "page": 1}})
+        start += len(text)
+
+    return {
+        "document_text": "".join(HANDBOOK),
+        "chunks": chunks,
+        "queries": [
+            make_query(1, "c1", ["c2", "c1", "c3"], ["c1", "c2", "c3"],
+                       "Employees get 25 days of annual leave."),
+            make_query(2, "c4", ["c4", "c3", "c1"], ["c4", "c1", "c3"],
+                       "Remote work is allowed 3 days a week."),
+        ],
+        "expected_chunks": [{"start": chunk["start"], "end": chunk["end"]} for chunk in chunks],
+        "expected_evidence": ["25 days of annual leave", "allowed 3 days a week"],
+        "required_metadata": ["source", "page"],
+        "size_limits": [3, 20],
+        "max_context_tokens": 30,
+        "embeddings": {
+            "vectors": {"c1": [0.95, 0.05], "c2": [0.7, 0.3], "c3": [0.5, 0.5], "c4": [0.1, 0.9]},
+            "query_vectors": {"q1": [1.0, 0.0], "q2": [0.0, 1.0]},
+            "relevant_ids": {"q1": ["c1"], "q2": ["c4"]},
+            "indexed_ids": ["c1", "c2", "c3", "c4"],
+            "index_results": {"q1": ["c1", "c2", "c3"], "q2": ["c4", "c3", "c2"]},
+        },
+    }
