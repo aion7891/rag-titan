@@ -58,10 +58,10 @@ class RootCauseAnalyzer:
         Check a report from RAGEvaluator (or a dict of {stage: stage result}).
 
         Returns:
-            {"first_failing_stage": stage name or None,
-             "failures": [{"stage", "metric", "observed", "minimum", "suggestion"}],
-             "method": how the hints were made}.
-            Metrics that were not measured are skipped, not failed.
+            A dict with "first_failing_stage" (a stage name or None), "failures"
+            (a list of {"stage", "metric", "observed", "minimum", "suggestion"})
+            and "method" (how the hints were made). Metrics that were not
+            measured are skipped, not failed.
         """
         if not isinstance(report, dict):
             raise ValueError("report must be a dict of {stage: stage result}")

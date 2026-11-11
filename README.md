@@ -31,6 +31,7 @@
 - **Watch every step, in your browser.** The [RAG playground →](https://aion7891.github.io/rag-titan/rag-playground/) runs the real package (Pyodide) side by side for any chunker and RAG type, and lights up each step on a live flow diagram: click a step to see the chunks it found. Recorded answers work instantly; a live mode with your own Ollama is work in progress.
 - **PDF, Word, Markdown and text files**, with paragraphs, headings and pages kept for the chunkers.
 - **Measure, don't guess.** Compare any chunker with any RAG type on your own questions in one command (`rag-titan evaluate`): recall, MRR, nDCG, answered rate and p95 time, plus every step of a run with `--trace`. [Evaluating RAG →](https://aion7891.github.io/rag-titan/evaluation/)
+- **Find the stage that fails, in any RAG system.** Pass the logged outputs of your pipeline (rag-titan or not) and get 70+ metrics for chunking, embedding, retrieval, reranking, context, answers and end to end, a 0 to 100 scorecard, root-cause hints and regression checks. No LLM judge. [Evaluating every stage →](https://aion7891.github.io/rag-titan/stage-evaluation/)
 - **Easy to read, easy to change.** Short files, plain Python, and a docstring on every class. Swap any part by inheriting one base class.
 
 ## Install
@@ -104,6 +105,48 @@ $ rag-titan ask --files docs/*.md --question "Can I work from Spain for a month?
 
 Real runs with `gemma3:4b` on the sample policies in `examples/sample_docs/`. Search-only scoring
 (`--retrieval-only`, no LLM) and the Python API are in **[Evaluating RAG →](https://aion7891.github.io/rag-titan/evaluation/)**
+
+## Evaluate every stage of any RAG system
+
+A wrong answer does not say **which part** failed. Pass what each stage of your pipeline
+produced, plus the right answers, and every stage is scored on its own. It works for any RAG
+system, uses no LLM judge and needs no extra dependencies:
+
+```python
+from rag_titan.evaluation import RAGEvaluator
+
+report = RAGEvaluator(k=5).evaluate(
+    chunks=chunks,        # what your chunker produced
+    queries=queries,      # per question: gold labels + retrieved ids, context, answer, latency
+    document_text=text,   # optional: more metrics when given
+)
+print(report["scorecard"]["overall"]["score"])          # 0 to 100
+print(report["root_causes"]["first_failing_stage"])     # e.g. "retrieval"
+```
+
+```bash
+rag-titan evaluate --input data.json --baseline last_report.json --fail-on-regression
+```
+
+```text
+| Pipeline stage       | Score / 100 | Rating    | Measurement coverage |
+|----------------------|------------:|-----------|---------------------:|
+| Document preparation |        97.6 | Excellent |                  74% |
+| Semantic indexing    |        98.4 | Excellent |                 100% |
+| Information search   |        79.4 | Good      |                 100% |
+| Search ordering      |        89.7 | Very Good |                 100% |
+| Answer context       |        92.3 | Excellent |                 100% |
+| Answer quality       |       100.0 | Excellent |                 100% |
+| User experience      |       100.0 | Excellent |                 100% |
+```
+
+<p align="center">
+  <a href="https://aion7891.github.io/rag-titan/stage-evaluation/"><img src="https://cdn.jsdelivr.net/gh/aion7891/rag-titan@main/docs/assets/images/evaluation-architecture.svg" alt="Evaluation architecture: your data, RAGEvaluator with one evaluator per stage, the scorecard and the reports" width="100%"></a>
+</p>
+
+Using rag-titan itself? `rag.evaluate_stages(files, "golden.json")` collects the data for you.
+Every formula is on the **[Evaluation metrics →](https://aion7891.github.io/rag-titan/evaluation-metrics/)** page,
+and the guide is **[Evaluating every stage →](https://aion7891.github.io/rag-titan/stage-evaluation/)**
 
 ## Supported RAG types
 
@@ -187,6 +230,8 @@ Click any picture to open its page.
 | Run RAG types in my browser and watch each step | [RAG playground](https://aion7891.github.io/rag-titan/rag-playground/) |
 | Try the chunkers on my own text | [Chunk playground](https://aion7891.github.io/rag-titan/playground/) |
 | Compare chunkers and RAG types on my questions | [Evaluating RAG](https://aion7891.github.io/rag-titan/evaluation/) |
+| Score every stage of any RAG pipeline | [Evaluating every stage](https://aion7891.github.io/rag-titan/stage-evaluation/) |
+| Look up a metric and its formula | [Evaluation metrics](https://aion7891.github.io/rag-titan/evaluation-metrics/) |
 | See why an answer went wrong | [Seeing every step](https://aion7891.github.io/rag-titan/rag-types/#seeing-every-step-run) |
 | Change models, chunk size or reranker | [Configuration](https://aion7891.github.io/rag-titan/configuration/) |
 | See every class and method | [API reference](https://aion7891.github.io/rag-titan/api/core/) |

@@ -20,6 +20,9 @@ With `rag-titan` you get:
   sentences, paragraphs, heading sections or pages. → [Chunking methods](chunking.md)
 - **Measure, don't guess.** Compare any chunker with any RAG type on your own
   questions in one command. → [Evaluating RAG](evaluation.md)
+- **Find the stage that fails.** Score chunking, embedding, retrieval, reranking,
+  context and answers of **any** RAG system from its logged outputs, with a 0 to 100
+  scorecard and regression checks. → [Evaluating every stage](stage-evaluation.md)
 - **Watch it work in your browser.** The [RAG playground](rag-playground.md) lights
   up every step on a live flow diagram; the [chunk playground](playground.md)
   shows how text is cut.
@@ -44,6 +47,8 @@ print(rag.ask("How many leave days do I get?"))
 | run RAG types in my browser          | [RAG playground](rag-playground.md)    |
 | choose a RAG type                    | [RAG types](rag-types.md)              |
 | compare setups on my own questions   | [Evaluating RAG](evaluation.md)        |
+| score every stage of a RAG pipeline  | [Evaluating every stage](stage-evaluation.md) |
+| look up a metric and its formula     | [Evaluation metrics](evaluation-metrics.md) |
 | understand each part                 | [Building blocks](building-blocks.md)  |
 | change models or chunk sizes         | [Configuration](configuration.md)      |
 | add my own vector store or LLM       | [Extending rag-titan](extending.md)    |

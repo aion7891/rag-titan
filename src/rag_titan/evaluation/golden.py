@@ -94,8 +94,8 @@ def check_golden(questions, documents=None):
         documents: {doc_id: text}; when given, every quote must be found in them.
 
     Returns:
-        {"question_count", "validated_count", "validated_share",
-         "problems": [{"id", "problem"}], "ready"}.
+        A dict with "question_count", "validated_count", "validated_share",
+        "problems" (a list of {"id", "problem"}) and "ready".
         A person marks a question as checked with "validated": true.
         "ready" is True when there is no problem and every question is validated.
     """

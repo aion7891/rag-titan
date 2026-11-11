@@ -35,6 +35,8 @@ markdown_extensions:
       generic: true
   - pymdownx.highlight
   - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
   - pymdownx.tasklist
   - tables
 
@@ -44,6 +46,8 @@ nav:
   - RAG types: rag-types.md
   - Building blocks: building-blocks.md
   - Evaluating RAG: evaluation.md
+  - Evaluating every stage: stage-evaluation.md
+  - Evaluation metrics: evaluation-metrics.md
   - Chunking methods: chunking.md
   - Chunk playground: playground.md
   - RAG playground: rag-playground.md
