@@ -6,6 +6,31 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-11-12
+
+### Added
+- Stage-by-stage evaluation for any RAG system from logged outputs and gold labels,
+  without an LLM judge or new dependencies: `ChunkEvaluator`, `EmbeddingEvaluator`,
+  `RetrievalEvaluator`, `RerankingEvaluator`, `AugmentationEvaluator`,
+  `GenerationEvaluator` and `EndToEndEvaluator` from `rag_titan.evaluation`.
+  Metrics cover chunk quality, vectors, ranking, context, answers and citations,
+  latency, cost and tokens, with multi-document support.
+- `RAGEvaluator`, `ScoreAggregator` and `RootCauseAnalyzer`: a weighted 0–100
+  scorecard with quality gates, measurement coverage, provisional status and
+  root-cause hints. Missing measurements stay unmeasured rather than scoring zero.
+- `ReportManager` and `evaluate_file()`: JSON and Markdown reports, comparisons
+  against a baseline and trends, with regression direction taken from the score policy.
+- `rag-titan evaluate --input data.json` with `--output`, `--baseline`, `--k` and
+  `--fail-on-regression` (non-zero exit on regression). Existing
+  `--files` / `--questions` evaluation remains supported.
+- `collect_dataset()` and `RAGTitan.evaluate_stages()` to collect and evaluate
+  rag-titan runs, plus `load_golden()` for gold labels and expected evidence.
+- Dataset helpers: `profile_documents()` for empty, short and duplicate documents,
+  `sample_documents()` for random, stratified or risk-based samples, and
+  `check_golden()` for golden-set checks and human-validation flags.
+- Stage evaluation guide, metric formula reference, architecture diagram and
+  runnable examples with sample data and golden questions.
+
 ## [0.7.0] - 2026-11-11
 
 ### Added

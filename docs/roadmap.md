@@ -32,4 +32,14 @@
 - [x] Step traces and flows for every RAG type (`run()`, `FLOW`, `ask --trace`), available since 0.6.0
 - [x] Swappable retrievers (`BaseRetriever`, `DenseRetriever`), available since 0.6.0
 - [x] RAG playground: run RAG types in the browser with live flow diagrams, recorded or live with your Ollama, available since 0.7.0
-- [ ] Answer grading (correctness and citations with an LLM grader)
+- [x] Answer grading: deterministic answer, fact coverage, grounding and citation metrics (`GenerationEvaluator`), available since 0.8.0
+- [x] Stage evaluation: chunking through end to end, scorecards, root-cause hints, reports and regression checks (`RAGEvaluator`, `rag-titan evaluate --input`), available since 0.8.0
+
+## Later ideas
+
+- [ ] LLM-based answer and citation grading
+- [ ] Stage evaluation directly from CLI runs (`rag-titan evaluate --files ... --questions golden.json --stages`)
+- [ ] LLM-drafted golden questions, validated by a human
+- [ ] S3 / cloud loaders
+- [ ] Confidence intervals and repeated evaluation runs
+- [ ] Scorecard breakdown by task type
