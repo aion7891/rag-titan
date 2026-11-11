@@ -7,21 +7,25 @@ Examples:
     rag-titan chat --files handbook.pdf policy.docx --rag-type adaptive
     rag-titan evaluate --files *.md --questions questions.json \\
         --rag-type simple adaptive --chunker word paragraph
+    rag-titan evaluate --input data.json --output report.json --baseline last_report.json
     rag-titan --version
 """
 
 import argparse
 import itertools
+from pathlib import Path
 
 from rag_titan import __version__
 from rag_titan.app import RAGTitan
 from rag_titan.evaluation import (
     compare_setups,
+    evaluate_file,
     evaluate_retriever,
     format_rag_report,
     format_report,
     load_questions,
 )
+from rag_titan.evaluation.reports import summary_text
 from rag_titan.factory import CHUNKERS, RAG_TYPES
 from rag_titan.utils.logger import setup_logging
 
@@ -40,7 +44,9 @@ def build_parser():
     evaluate = commands.add_parser("evaluate", help="score RAG types on test questions")
 
     for command in (ask, chat, evaluate):
-        command.add_argument("--files", nargs="+", required=True, help="PDF, DOCX, MD or TXT files")
+        # evaluate can also read a data file (--input), so it checks --files itself
+        command.add_argument("--files", nargs="+", required=command is not evaluate,
+                             help="PDF, DOCX, MD or TXT files")
         command.add_argument("--log-level", default="WARNING", help="DEBUG, INFO or WARNING")
     for command in (ask, chat):
         command.add_argument("--rag-type", default="simple", choices=RAG_TYPES)
@@ -48,7 +54,7 @@ def build_parser():
     ask.add_argument("--question", required=True, help="the question to answer")
     ask.add_argument("--trace", action="store_true", help="also print every step taken")
 
-    evaluate.add_argument("--questions", required=True, help="questions JSON file")
+    evaluate.add_argument("--questions", help="questions JSON file (with --files)")
     evaluate.add_argument("--rag-type", nargs="+", default=["simple"], choices=RAG_TYPES,
                           help="one or more RAG types to compare")
     evaluate.add_argument("--chunker", nargs="+", choices=CHUNKERS,
@@ -58,7 +64,20 @@ def build_parser():
     evaluate.add_argument("--retrieval-only", action="store_true",
                           help="score search only (fast, no LLM); --rag-type is ignored")
     evaluate.add_argument("--top-k", type=int, default=5, help="chunks per search (retrieval only)")
+    add_data_options(evaluate)
     return parser
+
+
+def add_data_options(evaluate):
+    """Options of `rag-titan evaluate --input`: score the logged data of any RAG system."""
+    evaluate.add_argument("--input", help="JSON data file with chunks, queries and gold labels "
+                                          "(instead of --files and --questions)")
+    evaluate.add_argument("--output", default="rag_report.json",
+                          help="where to save the JSON report (a .md report is saved next to it)")
+    evaluate.add_argument("--baseline", help="an earlier JSON report, to list what got worse")
+    evaluate.add_argument("--k", type=int, default=5, help="results scored per query (--input)")
+    evaluate.add_argument("--fail-on-regression", action="store_true",
+                          help="exit with code 1 when a metric got worse than the baseline")
 
 
 def run_chat(rag):
@@ -96,6 +115,12 @@ def build_setups(args):
 
 def run_evaluate(args):
     """Print the report for `rag-titan evaluate`, then the questions that went wrong."""
+    if args.input:
+        run_evaluate_data(args)
+        return
+    if not args.files or not args.questions:
+        raise SystemExit("rag-titan evaluate: give --input data.json, "
+                         "or --files and --questions")
     questions = load_questions(args.questions)
 
     if args.retrieval_only:
@@ -111,6 +136,19 @@ def run_evaluate(args):
         print(format_rag_report(results))
 
     print_weak_rows(results)
+
+
+def run_evaluate_data(args):
+    """Evaluate a data file, save the JSON and Markdown reports and print a summary."""
+    if args.fail_on_regression and not args.baseline:
+        raise SystemExit("rag-titan evaluate: --fail-on-regression needs --baseline")
+
+    report = evaluate_file(args.input, args.output, k=args.k, baseline=args.baseline)
+    print(f"Reports saved: {args.output} and {Path(args.output).with_suffix('.md')}")
+    print(summary_text(report))
+
+    if args.fail_on_regression and report["regressions"]:
+        raise SystemExit(1)
 
 
 def print_weak_rows(results):

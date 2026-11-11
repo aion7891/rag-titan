@@ -9,6 +9,7 @@ Two ways to use it:
 """
 
 from rag_titan.evaluation.benchmark import compare_retrievers, evaluate_retriever, format_report
+from rag_titan.evaluation.collect import collect_dataset
 from rag_titan.evaluation.end_to_end import compare_setups, evaluate_rag, format_rag_report
 from rag_titan.evaluation.metrics import (
     matches_evidence,
@@ -19,7 +20,7 @@ from rag_titan.evaluation.metrics import (
 )
 from rag_titan.evaluation.questions import as_questions, check_questions, load_questions
 from rag_titan.evaluation.rag_evaluator import RAGEvaluator
-from rag_titan.evaluation.reports import ReportManager
+from rag_titan.evaluation.reports import ReportManager, evaluate_file
 from rag_titan.evaluation.root_cause import RootCauseAnalyzer
 from rag_titan.evaluation.scoring import ScoreAggregator
 from rag_titan.evaluation.stages import (
@@ -45,7 +46,9 @@ __all__ = [
     "RootCauseAnalyzer",
     "ScoreAggregator",
     "as_questions",
+    "collect_dataset",
     "compare_setups",
+    "evaluate_file",
     "evaluate_rag",
     "format_rag_report",
     "check_questions",
