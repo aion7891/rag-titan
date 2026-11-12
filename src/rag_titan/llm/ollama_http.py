@@ -19,6 +19,9 @@ import urllib.request
 
 DEFAULT_PORT = 11434
 
+# the chat message fields Ollama understands (same list as the official client)
+MESSAGE_FIELDS = ("role", "content", "thinking", "images", "tool_name", "tool_calls")
+
 
 def parse_host(host=None):
     """
@@ -58,10 +61,11 @@ def parse_host(host=None):
 
 def clean_message(message):
     """
-    Return a copy of a chat message without empty fields.
+    Return a copy of a chat message with only the fields Ollama knows.
 
-    The official client never sent None, "" or [] values, so neither do we
-    (for example an assistant tool-call message goes back without "content").
+    Matches the official client: unknown fields (like a tool call's "id") are
+    dropped, and so are None, "" and [] values (an assistant tool-call
+    message goes back without "content").
 
     Args:
         message: a dict like {"role": "user", "content": "hi"}.
@@ -69,8 +73,22 @@ def clean_message(message):
     if not isinstance(message, dict):
         raise ValueError(f"Each chat message must be a dict, got {type(message).__name__}")
 
-    return {key: value for key, value in message.items()
-            if value is not None and value != "" and value != [] and value != {}}
+    cleaned = {}
+    for key in MESSAGE_FIELDS:
+        value = message.get(key)
+        if key == "tool_calls" and value:
+            value = [_clean_tool_call(call) for call in value]
+        if value is not None and value != "" and value != []:
+            cleaned[key] = value
+
+    return cleaned
+
+
+def _clean_tool_call(call):
+    """Keep only the function name and arguments of one tool call."""
+    function = call.get("function") or {}
+    return {"function": {"name": function.get("name"),
+                         "arguments": function.get("arguments") or {}}}
 
 
 def post_json(host, path, payload, timeout=None):

@@ -8,6 +8,7 @@ Before using it, pull the model:
 import numpy as np
 
 from rag_titan.embeddings.base_embedder import BaseEmbedder
+from rag_titan.llm.ollama_http import parse_host, post_json
 from rag_titan.utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -24,12 +25,9 @@ class OllamaEmbedder(BaseEmbedder):
     """
 
     def __init__(self, model="nomic-embed-text", host=None, batch_size=32):
-        # imported here, so the package also loads where ollama is missing (the browser)
-        import ollama
-
         super().__init__(model)
         self.batch_size = batch_size
-        self.client = ollama.Client(host=host)
+        self.host = parse_host(host)
 
     def embed_many(self, texts):
         """Return one numpy vector per text, in the same order."""
@@ -46,10 +44,18 @@ class OllamaEmbedder(BaseEmbedder):
     def _embed_batch(self, batch):
         """Send one batch of texts to Ollama and return their vectors."""
         try:
-            response = self.client.embed(model=self.model, input=batch)
-        except Exception as error:
+            reply = post_json(self.host, "/api/embed", {"model": self.model, "input": batch})
+        except RuntimeError as error:
             raise RuntimeError(
                 f"Ollama embedding failed for model '{self.model}': {error}"
             ) from error
 
-        return [np.array(vector, dtype=np.float32) for vector in response["embeddings"]]
+        vectors = reply.get("embeddings") if isinstance(reply, dict) else None
+        # one vector per text, or the chunks and vectors would get out of step
+        if not isinstance(vectors, list) or len(vectors) != len(batch):
+            raise RuntimeError(
+                f"Ollama sent {len(vectors or [])} embeddings for {len(batch)} texts "
+                f"(model '{self.model}')"
+            )
+
+        return [np.array(vector, dtype=np.float32) for vector in vectors]
