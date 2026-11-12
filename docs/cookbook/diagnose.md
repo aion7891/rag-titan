@@ -25,6 +25,9 @@ evaluator's rules. **Play** can be paused, and the stage buttons work with a key
 <p>Use the static scenarios below if the interactive walkthrough is unavailable.</p>
 </div>
 
+Every summary ends with **Queries to look at** (which question failed, and at which
+stage) and, when inputs are missing, **Not measured** (what to add to measure it).
+
 ## Case A: search never finds the answer
 
 ```bash
@@ -38,6 +41,8 @@ Expected summary:
 Overall score: 62.5/100 (Average)
 Status: Action Required | Measurement coverage: 97%
 First failing stage: retrieval
+Queries to look at:
+  - q1 (retrieval): no relevant chunk in the top K
 ```
 
 For q1, the input now says:
@@ -77,6 +82,9 @@ Expected summary:
 Overall score: 65.5/100 (Average)
 Status: Action Required | Measurement coverage: 96%
 First failing stage: generation
+Queries to look at:
+  - q1 (generation): the task was marked unsuccessful
+  - q2 (generation): the task was marked unsuccessful
 ```
 
 Retrieval and context are unchanged from the baseline. The answers now claim
@@ -101,6 +109,9 @@ Expected summary:
 Overall score: 89.8/100 (Very Good)
 Status: Provisional | Measurement coverage: 65%
 First failing stage: none
+Not measured (null in the report) - to measure it:
+  - task success: add "task_success" per query (a person's yes/no)
+  - refusals: add a question with "answerable": false and "abstained"
 ```
 
 The actual answers still exist, but we removed reference answers and several

@@ -14,6 +14,62 @@ Write the reference from the source document, then compare the model with it.
 
 Recorded from a real run with Ollama (`gemma3:4b`, `nomic-embed-text`). Live answers vary, so your score may differ.
 
+## Prepare golden data step by step
+
+A golden question is **the answer you know is correct**, written by you from the
+document. You do not have to start from an empty file: rag-titan writes a first
+draft, and you review it.
+
+**Step 1. List your questions**, one per line, in `questions.txt`:
+
+```text
+How much is the daily meal allowance?
+Can I fly business class on a four-hour flight?
+```
+
+**Step 2. Let rag-titan write the draft** (with your documents, it suggests an
+evidence sentence for each question):
+
+```bash
+rag-titan golden --questions questions.txt --files travel_policy.md --output golden.json
+```
+
+```text
+Wrote golden.json: 2 questions, 2 with a suggested evidence quote.
+Next: for every question, check the quote, write expected_answer and required_facts, then set validated to true.
+```
+
+**Step 3. Review every record.** Open `golden.json` and fill in what a person must decide:
+
+| Field | What you do | Example |
+|---|---|---|
+| `expected_evidence` | Check the suggested sentence **proves** the answer; replace it if not | `"Economy class is required for all flights under six hours."` |
+| `expected_answer` | Write the correct answer yourself, from the document | `"No, economy class is required under six hours."` |
+| `required_facts` | 1 to 3 words the answer must contain | `["economy"]` |
+| `answerable` | `false` if the documents do not answer it | `true` |
+| `validated` | Set to `true` only after you checked the record | `true` |
+
+!!! warning "The suggestion is only a draft"
+    The suggested sentence is the one that shares the most words with the question.
+    For "Can I fly business class on a four-hour flight?" it suggests *"Business
+    class is allowed for flights of six hours or longer."*: related, but the
+    sentence that **proves** the answer is the economy one. That is why every
+    record starts with `"validated": false`.
+
+**Step 4. Check the file** against your documents:
+
+```python
+from pathlib import Path
+from rag_titan.evaluation import check_golden
+
+result = check_golden("golden.json", {"travel_policy.md": Path("travel_policy.md").read_text()})
+print(result["ready"], result["problems"])
+```
+
+`Ready: True` means every question is reviewed, has an answer and evidence, and every
+quote occurs exactly once in your documents. Until then `problems` says what is missing,
+for example `no expected_answer`. The sections below explain each field in detail.
+
 ## 1. Write one complete question
 
 This is a record from the downloadable [golden.json](../assets/cookbook/golden.json):

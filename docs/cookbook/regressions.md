@@ -8,6 +8,19 @@ A **regression** is a measured result becoming worse than the baseline beyond th
 comparison tolerance. The comparator checks individual metrics, not only the
 weighted overall score.
 
+## A regression test in plain words
+
+Think of two exam results. The **baseline** is the report of a run you trust. The
+**candidate** is the report of a new run, after you changed a model, a prompt or a
+chunk size. rag-titan compares the two **metric by metric**. If any metric got worse
+by more than a small tolerance, that is a **regression**, and with
+`--fail-on-regression` the command exits with code **1** instead of 0.
+
+![A regression check: baseline and candidate are compared metric by metric; worse means exit code 1, not worse means exit code 0](../assets/images/regression-check.svg)
+
+Why the exit code matters: CI systems such as GitHub Actions treat exit code 1 as a
+failed step, so a worse RAG cannot be merged by accident.
+
 ## What you will see
 
 ![Catching a regression against a saved baseline](../assets/images/eval-terminal/regressions.svg)
@@ -116,7 +129,9 @@ Before relying on this gate:
   metrics are not automatically regressions: only comparable numeric measurements
   present in both reports are checked.
 - Review noisy latency or cost changes across repeated live runs. The CLI uses the
-  default tolerance: 0.02 absolute for quality metrics, 2% relative for telemetry.
+  default tolerance: 0.02 absolute for quality metrics, 2% relative for cost and
+  tokens. Timings jitter between runs, so a **latency** only counts as worse when
+  it is more than **10% and more than 5 ms** slower (7.2 ms → 7.55 ms is noise).
 - Inspect reranking *gain* metrics in context: improving retrieval can leave less
   improvement for the reranker and reduce its measured gain.
 - Promote a new baseline only after reviewing its failures and coverage.
@@ -128,7 +143,8 @@ changes = ReportManager().regressions(candidate, baseline, tolerance=0.05)
 ```
 
 This is **0.05 absolute** for quality metrics and **5% relative** for telemetry;
-it is not a universal “five percent score drop” rule.
+it is not a universal “five percent score drop” rule. To count every slower
+timing, also pass `latency_share=0, latency_min_ms=0`.
 
 **Next:** [bring logs from another RAG](any-rag.md), or
 [collect a live rag-titan run](live-pipeline.md).

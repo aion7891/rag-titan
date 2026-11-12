@@ -1,6 +1,6 @@
 """Tests for the clearer terminal summary: queries to look at, not-measured hints, latency noise."""
 
-from rag_titan.evaluation import RAGEvaluator, build_dataset
+from rag_titan.evaluation import RAGEvaluator, ReportManager, build_dataset
 from rag_titan.evaluation.reports import find_regressions, summary_text
 from rag_titan.evaluation.reports.hints import not_measured, queries_to_look_at
 
@@ -72,3 +72,10 @@ def test_tiny_latency_changes_are_noise():
 def test_real_slowdowns_still_count():
     assert find_regressions(latency(20.0), latency(7.2))[0]["metric"] == "retrieval.p50_latency_ms"
     assert len(find_regressions(latency(1200), latency(1000))) == 1      # +20%, +200 ms
+
+
+def test_report_manager_passes_the_latency_rule_on():
+    manager = ReportManager()
+    assert manager.regressions(latency(7.55), latency(7.2)) == []
+    strict = manager.regressions(latency(7.55), latency(7.2), latency_share=0, latency_min_ms=0)
+    assert strict[0]["metric"] == "retrieval.p50_latency_ms"
