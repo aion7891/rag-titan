@@ -16,7 +16,7 @@ from rag_titan.rag_types.adaptive.adaptive_rag import AdaptiveRAG
 from rag_titan.rag_types.simple_rag import SimpleRAG
 from rag_titan.utils.logger import setup_logging
 
-__version__ = "0.8.1"
+__version__ = "0.8.2"
 
 __all__ = [
     "RAGTitan",

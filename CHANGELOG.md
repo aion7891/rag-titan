@@ -6,6 +6,34 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.8.2] - 2026-11-12
+
+Helpers for users who already have a RAG, from a new-user test. Nothing existing
+was removed or renamed.
+
+### Added
+- `rag-titan golden --questions questions.txt --files docs.md` and
+  `make_golden_template()`: a first draft of your golden questions, with a
+  suggested evidence sentence per question. Every record starts unvalidated, so
+  `check_golden()` is not ready until a person has reviewed it. Never overwrites
+  an existing file without `--force`.
+- `build_dataset(chunks, runs, golden, documents)`: turns the logs of any RAG and
+  your golden questions into an evaluation data file. It places chunks in their
+  documents, takes labels only from the golden questions, finds gold chunk ids
+  from evidence quotes and turns `[p1]` markers into citations. On the new-user
+  test data, measurement coverage went from 32% to 59%.
+- Docs: "Prepare golden data step by step", "Why is a value null?", "A regression
+  test in plain words" with a diagram, and `build_dataset()` in "Evaluate your own RAG".
+
+### Changed
+- The `rag-titan evaluate --input` summary also prints "Queries to look at" (each
+  failed query and its stage) and "Not measured" (what input would measure each
+  missing part).
+- Regression checks ignore latency noise: a latency counts as worse only when it is
+  more than 10% and more than 5 ms slower. `find_regressions()` and
+  `ReportManager.regressions()` take `latency_share=0, latency_min_ms=0` for the
+  old strict rule.
+
 ## [0.8.1] - 2026-11-12
 
 Docs-only release: no change to the Python API.

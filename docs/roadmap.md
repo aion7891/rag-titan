@@ -35,6 +35,7 @@
 - [x] Answer grading: deterministic answer, fact coverage, grounding and citation metrics (`GenerationEvaluator`), available since 0.8.0
 - [x] Stage evaluation: chunking through end to end, scorecards, root-cause hints, reports and regression checks (`RAGEvaluator`, `rag-titan evaluate --input`), available since 0.8.0
 - [x] Evaluation cookbook: six recipes, starter kit and animated walkthroughs, available since 0.8.1
+- [x] Beginner evaluation helpers: golden questions template (`rag-titan golden`), `build_dataset()` for any RAG's logs, clearer summary, available since 0.8.2
 
 ## Later ideas
 
