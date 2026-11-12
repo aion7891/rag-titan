@@ -34,6 +34,7 @@
 - [x] RAG playground: run RAG types in the browser with live flow diagrams, recorded or live with your Ollama, available since 0.7.0
 - [x] Answer grading: deterministic answer, fact coverage, grounding and citation metrics (`GenerationEvaluator`), available since 0.8.0
 - [x] Stage evaluation: chunking through end to end, scorecards, root-cause hints, reports and regression checks (`RAGEvaluator`, `rag-titan evaluate --input`), available since 0.8.0
+- [x] Evaluation cookbook: six recipes, starter kit and animated walkthroughs, available since 0.8.1
 
 ## Later ideas
 

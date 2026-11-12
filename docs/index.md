@@ -6,6 +6,9 @@ hide:
 
 ![rag-titan: a Swiss Army knife for RAG](assets/images/banner.svg)
 
+[Already have a RAG? Evaluate it →](cookbook/index.md#choose-your-path){ .md-button .md-button--primary }
+[New here? Get started →](getting-started.md){ .md-button }
+
 RAG lets a language model answer questions about *your* documents. It first
 **finds** the most relevant pieces of text, then asks the model to **answer
 using only those pieces**.
