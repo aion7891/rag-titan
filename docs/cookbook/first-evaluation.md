@@ -4,7 +4,7 @@
 metrics. **Requirements:** Python 3.10 or newer and a terminal. Installation needs
 internet access; evaluating the bundled JSON does not need a model or network.
 
-You will use `rag-titan==0.8.3` so the expected numbers match this recipe.
+You will use `rag-titan==0.8.4` so the expected numbers match this recipe.
 
 ## What you will see
 
@@ -30,7 +30,7 @@ characters from other tutorials.
     python3 --version
     python3 -m venv .venv
     source .venv/bin/activate
-    python -m pip install "rag-titan==0.8.3"
+    python -m pip install "rag-titan==0.8.4"
     rag-titan --version
     ```
 
@@ -40,7 +40,7 @@ characters from other tutorials.
     py --version
     py -m venv .venv
     .\.venv\Scripts\Activate.ps1
-    python -m pip install "rag-titan==0.8.3"
+    python -m pip install "rag-titan==0.8.4"
     python -m rag_titan --version
     ```
 
@@ -51,7 +51,7 @@ characters from other tutorials.
     If PowerShell blocks activation, you do not need to change its execution policy:
 
     ```powershell
-    .\.venv\Scripts\python.exe -m pip install "rag-titan==0.8.3"
+    .\.venv\Scripts\python.exe -m pip install "rag-titan==0.8.4"
     .\.venv\Scripts\python.exe -m rag_titan --version
     ```
 
@@ -62,7 +62,7 @@ characters from other tutorials.
 Expected version output:
 
 ```text
-rag-titan 0.8.3
+rag-titan 0.8.4
 ```
 
 If Python is missing, install Python 3.10+ using the instructions in
@@ -166,7 +166,7 @@ whole system with a different retrieval configuration.”
 |---|---|
 | `rag-titan: command not found` | Activate `.venv`, or use its full executable path as shown above |
 | `Data file not found` | Open the terminal in the extracted folder; check that `sample.json` is there |
-| Version is not 0.8.3 | Use the fresh virtual environment and pinned install command above |
+| Version is not 0.8.4 | Use the fresh virtual environment and pinned install command above |
 | `not valid JSON` | Start with the unedited downloaded file; JSON uses double quotes and no trailing commas |
 | Different scores | Check package version, input file and K; use the original teaching fixture |
 | Ollama connection error | This recipe should not contact Ollama: use `--input`, not `--files` |

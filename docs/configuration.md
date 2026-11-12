@@ -50,7 +50,7 @@ Either keep using your local Ollama (run `ollama signin` once, then pick a
 
 ```bash
 OLLAMA_HOST=https://ollama.com
-OLLAMA_API_KEY=your-key          # the ollama client sends it for you
+OLLAMA_API_KEY=your-key          # sent for you as "Authorization: Bearer your-key"
 LLM_MODEL=gpt-oss:20b-cloud
 ```
 
