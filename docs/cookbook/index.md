@@ -6,19 +6,53 @@
 <p>Start with a small employee handbook and two questions. Then use the same workflow on your own RAG system. The first recipe needs only Python: no model, API key or GPU.</p>
 </div>
 
+## The whole workflow in one minute
+
+![From golden questions to a scorecard: write golden questions, check them, run your RAG, evaluate](../assets/images/eval-terminal/end-to-end.svg)
+
+Recorded from a real run with Ollama (`gemma3:4b`, `nomic-embed-text`). Live answers vary, so your score may differ.
+
+## Choose your path
+
+=== "Already have a RAG?"
+
+    You only want to **evaluate** it. No model, GPU or API key is needed for this.
+
+    ![Evaluate any RAG: your logs and golden labels go into rag-titan evaluate, which scores every stage and names the first failing stage](../assets/images/eval-flow.svg)
+
+    1. **Install:** `pip install rag-titan`
+    2. **Write golden questions:** questions with reviewed answers and evidence.
+       → [Build a golden set](golden-set.md)
+    3. **Save your RAG's outputs** (retrieved chunks, context, answer) in one JSON file.
+       → [Evaluate your own RAG](any-rag.md)
+    4. **Score it:** `rag-titan evaluate --input my-data.json --output report.json --k 3`.
+       You get a 0 to 100 score and the first stage that fails.
+    5. **Score is low?** Find which stage to fix. → [Diagnose a bad answer](diagnose.md)
+    6. **Changed something?** Compare with your last report. → [Catch regressions](regressions.md)
+
+=== "New to evaluation?"
+
+    Learn the workflow on a tiny handbook first, with ready-made data.
+
+    1. [Your first evaluation](first-evaluation.md): run one command, read three numbers.
+    2. [Diagnose a bad answer](diagnose.md): see how a failing stage is found.
+    3. [Catch regressions](regressions.md): stop a worse version before it ships.
+
+    Then switch to the **Already have a RAG?** path with your own data.
+
 **RAG** means finding pieces of your documents and giving them to a language model
 so it can answer a question. **Evaluation** means comparing what happened with
 what should have happened. A fluent answer alone does not tell you whether the
 system found the right evidence or used it correctly.
 
-## Pick your starting point
+## All recipes
 
 | Your situation | Recipe | What you finish with |
 |---|---|---|
 | “I have never evaluated a RAG.” | [1. Your first evaluation](first-evaluation.md) | A JSON report and a readable Markdown report |
 | “The answer is wrong. Where do I look?” | [2. Diagnose a bad answer](diagnose.md) | A stage to investigate and a concrete next experiment |
 | “I changed something. Is it better?” | [3. Catch regressions](regressions.md) | A baseline comparison and a command that fails on regression |
-| “I already have my own RAG.” | [4. Evaluate another RAG system](any-rag.md) | Logged outputs in a portable evaluation format |
+| “I already have my own RAG.” | [4. Evaluate your own RAG](any-rag.md) | Logged outputs in a portable evaluation format |
 | “I want to run this on real models.” | [5. Evaluate a live rag-titan pipeline](live-pipeline.md) | Actual Ollama outputs, saved data and a stage report |
 | “What should my test questions look like?” | [6. Build a golden question set](golden-set.md) | Reviewed questions, reference answers and evidence labels |
 

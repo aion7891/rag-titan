@@ -6,10 +6,25 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.8.1] - 2026-11-12
+
+Docs-only release: no change to the Python API.
+
 ### Added
 - Beginner evaluation cookbook: six runnable recipes, downloadable teaching data and
   live Ollama scripts, interactive stage walkthroughs using real evaluator results,
   and Bash/PowerShell command builders for scoring and regression checks.
+- Animated terminal demos of the evaluation recipes, generated from real
+  `rag-titan evaluate` output, including an end-to-end demo from golden questions
+  to a scorecard.
+- Animated evaluation flow image: your logs in, the score of every stage and the
+  first failing stage out, drawn from a real evaluator run.
+- "Choose your path" on the cookbook start page, with six steps for users who
+  already have a RAG and only want to evaluate it; buttons on the Home page.
+
+### Changed
+- Docs sidebar regrouped into collapsible sections: Get started, Evaluate your RAG,
+  Evaluation reference, Build a RAG, Playgrounds and Advanced.
 
 ## [0.8.0] - 2026-11-12
 

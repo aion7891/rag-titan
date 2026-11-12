@@ -1,9 +1,17 @@
-# 4. Evaluate another RAG system
+# 4. Evaluate your own RAG
 
 **Goal:** evaluate outputs from your existing RAG, regardless of its framework,
 model or vector database. **Requirements:** the installation from
 [recipe 1](first-evaluation.md) and access to your system's logged outputs.
 Evaluation itself does not need access to the model or database.
+
+## What you will see
+
+![Evaluate any RAG: your logs and golden labels go into rag-titan evaluate, which scores every stage and names the first failing stage](../assets/images/eval-flow.svg)
+
+![Evaluating a minimal file of your own logs](../assets/images/eval-terminal/own-rag.svg)
+
+The terminal replays the **real output** of this recipe's commands on the starter data.
 
 ## 1. Start with the smallest useful dataset
 

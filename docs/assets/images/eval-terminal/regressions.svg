@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 464"
+     width="960" height="464" role="img" aria-labelledby="title desc">
+  <title id="title">rag-titan: Catch regressions</title>
+  <desc id="desc">Save a baseline, then compare a broken run against it; the command exits with code 1.</desc>
+  <defs>
+    <style>
+.t { font: 14px ui-monospace, SFMono-Regular, Menlo, monospace; white-space: pre; }
+.bar { font: 600 12px system-ui, -apple-system, "Segoe UI", sans-serif;
+       fill: #94a3b8; text-anchor: middle; }
+@media (prefers-reduced-motion: reduce) {
+  .t { animation: none !important; opacity: 1; }
+  .cover { display: none; }
+}
+@keyframes l0 { 0%, 2.02% { opacity: 0; } 3.03%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l0 { animation: l0 19.8s infinite; }
+@keyframes c0 { 0%, 2.02% { transform: translateX(0); } 10.10%, 100% { transform: translateX(578px); } }
+.c0 { animation: c0 19.8s infinite steps(67, end); }
+@keyframes l1 { 0%, 14.65% { opacity: 0; } 15.66%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l1 { animation: l1 19.8s infinite; }
+@keyframes l2 { 0%, 16.92% { opacity: 0; } 17.93%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l2 { animation: l2 19.8s infinite; }
+@keyframes l3 { 0%, 19.19% { opacity: 0; } 20.20%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l3 { animation: l3 19.8s infinite; }
+@keyframes l4 { 0%, 21.46% { opacity: 0; } 22.47%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l4 { animation: l4 19.8s infinite; }
+@keyframes l5 { 0%, 26.77% { opacity: 0; } 27.78%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l5 { animation: l5 19.8s infinite; }
+@keyframes c5 { 0%, 26.77% { transform: translateX(0); } 34.85%, 100% { transform: translateX(840px); } }
+.c5 { animation: c5 19.8s infinite steps(98, end); }
+@keyframes l6 { 0%, 34.85% { opacity: 0; } 35.86%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l6 { animation: l6 19.8s infinite; }
+@keyframes c6 { 0%, 34.85% { transform: translateX(0); } 42.93%, 100% { transform: translateX(249px); } }
+.c6 { animation: c6 19.8s infinite steps(28, end); }
+@keyframes l7 { 0%, 47.47% { opacity: 0; } 48.48%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l7 { animation: l7 19.8s infinite; }
+@keyframes l8 { 0%, 49.75% { opacity: 0; } 50.76%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l8 { animation: l8 19.8s infinite; }
+@keyframes l9 { 0%, 52.02% { opacity: 0; } 53.03%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l9 { animation: l9 19.8s infinite; }
+@keyframes l10 { 0%, 54.29% { opacity: 0; } 55.30%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l10 { animation: l10 19.8s infinite; }
+@keyframes l11 { 0%, 56.57% { opacity: 0; } 57.58%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l11 { animation: l11 19.8s infinite; }
+@keyframes l12 { 0%, 61.87% { opacity: 0; } 62.88%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l12 { animation: l12 19.8s infinite; }
+@keyframes c12 { 0%, 61.87% { transform: translateX(0); } 69.95%, 100% { transform: translateX(71px); } }
+.c12 { animation: c12 19.8s infinite steps(7, end); }
+@keyframes l13 { 0%, 74.49% { opacity: 0; } 75.51%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l13 { animation: l13 19.8s infinite; }
+    </style>
+    <clipPath id="screen"><rect x="0" y="0" width="960" height="464"/></clipPath>
+  </defs>
+  <rect x="0.5" y="0.5" width="959" height="463" rx="14"
+        fill="#0f172a" stroke="#1e293b"/>
+  <rect x="0.5" y="0.5" width="959" height="40" rx="14" fill="#1e293b"/>
+  <rect x="0.5" y="26" width="959" height="15" fill="#1e293b"/>
+  <circle cx="26" cy="21" r="6" fill="#f87171"/>
+  <circle cx="46" cy="21" r="6" fill="#fbbf24"/>
+  <circle cx="66" cy="21" r="6" fill="#4ade80"/>
+  <text class="bar" x="480" y="25">rag-titan — terminal</text>
+  <text class="t l0" x="44" y="90" fill="#e2e8f0"><tspan fill="#f472b6">$ </tspan>rag-titan evaluate --input sample.json --output baseline.json --k 3</text>
+<g clip-path="url(#screen)"><rect class="cover c0" x="60.9" y="73" width="578" height="24" fill="#0f172a"/></g>
+  <text class="t l1" x="44" y="114" fill="#94a3b8">Reports saved: baseline.json and baseline.md</text>
+  <text class="t l2" x="44" y="138" fill="#86efac">Overall score: 93.2/100 (Excellent)</text>
+  <text class="t l3" x="44" y="162" fill="#94a3b8">Status: Evaluated | Measurement coverage: 97%</text>
+  <text class="t l4" x="44" y="186" fill="#86efac">First failing stage: none</text>
+  <text class="t l5" x="44" y="224" fill="#e2e8f0"><tspan fill="#f472b6">$ </tspan>rag-titan evaluate --input missed-evidence.json --output candidate.json --baseline baseline.json \</text>
+<g clip-path="url(#screen)"><rect class="cover c5" x="60.9" y="207" width="840" height="24" fill="#0f172a"/></g>
+  <text class="t l6" x="44" y="248" fill="#e2e8f0">    --k 3 --fail-on-regression</text>
+<g clip-path="url(#screen)"><rect class="cover c6" x="60.9" y="231" width="249" height="24" fill="#0f172a"/></g>
+  <text class="t l7" x="44" y="272" fill="#94a3b8">Reports saved: candidate.json and candidate.md</text>
+  <text class="t l8" x="44" y="296" fill="#fdba74">Overall score: 62.5/100 (Average)</text>
+  <text class="t l9" x="44" y="320" fill="#94a3b8">Status: Action Required | Measurement coverage: 97%</text>
+  <text class="t l10" x="44" y="344" fill="#fdba74">First failing stage: retrieval</text>
+  <text class="t l11" x="44" y="368" fill="#fca5a5">Regressions against the baseline: retrieval.precision_at_k, retrieval.recall_at_k, … (+30 more)</text>
+  <text class="t l12" x="44" y="406" fill="#e2e8f0"><tspan fill="#f472b6">$ </tspan>echo $?</text>
+<g clip-path="url(#screen)"><rect class="cover c12" x="60.9" y="389" width="71" height="24" fill="#0f172a"/></g>
+  <text class="t l13" x="44" y="430" fill="#fca5a5">1</text>
+</svg>

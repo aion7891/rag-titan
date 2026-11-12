@@ -8,6 +8,12 @@ An answer can fail even when retrieval succeeds. Work forward through the pipeli
 source → chunks → vectors → search → reranking → context → answer. Fixing an early
 failure may fix several downstream symptoms.
 
+## What you will see
+
+![Diagnosing a run where search missed the evidence](../assets/images/eval-terminal/diagnose.svg)
+
+The terminal replays the **real output** of this recipe's commands on the starter data.
+
 ## Explore four controlled runs
 
 The animation is a step-by-step illustration of saved outputs. It does not run

@@ -6,6 +6,9 @@ hide:
 
 ![rag-titan: a Swiss Army knife for RAG](assets/images/banner.svg)
 
+[Already have a RAG? Evaluate it →](cookbook/index.md#choose-your-path){ .md-button .md-button--primary }
+[New here? Get started →](getting-started.md){ .md-button }
+
 RAG lets a language model answer questions about *your* documents. It first
 **finds** the most relevant pieces of text, then asks the model to **answer
 using only those pieces**.
@@ -23,6 +26,8 @@ With `rag-titan` you get:
 - **Find the stage that fails.** Score chunking, embedding, retrieval, reranking,
   context and answers of **any** RAG system from its logged outputs, with a 0 to 100
   scorecard and regression checks. → [Evaluating every stage](stage-evaluation.md)
+- **Already have a RAG?** Evaluate it in 6 simple steps, no model needed.
+  → [Evaluation cookbook](cookbook/index.md#choose-your-path)
 - **Watch it work in your browser.** The [RAG playground](rag-playground.md) lights
   up every step on a live flow diagram; the [chunk playground](playground.md)
   shows how text is cut.
