@@ -8,6 +8,7 @@ Examples:
     rag-titan evaluate --files *.md --questions questions.json \\
         --rag-type simple adaptive --chunker word paragraph
     rag-titan evaluate --input data.json --output report.json --baseline last_report.json
+    rag-titan golden --questions questions.txt --files policy.md --output golden.json
     rag-titan --version
 """
 
@@ -17,6 +18,7 @@ from pathlib import Path
 
 from rag_titan import __version__
 from rag_titan.app import RAGTitan
+from rag_titan.cli_golden import add_golden_command, run_golden
 from rag_titan.evaluation import (
     compare_setups,
     evaluate_file,
@@ -65,6 +67,7 @@ def build_parser():
                           help="score search only (fast, no LLM); --rag-type is ignored")
     evaluate.add_argument("--top-k", type=int, default=5, help="chunks per search (retrieval only)")
     add_data_options(evaluate)
+    add_golden_command(commands)
     return parser
 
 
@@ -173,6 +176,9 @@ def main(argv=None):
 
     if args.command == "evaluate":
         run_evaluate(args)
+        return
+    if args.command == "golden":
+        run_golden(args)
         return
 
     rag = RAGTitan(rag_type=args.rag_type)
