@@ -4,7 +4,7 @@
 metrics. **Requirements:** Python 3.10 or newer and a terminal. Installation needs
 internet access; evaluating the bundled JSON does not need a model or network.
 
-You will use `rag-titan==0.8.2` so the expected numbers match this recipe.
+You will use `rag-titan==0.8.3` so the expected numbers match this recipe.
 
 ## What you will see
 
@@ -30,7 +30,7 @@ characters from other tutorials.
     python3 --version
     python3 -m venv .venv
     source .venv/bin/activate
-    python -m pip install "rag-titan==0.8.2"
+    python -m pip install "rag-titan==0.8.3"
     rag-titan --version
     ```
 
@@ -40,25 +40,29 @@ characters from other tutorials.
     py --version
     py -m venv .venv
     .\.venv\Scripts\Activate.ps1
-    python -m pip install "rag-titan==0.8.2"
-    rag-titan --version
+    python -m pip install "rag-titan==0.8.3"
+    python -m rag_titan --version
     ```
+
+    On Windows, prefer `python -m rag_titan` over `rag-titan`: security settings
+    such as Smart App Control can block the `rag-titan.exe` launcher, and
+    `python -m rag_titan` takes exactly the same options.
 
     If PowerShell blocks activation, you do not need to change its execution policy:
 
     ```powershell
-    .\.venv\Scripts\python.exe -m pip install "rag-titan==0.8.2"
-    .\.venv\Scripts\rag-titan.exe --version
+    .\.venv\Scripts\python.exe -m pip install "rag-titan==0.8.3"
+    .\.venv\Scripts\python.exe -m rag_titan --version
     ```
 
     In the rest of the cookbook, replace `python` with
     `.\.venv\Scripts\python.exe` and `rag-titan` with
-    `.\.venv\Scripts\rag-titan.exe` when running without activation.
+    `.\.venv\Scripts\python.exe -m rag_titan` when running without activation.
 
 Expected version output:
 
 ```text
-rag-titan 0.8.2
+rag-titan 0.8.3
 ```
 
 If Python is missing, install Python 3.10+ using the instructions in
@@ -162,7 +166,7 @@ whole system with a different retrieval configuration.”
 |---|---|
 | `rag-titan: command not found` | Activate `.venv`, or use its full executable path as shown above |
 | `Data file not found` | Open the terminal in the extracted folder; check that `sample.json` is there |
-| Version is not 0.8.2 | Use the fresh virtual environment and pinned install command above |
+| Version is not 0.8.3 | Use the fresh virtual environment and pinned install command above |
 | `not valid JSON` | Start with the unedited downloaded file; JSON uses double quotes and no trailing commas |
 | Different scores | Check package version, input file and K; use the original teaching fixture |
 | Ollama connection error | This recipe should not contact Ollama: use `--input`, not `--files` |

@@ -1,6 +1,8 @@
 # Command line
 
-Installing the package adds a `rag-titan` command.
+Installing the package adds a `rag-titan` command. `python -m rag_titan` runs the
+same tool with the same options; use it on Windows when security settings block the
+`rag-titan.exe` launcher, see [Getting started](getting-started.md).
 
 ![rag-titan command line demo](assets/images/cli.svg)
 

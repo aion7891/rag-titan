@@ -8,6 +8,22 @@ pip install rag-titan
 
 Python 3.10 or newer is required.
 
+!!! tip "Windows: rag-titan.exe is blocked?"
+    Smart App Control or a company application-control policy can block the
+    `rag-titan.exe` launcher that pip creates ("An Application Control policy has
+    blocked this file"). rag-titan is fine; only the launcher is blocked. Run the
+    same command through Python instead, everywhere in these docs:
+
+    ```powershell
+    python -m pip install rag-titan
+    python -m rag_titan --version
+    python -m rag_titan evaluate --input data.json --output report.json --k 3
+    ```
+
+    Use `python -m pip`, not `pip`, so the package goes into the same Python you run.
+    Please do not turn off Smart App Control for this: Windows cannot turn it back
+    on without a reset.
+
 ## 2. Install Ollama and pull the models
 
 `rag-titan` uses [Ollama](https://ollama.com) to run models on your own computer.

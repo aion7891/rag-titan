@@ -6,6 +6,17 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.8.3] - 2026-11-12
+
+### Fixed
+- Windows: `python -m rag_titan ...` now runs the command line tool, with the same
+  commands and options as `rag-titan`. Use it when Smart App Control or an
+  application-control policy blocks the unsigned `rag-titan.exe` launcher that pip
+  creates. Before, `python -m rag_titan` failed with "is a package and cannot be
+  directly executed".
+- Docs: Getting started, the cookbook's Windows install steps and the Command line
+  page use `python -m rag_titan` instead of `rag-titan.exe`.
+
 ## [0.8.2] - 2026-11-12
 
 Helpers for users who already have a RAG, from a new-user test. Nothing existing
