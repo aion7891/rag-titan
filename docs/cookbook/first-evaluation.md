@@ -6,6 +6,12 @@ internet access; evaluating the bundled JSON does not need a model or network.
 
 You will use `rag-titan==0.8.0` so the expected numbers match this recipe.
 
+## What you will see
+
+![Your first evaluation in the terminal](../assets/images/eval-terminal/first-evaluation.svg)
+
+The terminal replays the **real output** of this recipe's commands on the starter data.
+
 ## 1. Set up a folder
 
 [Download the starter ZIP](../assets/cookbook/rag-titan-cookbook.zip) and extract it

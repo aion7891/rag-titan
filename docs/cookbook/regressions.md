@@ -8,6 +8,12 @@ A **regression** is a measured result becoming worse than the baseline beyond th
 comparison tolerance. The comparator checks individual metrics, not only the
 weighted overall score.
 
+## What you will see
+
+![Catching a regression against a saved baseline](../assets/images/eval-terminal/regressions.svg)
+
+The terminal replays the **real output** of this recipe's commands on the starter data.
+
 ## 1. Save the known baseline
 
 ```bash

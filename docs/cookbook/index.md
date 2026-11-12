@@ -18,7 +18,7 @@ system found the right evidence or used it correctly.
 | “I have never evaluated a RAG.” | [1. Your first evaluation](first-evaluation.md) | A JSON report and a readable Markdown report |
 | “The answer is wrong. Where do I look?” | [2. Diagnose a bad answer](diagnose.md) | A stage to investigate and a concrete next experiment |
 | “I changed something. Is it better?” | [3. Catch regressions](regressions.md) | A baseline comparison and a command that fails on regression |
-| “I already have my own RAG.” | [4. Evaluate another RAG system](any-rag.md) | Logged outputs in a portable evaluation format |
+| “I already have my own RAG.” | [4. Evaluate your own RAG](any-rag.md) | Logged outputs in a portable evaluation format |
 | “I want to run this on real models.” | [5. Evaluate a live rag-titan pipeline](live-pipeline.md) | Actual Ollama outputs, saved data and a stage report |
 | “What should my test questions look like?” | [6. Build a golden question set](golden-set.md) | Reviewed questions, reference answers and evidence labels |
 
