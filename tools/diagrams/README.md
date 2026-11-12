@@ -37,7 +37,12 @@ and `inspect_report.py` on the cookbook starter data, so every line is real outp
 ```bash
 python tools/diagrams/make_terminal_demos.py           # draw all demos
 python tools/diagrams/make_terminal_demos.py --check   # fail if any is out of date
+python tools/diagrams/make_terminal_demos.py --live    # redraw the end-to-end demo
 ```
+
+The end-to-end demo (`end-to-end.svg`) runs the live Ollama script, so its answers
+change between runs: it is redrawn only with `--live` (Ollama running, `gemma3:4b`
+and `nomic-embed-text` pulled) and `--check` skips it.
 
 Run `--check` after changing the evaluator or the starter data. `terminal_svg.py`
 draws the terminal (typing, line timing, colours) in the style of `cli.svg`.

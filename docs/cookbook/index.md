@@ -6,6 +6,12 @@
 <p>Start with a small employee handbook and two questions. Then use the same workflow on your own RAG system. The first recipe needs only Python: no model, API key or GPU.</p>
 </div>
 
+## The whole workflow in one minute
+
+![From golden questions to a scorecard: write golden questions, check them, run your RAG, evaluate](../assets/images/eval-terminal/end-to-end.svg)
+
+Recorded from a real run with Ollama (`gemma3:4b`, `nomic-embed-text`). Live answers vary, so your score may differ.
+
 **RAG** means finding pieces of your documents and giving them to a language model
 so it can answer a question. **Evaluation** means comparing what happened with
 what should have happened. A fluent answer alone does not tell you whether the

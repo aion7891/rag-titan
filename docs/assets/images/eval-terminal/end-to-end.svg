@@ -1,0 +1,139 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 862"
+     width="960" height="862" role="img" aria-labelledby="title desc">
+  <title id="title">rag-titan: From golden questions to a scorecard</title>
+  <desc id="desc">Write golden questions, check them against the handbook, then run a live Ollama RAG that answers them; rag-titan scores every stage and names what to fix.</desc>
+  <defs>
+    <style>
+.t { font: 14px ui-monospace, SFMono-Regular, Menlo, monospace; white-space: pre; }
+.bar { font: 600 12px system-ui, -apple-system, "Segoe UI", sans-serif;
+       fill: #94a3b8; text-anchor: middle; }
+@media (prefers-reduced-motion: reduce) {
+  .t { animation: none !important; opacity: 1; }
+  .cover { display: none; }
+}
+@keyframes l0 { 0%, 1.21% { opacity: 0; } 1.81%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l0 { animation: l0 33.1s infinite; }
+@keyframes c0 { 0%, 1.21% { transform: translateX(0); } 6.04%, 100% { transform: translateX(612px); } }
+.c0 { animation: c0 33.1s infinite steps(71, end); }
+@keyframes l1 { 0%, 6.04% { opacity: 0; } 6.65%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l1 { animation: l1 33.1s infinite; }
+@keyframes c1 { 0%, 6.04% { transform: translateX(0); } 10.88%, 100% { transform: translateX(189px); } }
+.c1 { animation: c1 33.1s infinite steps(21, end); }
+@keyframes l2 { 0%, 13.60% { opacity: 0; } 14.20%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l2 { animation: l2 33.1s infinite; }
+@keyframes l3 { 0%, 14.95% { opacity: 0; } 15.56%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l3 { animation: l3 33.1s infinite; }
+@keyframes l4 { 0%, 16.31% { opacity: 0; } 16.92%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l4 { animation: l4 33.1s infinite; }
+@keyframes l5 { 0%, 17.67% { opacity: 0; } 18.28%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l5 { animation: l5 33.1s infinite; }
+@keyframes l6 { 0%, 19.03% { opacity: 0; } 19.64%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l6 { animation: l6 33.1s infinite; }
+@keyframes l7 { 0%, 20.39% { opacity: 0; } 21.00%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l7 { animation: l7 33.1s infinite; }
+@keyframes l8 { 0%, 21.75% { opacity: 0; } 22.36%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l8 { animation: l8 33.1s infinite; }
+@keyframes l9 { 0%, 23.11% { opacity: 0; } 23.72%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l9 { animation: l9 33.1s infinite; }
+@keyframes l10 { 0%, 26.28% { opacity: 0; } 26.89%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l10 { animation: l10 33.1s infinite; }
+@keyframes c10 { 0%, 26.28% { transform: translateX(0); } 31.12%, 100% { transform: translateX(333px); } }
+.c10 { animation: c10 33.1s infinite steps(38, end); }
+@keyframes l11 { 0%, 31.12% { opacity: 0; } 31.72%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l11 { animation: l11 33.1s infinite; }
+@keyframes c11 { 0%, 31.12% { transform: translateX(0); } 35.95%, 100% { transform: translateX(198px); } }
+.c11 { animation: c11 33.1s infinite steps(22, end); }
+@keyframes l12 { 0%, 38.67% { opacity: 0; } 39.27%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l12 { animation: l12 33.1s infinite; }
+@keyframes l13 { 0%, 40.03% { opacity: 0; } 40.63%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l13 { animation: l13 33.1s infinite; }
+@keyframes l14 { 0%, 41.39% { opacity: 0; } 41.99%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l14 { animation: l14 33.1s infinite; }
+@keyframes l15 { 0%, 44.56% { opacity: 0; } 45.17%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l15 { animation: l15 33.1s infinite; }
+@keyframes c15 { 0%, 44.56% { transform: translateX(0); } 49.40%, 100% { transform: translateX(485px); } }
+.c15 { animation: c15 33.1s infinite steps(56, end); }
+@keyframes l16 { 0%, 49.40% { opacity: 0; } 50.00%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l16 { animation: l16 33.1s infinite; }
+@keyframes c16 { 0%, 49.40% { transform: translateX(0); } 54.23%, 100% { transform: translateX(223px); } }
+.c16 { animation: c16 33.1s infinite steps(25, end); }
+@keyframes l17 { 0%, 56.95% { opacity: 0; } 57.55%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l17 { animation: l17 33.1s infinite; }
+@keyframes l18 { 0%, 58.31% { opacity: 0; } 58.91%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l18 { animation: l18 33.1s infinite; }
+@keyframes l19 { 0%, 59.67% { opacity: 0; } 60.27%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l19 { animation: l19 33.1s infinite; }
+@keyframes l20 { 0%, 61.03% { opacity: 0; } 61.63%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l20 { animation: l20 33.1s infinite; }
+@keyframes l21 { 0%, 64.20% { opacity: 0; } 64.80%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l21 { animation: l21 33.1s infinite; }
+@keyframes c21 { 0%, 64.20% { transform: translateX(0); } 69.03%, 100% { transform: translateX(181px); } }
+.c21 { animation: c21 33.1s infinite steps(20, end); }
+@keyframes l22 { 0%, 69.03% { opacity: 0; } 69.64%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l22 { animation: l22 33.1s infinite; }
+@keyframes c22 { 0%, 69.03% { transform: translateX(0); } 73.87%, 100% { transform: translateX(358px); } }
+.c22 { animation: c22 33.1s infinite steps(41, end); }
+@keyframes l23 { 0%, 76.59% { opacity: 0; } 77.19%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l23 { animation: l23 33.1s infinite; }
+@keyframes l24 { 0%, 77.95% { opacity: 0; } 78.55%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l24 { animation: l24 33.1s infinite; }
+@keyframes l25 { 0%, 79.31% { opacity: 0; } 79.91%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l25 { animation: l25 33.1s infinite; }
+@keyframes l26 { 0%, 80.66% { opacity: 0; } 81.27%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l26 { animation: l26 33.1s infinite; }
+@keyframes l27 { 0%, 82.02% { opacity: 0; } 82.63%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l27 { animation: l27 33.1s infinite; }
+@keyframes l28 { 0%, 83.38% { opacity: 0; } 83.99%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l28 { animation: l28 33.1s infinite; }
+@keyframes l29 { 0%, 84.74% { opacity: 0; } 85.35%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l29 { animation: l29 33.1s infinite; }
+    </style>
+    <clipPath id="screen"><rect x="0" y="0" width="960" height="862"/></clipPath>
+  </defs>
+  <rect x="0.5" y="0.5" width="959" height="861" rx="14"
+        fill="#0f172a" stroke="#1e293b"/>
+  <rect x="0.5" y="0.5" width="959" height="40" rx="14" fill="#1e293b"/>
+  <rect x="0.5" y="26" width="959" height="15" fill="#1e293b"/>
+  <circle cx="26" cy="21" r="6" fill="#f87171"/>
+  <circle cx="46" cy="21" r="6" fill="#fbbf24"/>
+  <circle cx="66" cy="21" r="6" fill="#4ade80"/>
+  <text class="bar" x="480" y="25">rag-titan — terminal</text>
+  <text class="t l0" x="44" y="90" fill="#7dd3fc"># 1. Write golden questions: question, reference answer, evidence quote</text>
+<g clip-path="url(#screen)"><rect class="cover c0" x="44.0" y="73" width="612" height="24" fill="#0f172a"/></g>
+  <text class="t l1" x="44" y="114" fill="#e2e8f0"><tspan fill="#f472b6">$ </tspan>head -n 8 golden.json</text>
+<g clip-path="url(#screen)"><rect class="cover c1" x="60.9" y="97" width="189" height="24" fill="#0f172a"/></g>
+  <text class="t l2" x="44" y="138" fill="#94a3b8">[</text>
+  <text class="t l3" x="44" y="162" fill="#94a3b8">  {</text>
+  <text class="t l4" x="44" y="186" fill="#94a3b8">    "id": "q1",</text>
+  <text class="t l5" x="44" y="210" fill="#94a3b8">    "question": "How many days of annual leave do employees get?",</text>
+  <text class="t l6" x="44" y="234" fill="#94a3b8">    "expected_answer": "Employees get 25 days of annual leave.",</text>
+  <text class="t l7" x="44" y="258" fill="#94a3b8">    "expected_evidence": [</text>
+  <text class="t l8" x="44" y="282" fill="#94a3b8">      "Employees get 25 days of annual leave."</text>
+  <text class="t l9" x="44" y="306" fill="#94a3b8">    ],</text>
+  <text class="t l10" x="44" y="344" fill="#7dd3fc"># 2. Check them against your documents</text>
+<g clip-path="url(#screen)"><rect class="cover c10" x="44.0" y="327" width="333" height="24" fill="#0f172a"/></g>
+  <text class="t l11" x="44" y="368" fill="#e2e8f0"><tspan fill="#f472b6">$ </tspan>python check_golden.py</text>
+<g clip-path="url(#screen)"><rect class="cover c11" x="60.9" y="351" width="198" height="24" fill="#0f172a"/></g>
+  <text class="t l12" x="44" y="392" fill="#94a3b8">Questions: 2</text>
+  <text class="t l13" x="44" y="416" fill="#94a3b8">Human-validated: 2</text>
+  <text class="t l14" x="44" y="440" fill="#86efac">Ready: True</text>
+  <text class="t l15" x="44" y="478" fill="#7dd3fc"># 3. Your RAG answers them; rag-titan scores every stage</text>
+<g clip-path="url(#screen)"><rect class="cover c15" x="44.0" y="461" width="485" height="24" fill="#0f172a"/></g>
+  <text class="t l16" x="44" y="502" fill="#e2e8f0"><tspan fill="#f472b6">$ </tspan>python live_evaluation.py</text>
+<g clip-path="url(#screen)"><rect class="cover c16" x="60.9" y="485" width="223" height="24" fill="#0f172a"/></g>
+  <text class="t l17" x="44" y="526" fill="#86efac">Overall score: 89.4/100 (Very Good)</text>
+  <text class="t l18" x="44" y="550" fill="#94a3b8">Status: Evaluated | Measurement coverage: 76%</text>
+  <text class="t l19" x="44" y="574" fill="#86efac">First failing stage: none</text>
+  <text class="t l20" x="44" y="598" fill="#94a3b8">Saved live-data.json, live-report.json and live-report.md</text>
+  <text class="t l21" x="44" y="636" fill="#7dd3fc"># 4. See what to fix</text>
+<g clip-path="url(#screen)"><rect class="cover c21" x="44.0" y="619" width="181" height="24" fill="#0f172a"/></g>
+  <text class="t l22" x="44" y="660" fill="#e2e8f0"><tspan fill="#f472b6">$ </tspan>python inspect_report.py live-report.json</text>
+<g clip-path="url(#screen)"><rect class="cover c22" x="60.9" y="643" width="358" height="24" fill="#0f172a"/></g>
+  <text class="t l23" x="44" y="684" fill="#94a3b8">retrieval.recall_at_k: 1.0</text>
+  <text class="t l24" x="44" y="708" fill="#94a3b8">retrieval.mrr_at_k: 1.0</text>
+  <text class="t l25" x="44" y="732" fill="#94a3b8">augmentation.context_sufficient: 1.0</text>
+  <text class="t l26" x="44" y="756" fill="#94a3b8">generation.answer_f1: 1.0</text>
+  <text class="t l27" x="44" y="780" fill="#94a3b8">generation.citation_precision: 1.0</text>
+  <text class="t l28" x="44" y="804" fill="#94a3b8">generation.unsupported_number_rate: 0.0</text>
+  <text class="t l29" x="44" y="828" fill="#86efac">First failing stage: none</text>
+</svg>

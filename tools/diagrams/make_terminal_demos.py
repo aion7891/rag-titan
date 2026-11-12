@@ -5,6 +5,7 @@ starter data, so every line in a demo is real output.
 
     python tools/diagrams/make_terminal_demos.py           # draw all demos
     python tools/diagrams/make_terminal_demos.py --check   # fail if any is out of date
+    python tools/diagrams/make_terminal_demos.py --live    # redraw the Ollama demo (needs Ollama)
 """
 
 import shutil
@@ -51,7 +52,24 @@ DEMOS = {
         [EVALUATE.format("minimal.json", "minimal-report.json", 1),
          "python inspect_report.py minimal-report.json"],
     ),
+    "end-to-end": (
+        "From golden questions to a scorecard",
+        "Write golden questions, check them against the handbook, then run a live Ollama RAG"
+        " that answers them; rag-titan scores every stage and names what to fix.",
+        ["# 1. Write golden questions: question, reference answer, evidence quote",
+         "head -n 8 golden.json",
+         "# 2. Check them against your documents",
+         "python check_golden.py",
+         "# 3. Your RAG answers them; rag-titan scores every stage",
+         "python live_evaluation.py",
+         "# 4. See what to fix",
+         "python inspect_report.py live-report.json"],
+    ),
 }
+
+# demos that call Ollama: answers change between runs, so they are only
+# redrawn with --live and never compared by --check
+LIVE = {"end-to-end"}
 
 
 def tool_path(name):
@@ -67,11 +85,11 @@ def run_commands(commands, folder):
     """Run the commands in folder and return [(command, output lines)]."""
     results, last_code = [], 0
     for command in commands:
-        if command == "echo $?":
-            results.append((command, [str(last_code)]))
+        if command.startswith("#") or command == "echo $?":
+            results.append((command, [] if command.startswith("#") else [str(last_code)]))
             continue
         words = command.split()
-        program = sys.executable if words[0] == "python" else tool_path(words[0])
+        program = {"python": sys.executable, "head": "head"}.get(words[0]) or tool_path(words[0])
         done = subprocess.run([program] + words[1:], cwd=folder, capture_output=True, text=True)
         if done.stderr.strip():
             raise ValueError(f"'{command}' printed an error:\n{done.stderr}")
@@ -84,7 +102,8 @@ def build(name):
     """Run one demo in a fresh copy of the starter data and return its SVG text."""
     title, description, commands = DEMOS[name]
     with tempfile.TemporaryDirectory() as folder:
-        for path in list(DATA.glob("*.json")) + [DATA / "inspect_report.py"]:
+        extras = ["inspect_report.py", "check_golden.py", "live_evaluation.py", "handbook.md"]
+        for path in list(DATA.glob("*.json")) + [DATA / extra for extra in extras]:
             shutil.copy(path, folder)
         demo = run_commands(commands, folder)
     return render(f"rag-titan: {title}", description, demo)
@@ -93,9 +112,12 @@ def build(name):
 def main():
     """Draw every demo, or with --check report the ones that are out of date."""
     check = "--check" in sys.argv
+    live = "--live" in sys.argv
     OUT.mkdir(parents=True, exist_ok=True)
     stale = []
     for name in DEMOS:
+        if (name in LIVE) != live:
+            continue
         path = OUT / f"{name}.svg"
         svg = build(name)
         if check:

@@ -9,6 +9,12 @@ models uses your computer's CPU/GPU and memory; time depends on your machine.
 Unlike the saved-data recipes, this recipe actually runs embedding and answer models.
 It uses local Ollama at `http://localhost:11434` and does not require a cloud API key.
 
+## What you will see
+
+![From golden questions to a scorecard: write golden questions, check them, run your RAG, evaluate](../assets/images/eval-terminal/end-to-end.svg)
+
+Recorded from a real run with Ollama (`gemma3:4b`, `nomic-embed-text`). Live answers vary, so your score may differ.
+
 ## 1. Start Ollama and download the models
 
 Open the Ollama application. If you use the command-line server instead, run this

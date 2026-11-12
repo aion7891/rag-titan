@@ -8,6 +8,12 @@ A **golden set** is a collection of questions with human-reviewed expected answe
 and supporting evidence. Your model's current answer is not automatically the truth.
 Write the reference from the source document, then compare the model with it.
 
+## What you will see
+
+![From golden questions to a scorecard: write golden questions, check them, run your RAG, evaluate](../assets/images/eval-terminal/end-to-end.svg)
+
+Recorded from a real run with Ollama (`gemma3:4b`, `nomic-embed-text`). Live answers vary, so your score may differ.
+
 ## 1. Write one complete question
 
 This is a record from the downloadable [golden.json](../assets/cookbook/golden.json):

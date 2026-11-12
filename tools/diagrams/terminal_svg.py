@@ -2,6 +2,7 @@
 
 A demo is a list of (command, output_lines) pairs. Each command is "typed",
 then its output lines fade in one by one; the whole terminal loops.
+A command starting with "#" is a step title: typed in blue, never run.
 """
 
 from xml.sax.saxutils import escape
@@ -50,6 +51,8 @@ def line_color(line):
     if line.startswith("Overall score:"):
         score = float(line.split(":")[1].split("/")[0])
         return "#86efac" if score >= 80 else "#fdba74"
+    if line.startswith("Ready:"):
+        return "#86efac" if line.endswith("True") else "#fca5a5"
     if line.startswith("First failing stage:"):
         return "#86efac" if line.endswith("none") else "#fdba74"
     if line.startswith("Regressions") or line.strip() == "1":
@@ -73,9 +76,16 @@ def split_command(command):
 
 def timeline(demo):
     """Return the rows to draw: (kind, text, y, start_second), plus the loop length."""
-    rows, y, now = [], 52, 0.4
+    rows, y, now, after_note = [], 52, 0.4, False
     for command, output in demo:
-        y += GROUP_GAP
+        if command.startswith("#"):   # a step title, typed like a shell comment
+            y += GROUP_GAP + LINE_H
+            rows.append(("note", command, y, now))
+            now += TYPE_SECONDS
+            after_note = True
+            continue
+        y += 0 if after_note else GROUP_GAP
+        after_note = False
         for index, piece in enumerate(split_command(command)):
             y += LINE_H
             rows.append(("cmd" if index == 0 else "more", piece, y, now))
@@ -117,10 +127,11 @@ def draw_row(index, row, total):
                f'{escape(text)}</text>')
         return css, svg
     width = len(text) * CHAR_W + 12
-    x = LEFT + 2 * CHAR_W
-    prompt = '<tspan fill="#f472b6">$ </tspan>' if kind == "cmd" else "  "
+    prompt = {"cmd": '<tspan fill="#f472b6">$ </tspan>', "more": "  ", "note": ""}[kind]
+    x = LEFT if kind == "note" else LEFT + 2 * CHAR_W
+    color = "#7dd3fc" if kind == "note" else "#e2e8f0"
     css += typing(f"c{index}", start, total, width, len(text))
-    svg = (f'<text class="t {name}" x="{LEFT}" y="{y}" fill="#e2e8f0">{prompt}'
+    svg = (f'<text class="t {name}" x="{LEFT}" y="{y}" fill="{color}">{prompt}'
            f'{escape(text)}</text>\n'
            f'<g clip-path="url(#screen)"><rect class="cover c{index}" x="{x:.1f}" y="{y - 17}" '
            f'width="{width:.0f}" height="{LINE_H}" fill="#0f172a"/></g>')
