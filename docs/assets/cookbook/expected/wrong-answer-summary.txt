@@ -1,0 +1,3 @@
+Overall score: 65.5/100 (Average)
+Status: Action Required | Measurement coverage: 96%
+First failing stage: generation

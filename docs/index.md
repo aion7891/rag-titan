@@ -44,6 +44,7 @@ print(rag.ask("How many leave days do I get?"))
 | I want to...                         | Read                                   |
 |--------------------------------------|----------------------------------------|
 | install it and ask my first question | [Getting started](getting-started.md)  |
+| learn evaluation with copy-and-run recipes | [Evaluation cookbook](cookbook/index.md) |
 | run RAG types in my browser          | [RAG playground](rag-playground.md)    |
 | choose a RAG type                    | [RAG types](rag-types.md)              |
 | compare setups on my own questions   | [Evaluating RAG](evaluation.md)        |
