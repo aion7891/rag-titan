@@ -86,7 +86,10 @@ def test_regression_tolerance():
     new = {"retrieval": {"summary": {"recall_at_k": 0.79}}, "end_to_end": {"p95_latency_ms": 1015}}
 
     assert find_regressions(new, old) == []                         # within 0.02 and within 2%
-    assert len(find_regressions(new, old, tolerance=0)) == 2
+    assert [r["metric"] for r in find_regressions(new, old, tolerance=0)] == \
+        ["retrieval.recall_at_k"]                                   # +15 ms is latency noise
+    strict = find_regressions(new, old, tolerance=0, latency_share=0, latency_min_ms=0)
+    assert len(strict) == 2
     with pytest.raises(ValueError, match="tolerance"):
         find_regressions(new, old, tolerance=-1)
 

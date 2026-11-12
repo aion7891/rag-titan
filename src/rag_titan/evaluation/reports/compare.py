@@ -16,6 +16,11 @@ LOWER_DIRECTIONS = {"low", "ratio", "fragmentation", "cos_low"}
 # telemetry is compared by relative change: +2% of 900 ms, not +0.02 ms
 TELEMETRY = {"p50_latency_ms", "p95_latency_ms", "mean_cost_usd", "mean_total_tokens"}
 
+# timings jitter from run to run: a latency only counts as worse when it is
+# more than 10% AND more than 5 ms slower (7.2 -> 7.55 ms is noise, not a regression)
+LATENCY_SHARE = 0.10
+LATENCY_MIN_MS = 5.0
+
 
 def flatten(report):
     """Return every numeric stage metric of a report as {"stage.metric": value}."""
@@ -47,7 +52,8 @@ def better_direction(name):
     return "lower" if direction in LOWER_DIRECTIONS else "higher"
 
 
-def find_regressions(report, baseline, tolerance=0.02):
+def find_regressions(report, baseline, tolerance=0.02, latency_share=LATENCY_SHARE,
+                     latency_min_ms=LATENCY_MIN_MS):
     """
     List the metrics that got worse than in the baseline report.
 
@@ -57,12 +63,17 @@ def find_regressions(report, baseline, tolerance=0.02):
         tolerance: how much worse still counts as noise. For scores it is an
             absolute change (0.02 = 2 points of 100); for latency, cost and
             tokens a relative one (0.02 = 2% slower or more expensive).
+        latency_share: a latency must also be this share slower (0.10 = 10%).
+        latency_min_ms: ... and this many milliseconds slower. Set both to 0
+            to count every slower timing.
 
     Returns:
         A list of {"metric", "baseline", "current", "delta"}, in pipeline order.
     """
-    if not is_number(tolerance) or tolerance < 0:
-        raise ValueError(f"tolerance must be a number of 0 or more, got {tolerance!r}")
+    for label, value in (("tolerance", tolerance), ("latency_share", latency_share),
+                         ("latency_min_ms", latency_min_ms)):
+        if not is_number(value) or value < 0:
+            raise ValueError(f"{label} must be a number of 0 or more, got {value!r}")
 
     current, previous = flatten(report), flatten(baseline)
     found = []
@@ -73,7 +84,10 @@ def find_regressions(report, baseline, tolerance=0.02):
 
         old = previous[name]
         worse_by = value - old if direction == "lower" else old - value
-        allowed = tolerance * abs(old) if name.partition(".")[2] in TELEMETRY else tolerance
+        metric = name.partition(".")[2]
+        allowed = tolerance * abs(old) if metric in TELEMETRY else tolerance
+        if metric.endswith("latency_ms"):
+            allowed = max(allowed, latency_share * abs(old), latency_min_ms)
         if worse_by > allowed:
             found.append({"metric": name, "baseline": old, "current": value,
                           "delta": value - old})
