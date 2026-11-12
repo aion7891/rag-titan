@@ -6,6 +6,31 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.8.4] - 2026-11-12
+
+### Fixed
+- Windows: `RAGTitan(...)` no longer crashes with "DLL load failed while importing
+  _pydantic_core: An Application Control policy has blocked this file". rag-titan
+  now talks to Ollama over plain HTTP with the Python standard library, so it no
+  longer needs pydantic and its compiled `_pydantic_core` file, which Smart App
+  Control and company application-control policies block.
+- Clearer errors when Ollama is not running ("Could not reach Ollama at ... Is
+  Ollama running?"), when Ollama returns an error (its own message, like "model not
+  found", is shown), and when it sends a different number of embeddings than texts.
+
+### Changed
+- `OllamaLLM` and `OllamaEmbedder` send exactly the same requests as before
+  (same JSON, same tool descriptions, same host rules, `OLLAMA_HOST` and
+  `OLLAMA_API_KEY` work as before). Their `.client` attribute is gone; use `.host`
+  to see the server address.
+- `OllamaLLM.chat()["message"]` is now a plain dict instead of an `ollama.Message`
+  object. `message["content"]` and the other keys work as before; attribute access
+  like `message.content` does not.
+
+### Removed
+- The `ollama` dependency, and with it `pydantic`, `pydantic-core`, `httpx`,
+  `httpcore`, `anyio`, `h11` and `typing-inspection`.
+
 ## [0.8.3] - 2026-11-12
 
 ### Fixed

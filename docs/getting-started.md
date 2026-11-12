@@ -24,6 +24,11 @@ Python 3.10 or newer is required.
     Please do not turn off Smart App Control for this: Windows cannot turn it back
     on without a reset.
 
+    Seeing `DLL load failed while importing _pydantic_core` when you create
+    `RAGTitan(...)`? Versions before 0.8.4 needed pydantic, whose compiled file
+    these policies block. Since 0.8.4 rag-titan talks to Ollama with plain Python,
+    so upgrading fixes it: `python -m pip install --upgrade rag-titan`.
+
 ## 2. Install Ollama and pull the models
 
 `rag-titan` uses [Ollama](https://ollama.com) to run models on your own computer.

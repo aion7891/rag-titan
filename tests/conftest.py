@@ -7,6 +7,7 @@ fast, and without downloading any model.
 
 import numpy as np
 import pytest
+from fake_ollama import fake_ollama  # noqa: F401  (shares the fixture with every test)
 
 from rag_titan.chunking import WordChunker
 from rag_titan.embeddings import BaseEmbedder

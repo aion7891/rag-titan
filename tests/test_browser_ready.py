@@ -1,6 +1,7 @@
 """
 Tests for running without ollama, pypdf, python-docx and python-dotenv (like in
-the browser), HashEmbedder, recording/replaying models, and the Ollama host.
+the browser), HashEmbedder, and recording/replaying models.
+The Ollama host settings are tested in test_ollama_models.py.
 """
 
 import subprocess
@@ -15,7 +16,7 @@ from rag_titan import SimpleRAG, get_settings
 from rag_titan.embeddings import HashEmbedder, RecordingEmbedder, ReplayEmbedder
 from rag_titan.factory import build_embedder
 from rag_titan.generation import GroundedGenerator
-from rag_titan.llm import OllamaLLM, RecordingLLM, ReplayLLM
+from rag_titan.llm import RecordingLLM, ReplayLLM
 
 BLOCKED_RUN = textwrap.dedent("""
     import sys
@@ -117,13 +118,3 @@ def test_record_then_replay_embedder():
     with pytest.raises(ValueError, match="dict"):
         ReplayEmbedder([])
 
-
-def test_ollama_host_and_cloud_settings_reach_the_client(monkeypatch):
-    import ollama
-
-    hosts = []
-    monkeypatch.setattr(ollama, "Client", lambda host=None: hosts.append(host))
-    OllamaLLM("gpt-oss:20b-cloud", host="https://ollama.com")
-    build_embedder(get_settings({"ollama_host": "https://ollama.com"}))
-
-    assert hosts == ["https://ollama.com", "https://ollama.com"]

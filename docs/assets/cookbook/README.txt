@@ -3,7 +3,7 @@ rag-titan evaluation cookbook
 Teaching data: fictional company policies, hand-written answers and toy vectors.
 Scores are computed by the real package, not by an LLM judge.
 
-Install: python -m pip install "rag-titan==0.8.3"
+Install: python -m pip install "rag-titan==0.8.4"
 Run: rag-titan evaluate --input sample.json --output baseline.json --k 3
 Inspect: python inspect_report.py baseline.json
 Compare: rag-titan evaluate --input missed-evidence.json --output candidate.json --baseline baseline.json --k 3 --fail-on-regression
