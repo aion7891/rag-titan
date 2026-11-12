@@ -112,6 +112,13 @@ A wrong answer does not say **which part** failed. Pass what each stage of your 
 produced, plus the right answers, and every stage is scored on its own. It works for any RAG
 system, uses no LLM judge and needs no extra dependencies:
 
+<p align="center">
+  <a href="https://aion7891.github.io/rag-titan/cookbook/"><img src="https://cdn.jsdelivr.net/gh/aion7891/rag-titan@main/docs/assets/images/eval-flow.svg" alt="Evaluate any RAG: your logs and golden labels go into rag-titan evaluate, which scores every stage and names the first failing stage" width="100%"></a>
+</p>
+
+**Already have a RAG and only want to evaluate it?** Follow the 6 steps in the
+**[Evaluation cookbook →](https://aion7891.github.io/rag-titan/cookbook/#choose-your-path)**
+
 ```python
 from rag_titan.evaluation import RAGEvaluator
 
@@ -230,6 +237,7 @@ Click any picture to open its page.
 | Run RAG types in my browser and watch each step | [RAG playground](https://aion7891.github.io/rag-titan/rag-playground/) |
 | Try the chunkers on my own text | [Chunk playground](https://aion7891.github.io/rag-titan/playground/) |
 | Compare chunkers and RAG types on my questions | [Evaluating RAG](https://aion7891.github.io/rag-titan/evaluation/) |
+| Evaluate the RAG I already built, step by step | [Evaluation cookbook](https://aion7891.github.io/rag-titan/cookbook/) |
 | Score every stage of any RAG pipeline | [Evaluating every stage](https://aion7891.github.io/rag-titan/stage-evaluation/) |
 | Look up a metric and its formula | [Evaluation metrics](https://aion7891.github.io/rag-titan/evaluation-metrics/) |
 | See why an answer went wrong | [Seeing every step](https://aion7891.github.io/rag-titan/rag-types/#seeing-every-step-run) |

@@ -18,6 +18,8 @@ Recorded from a real run with Ollama (`gemma3:4b`, `nomic-embed-text`). Live ans
 
     You only want to **evaluate** it. No model, GPU or API key is needed for this.
 
+    ![Evaluate any RAG: your logs and golden labels go into rag-titan evaluate, which scores every stage and names the first failing stage](../assets/images/eval-flow.svg)
+
     1. **Install:** `pip install rag-titan`
     2. **Write golden questions:** questions with reviewed answers and evidence.
        → [Build a golden set](golden-set.md)

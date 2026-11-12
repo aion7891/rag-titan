@@ -46,3 +46,14 @@ and `nomic-embed-text` pulled) and `--check` skips it.
 
 Run `--check` after changing the evaluator or the starter data. `terminal_svg.py`
 draws the terminal (typing, line timing, colours) in the style of `cli.svg`.
+
+# Evaluation flow image
+
+`make_eval_flow.py` draws `docs/assets/images/eval-flow.svg`: your RAG → your logs →
+`rag-titan evaluate` → the score of every stage → the first failing stage and a hint.
+It **runs the real evaluator** on `missed-evidence.json`, so every score is real.
+
+```bash
+python tools/diagrams/make_eval_flow.py           # draw the image
+python tools/diagrams/make_eval_flow.py --check   # fail if it is out of date
+```

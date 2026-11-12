@@ -7,6 +7,8 @@ Evaluation itself does not need access to the model or database.
 
 ## What you will see
 
+![Evaluate any RAG: your logs and golden labels go into rag-titan evaluate, which scores every stage and names the first failing stage](../assets/images/eval-flow.svg)
+
 ![Evaluating a minimal file of your own logs](../assets/images/eval-terminal/own-rag.svg)
 
 The terminal replays the **real output** of this recipe's commands on the starter data.
