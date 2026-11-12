@@ -152,6 +152,8 @@ rag-titan evaluate --input data.json --baseline last_report.json --fail-on-regre
 </p>
 
 Using rag-titan itself? `rag.evaluate_stages(files, "golden.json")` collects the data for you.
+Your own RAG? `rag-titan golden` drafts your golden questions and `build_dataset()` turns your
+logs into the data file, see **[Evaluate your own RAG →](https://aion7891.github.io/rag-titan/cookbook/any-rag/)**.
 Every formula is on the **[Evaluation metrics →](https://aion7891.github.io/rag-titan/evaluation-metrics/)** page,
 and the guide is **[Evaluating every stage →](https://aion7891.github.io/rag-titan/stage-evaluation/)**
 

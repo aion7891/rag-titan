@@ -13,6 +13,7 @@ import json
 from pathlib import Path
 
 from rag_titan.evaluation.rag_evaluator import RAGEvaluator
+from rag_titan.evaluation.reports.hints import not_measured, queries_to_look_at
 from rag_titan.evaluation.reports.manager import ReportManager
 
 
@@ -56,7 +57,10 @@ def evaluate_file(input_path, output_path="rag_report.json", k=5, baseline=None)
 
 
 def summary_text(report):
-    """Return the few lines printed after an evaluation: score, status, first failure."""
+    """
+    Return the lines printed after an evaluation: score, status, first failure,
+    the queries to look at, regressions and what was not measured.
+    """
     overall = report["scorecard"]["overall"]
     score = "N/A" if overall["score"] is None else f"{overall['score']:.1f}/100"
     lines = [
@@ -65,7 +69,15 @@ def summary_text(report):
         f"{overall['evaluation_coverage']:.0%}",
         f"First failing stage: {report['root_causes']['first_failing_stage'] or 'none'}",
     ]
+    # a wrong answer must be visible here, not only at the end of the .md report
+    lines += _section("Queries to look at:", queries_to_look_at(report))
     if "regressions" in report:
         names = ", ".join(item["metric"] for item in report["regressions"]) or "none"
         lines.append(f"Regressions against the baseline: {names}")
+    lines += _section("Not measured (null in the report) - to measure it:", not_measured(report))
     return "\n".join(lines)
+
+
+def _section(title, items):
+    """A title and its items indented below it, or nothing when there are no items."""
+    return [title] + [f"  - {item}" for item in items] if items else []

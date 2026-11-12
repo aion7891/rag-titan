@@ -21,12 +21,13 @@ Recorded from a real run with Ollama (`gemma3:4b`, `nomic-embed-text`). Live ans
     ![Evaluate any RAG: your logs and golden labels go into rag-titan evaluate, which scores every stage and names the first failing stage](../assets/images/eval-flow.svg)
 
     1. **Install:** `pip install rag-titan`
-    2. **Write golden questions:** questions with reviewed answers and evidence.
-       → [Build a golden set](golden-set.md)
-    3. **Save your RAG's outputs** (retrieved chunks, context, answer) in one JSON file.
-       → [Evaluate your own RAG](any-rag.md)
+    2. **Write golden questions:** `rag-titan golden --questions questions.txt --files your-docs.md`
+       writes a draft; you review it. → [Build a golden set](golden-set.md#prepare-golden-data-step-by-step)
+    3. **Turn your RAG's logs into one data file** with `build_dataset()`.
+       → [Evaluate your own RAG](any-rag.md#3-build-the-data-file-with-build_dataset)
     4. **Score it:** `rag-titan evaluate --input my-data.json --output report.json --k 3`.
-       You get a 0 to 100 score and the first stage that fails.
+       You get a 0 to 100 score, the first failing stage, the queries to look at
+       and what was not measured.
     5. **Score is low?** Find which stage to fix. → [Diagnose a bad answer](diagnose.md)
     6. **Changed something?** Compare with your last report. → [Catch regressions](regressions.md)
 

@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 498"
-     width="960" height="498" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 546"
+     width="960" height="546" role="img" aria-labelledby="title desc">
   <title id="title">rag-titan: Diagnose a bad answer</title>
   <desc id="desc">Search missed the evidence: the report names retrieval as the first failing stage and suggests a fix.</desc>
   <defs>
@@ -11,46 +11,50 @@
   .t { animation: none !important; opacity: 1; }
   .cover { display: none; }
 }
-@keyframes l0 { 0%, 2.37% { opacity: 0; } 3.55%, 94% { opacity: 1; } 100% { opacity: 0; } }
-.l0 { animation: l0 16.9s infinite; }
-@keyframes c0 { 0%, 2.37% { transform: translateX(0); } 11.83%, 100% { transform: translateX(696px); } }
-.c0 { animation: c0 16.9s infinite steps(81, end); }
-@keyframes l1 { 0%, 17.16% { opacity: 0; } 18.34%, 94% { opacity: 1; } 100% { opacity: 0; } }
-.l1 { animation: l1 16.9s infinite; }
-@keyframes l2 { 0%, 19.82% { opacity: 0; } 21.01%, 94% { opacity: 1; } 100% { opacity: 0; } }
-.l2 { animation: l2 16.9s infinite; }
-@keyframes l3 { 0%, 22.49% { opacity: 0; } 23.67%, 94% { opacity: 1; } 100% { opacity: 0; } }
-.l3 { animation: l3 16.9s infinite; }
-@keyframes l4 { 0%, 25.15% { opacity: 0; } 26.33%, 94% { opacity: 1; } 100% { opacity: 0; } }
-.l4 { animation: l4 16.9s infinite; }
-@keyframes l5 { 0%, 31.36% { opacity: 0; } 32.54%, 94% { opacity: 1; } 100% { opacity: 0; } }
-.l5 { animation: l5 16.9s infinite; }
-@keyframes c5 { 0%, 31.36% { transform: translateX(0); } 40.83%, 100% { transform: translateX(375px); } }
-.c5 { animation: c5 16.9s infinite steps(43, end); }
-@keyframes l6 { 0%, 46.15% { opacity: 0; } 47.34%, 94% { opacity: 1; } 100% { opacity: 0; } }
-.l6 { animation: l6 16.9s infinite; }
-@keyframes l7 { 0%, 48.82% { opacity: 0; } 50.00%, 94% { opacity: 1; } 100% { opacity: 0; } }
-.l7 { animation: l7 16.9s infinite; }
-@keyframes l8 { 0%, 51.48% { opacity: 0; } 52.66%, 94% { opacity: 1; } 100% { opacity: 0; } }
-.l8 { animation: l8 16.9s infinite; }
-@keyframes l9 { 0%, 54.14% { opacity: 0; } 55.33%, 94% { opacity: 1; } 100% { opacity: 0; } }
-.l9 { animation: l9 16.9s infinite; }
-@keyframes l10 { 0%, 56.80% { opacity: 0; } 57.99%, 94% { opacity: 1; } 100% { opacity: 0; } }
-.l10 { animation: l10 16.9s infinite; }
-@keyframes l11 { 0%, 59.47% { opacity: 0; } 60.65%, 94% { opacity: 1; } 100% { opacity: 0; } }
-.l11 { animation: l11 16.9s infinite; }
-@keyframes l12 { 0%, 62.13% { opacity: 0; } 63.31%, 94% { opacity: 1; } 100% { opacity: 0; } }
-.l12 { animation: l12 16.9s infinite; }
-@keyframes l13 { 0%, 64.79% { opacity: 0; } 65.98%, 94% { opacity: 1; } 100% { opacity: 0; } }
-.l13 { animation: l13 16.9s infinite; }
-@keyframes l14 { 0%, 67.46% { opacity: 0; } 68.64%, 94% { opacity: 1; } 100% { opacity: 0; } }
-.l14 { animation: l14 16.9s infinite; }
-@keyframes l15 { 0%, 70.12% { opacity: 0; } 71.30%, 94% { opacity: 1; } 100% { opacity: 0; } }
-.l15 { animation: l15 16.9s infinite; }
+@keyframes l0 { 0%, 2.25% { opacity: 0; } 3.37%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l0 { animation: l0 17.8s infinite; }
+@keyframes c0 { 0%, 2.25% { transform: translateX(0); } 11.24%, 100% { transform: translateX(696px); } }
+.c0 { animation: c0 17.8s infinite steps(81, end); }
+@keyframes l1 { 0%, 16.29% { opacity: 0; } 17.42%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l1 { animation: l1 17.8s infinite; }
+@keyframes l2 { 0%, 18.82% { opacity: 0; } 19.94%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l2 { animation: l2 17.8s infinite; }
+@keyframes l3 { 0%, 21.35% { opacity: 0; } 22.47%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l3 { animation: l3 17.8s infinite; }
+@keyframes l4 { 0%, 23.88% { opacity: 0; } 25.00%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l4 { animation: l4 17.8s infinite; }
+@keyframes l5 { 0%, 26.40% { opacity: 0; } 27.53%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l5 { animation: l5 17.8s infinite; }
+@keyframes l6 { 0%, 28.93% { opacity: 0; } 30.06%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l6 { animation: l6 17.8s infinite; }
+@keyframes l7 { 0%, 34.83% { opacity: 0; } 35.96%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l7 { animation: l7 17.8s infinite; }
+@keyframes c7 { 0%, 34.83% { transform: translateX(0); } 43.82%, 100% { transform: translateX(375px); } }
+.c7 { animation: c7 17.8s infinite steps(43, end); }
+@keyframes l8 { 0%, 48.88% { opacity: 0; } 50.00%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l8 { animation: l8 17.8s infinite; }
+@keyframes l9 { 0%, 51.40% { opacity: 0; } 52.53%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l9 { animation: l9 17.8s infinite; }
+@keyframes l10 { 0%, 53.93% { opacity: 0; } 55.06%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l10 { animation: l10 17.8s infinite; }
+@keyframes l11 { 0%, 56.46% { opacity: 0; } 57.58%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l11 { animation: l11 17.8s infinite; }
+@keyframes l12 { 0%, 58.99% { opacity: 0; } 60.11%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l12 { animation: l12 17.8s infinite; }
+@keyframes l13 { 0%, 61.52% { opacity: 0; } 62.64%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l13 { animation: l13 17.8s infinite; }
+@keyframes l14 { 0%, 64.04% { opacity: 0; } 65.17%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l14 { animation: l14 17.8s infinite; }
+@keyframes l15 { 0%, 66.57% { opacity: 0; } 67.70%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l15 { animation: l15 17.8s infinite; }
+@keyframes l16 { 0%, 69.10% { opacity: 0; } 70.22%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l16 { animation: l16 17.8s infinite; }
+@keyframes l17 { 0%, 71.63% { opacity: 0; } 72.75%, 94% { opacity: 1; } 100% { opacity: 0; } }
+.l17 { animation: l17 17.8s infinite; }
     </style>
-    <clipPath id="screen"><rect x="0" y="0" width="960" height="498"/></clipPath>
+    <clipPath id="screen"><rect x="0" y="0" width="960" height="546"/></clipPath>
   </defs>
-  <rect x="0.5" y="0.5" width="959" height="497" rx="14"
+  <rect x="0.5" y="0.5" width="959" height="545" rx="14"
         fill="#0f172a" stroke="#1e293b"/>
   <rect x="0.5" y="0.5" width="959" height="40" rx="14" fill="#1e293b"/>
   <rect x="0.5" y="26" width="959" height="15" fill="#1e293b"/>
@@ -64,16 +68,18 @@
   <text class="t l2" x="44" y="138" fill="#fdba74">Overall score: 62.5/100 (Average)</text>
   <text class="t l3" x="44" y="162" fill="#94a3b8">Status: Action Required | Measurement coverage: 97%</text>
   <text class="t l4" x="44" y="186" fill="#fdba74">First failing stage: retrieval</text>
-  <text class="t l5" x="44" y="224" fill="#e2e8f0"><tspan fill="#f472b6">$ </tspan>python inspect_report.py missed-report.json</text>
-<g clip-path="url(#screen)"><rect class="cover c5" x="60.9" y="207" width="375" height="24" fill="#0f172a"/></g>
-  <text class="t l6" x="44" y="248" fill="#94a3b8">retrieval.recall_at_k: 0.5</text>
-  <text class="t l7" x="44" y="272" fill="#94a3b8">retrieval.mrr_at_k: 0.5</text>
-  <text class="t l8" x="44" y="296" fill="#94a3b8">augmentation.context_sufficient: 0.5</text>
-  <text class="t l9" x="44" y="320" fill="#94a3b8">generation.answer_f1: 0.5</text>
-  <text class="t l10" x="44" y="344" fill="#94a3b8">generation.citation_precision: 1.0</text>
-  <text class="t l11" x="44" y="368" fill="#94a3b8">generation.unsupported_number_rate: 0.0</text>
-  <text class="t l12" x="44" y="392" fill="#fdba74">First failing stage: retrieval</text>
-  <text class="t l13" x="44" y="416" fill="#94a3b8">  retrieval: Try hybrid retrieval or query rewriting, or raise top-k.</text>
-  <text class="t l14" x="44" y="440" fill="#94a3b8">  augmentation: Pack all the supporting evidence into the context, within the budget.</text>
-  <text class="t l15" x="44" y="464" fill="#94a3b8">  generation: Compare the answers with the references: check the prompt and the LLM.</text>
+  <text class="t l5" x="44" y="210" fill="#94a3b8">Queries to look at:</text>
+  <text class="t l6" x="44" y="234" fill="#94a3b8">  - q1 (retrieval): no relevant chunk in the top K</text>
+  <text class="t l7" x="44" y="272" fill="#e2e8f0"><tspan fill="#f472b6">$ </tspan>python inspect_report.py missed-report.json</text>
+<g clip-path="url(#screen)"><rect class="cover c7" x="60.9" y="255" width="375" height="24" fill="#0f172a"/></g>
+  <text class="t l8" x="44" y="296" fill="#94a3b8">retrieval.recall_at_k: 0.5</text>
+  <text class="t l9" x="44" y="320" fill="#94a3b8">retrieval.mrr_at_k: 0.5</text>
+  <text class="t l10" x="44" y="344" fill="#94a3b8">augmentation.context_sufficient: 0.5</text>
+  <text class="t l11" x="44" y="368" fill="#94a3b8">generation.answer_f1: 0.5</text>
+  <text class="t l12" x="44" y="392" fill="#94a3b8">generation.citation_precision: 1.0</text>
+  <text class="t l13" x="44" y="416" fill="#94a3b8">generation.unsupported_number_rate: 0.0</text>
+  <text class="t l14" x="44" y="440" fill="#fdba74">First failing stage: retrieval</text>
+  <text class="t l15" x="44" y="464" fill="#94a3b8">  retrieval: Try hybrid retrieval or query rewriting, or raise top-k.</text>
+  <text class="t l16" x="44" y="488" fill="#94a3b8">  augmentation: Pack all the supporting evidence into the context, within the budget.</text>
+  <text class="t l17" x="44" y="512" fill="#94a3b8">  generation: Compare the answers with the references: check the prompt and the LLM.</text>
 </svg>

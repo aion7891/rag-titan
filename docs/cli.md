@@ -53,6 +53,18 @@ it lists the metrics that got worse, and `--fail-on-regression` then exits
 with code 1, for scheduled runs. No model is needed. See
 [Evaluating every stage](stage-evaluation.md).
 
+## Write golden questions
+
+```bash
+rag-titan golden --questions questions.txt --files policy.md --output golden.json
+```
+
+Writes a first draft of your golden questions: one record per question (one per
+line in `questions.txt`, or a JSON list), with a suggested evidence sentence from
+your files. Every record starts with `"validated": false`: you review it, write the
+expected answer, then mark it validated. It never overwrites an existing file unless
+you add `--force`. See [Build a golden set](cookbook/golden-set.md).
+
 ## Options
 
 | Option        | Used by     | Meaning                                   |
@@ -72,6 +84,10 @@ with code 1, for scheduled runs. No model is needed. See
 | `--k`         | evaluate    | results scored per query with `--input` (default 5) |
 | `--baseline`  | evaluate    | an earlier JSON report: list what got worse |
 | `--fail-on-regression` | evaluate | exit with code 1 when a metric got worse than the baseline |
+| `--questions` | golden      | questions, one per line (.txt) or a JSON list (required) |
+| `--files`     | golden      | your documents, to suggest evidence quotes |
+| `--output`    | golden      | where to write the template (default `golden.json`) |
+| `--force`     | golden      | overwrite `--output` if it exists          |
 | `--version`   | –           | print the version                         |
 
 The CLI also reads your `.env` file, see [Configuration](configuration.md).

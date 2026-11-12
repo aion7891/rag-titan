@@ -10,8 +10,10 @@ Two ways to use it:
 
 from rag_titan.evaluation.benchmark import compare_retrievers, evaluate_retriever, format_report
 from rag_titan.evaluation.collect import collect_dataset
+from rag_titan.evaluation.dataset import build_dataset
 from rag_titan.evaluation.end_to_end import compare_setups, evaluate_rag, format_rag_report
 from rag_titan.evaluation.golden import check_golden, load_golden
+from rag_titan.evaluation.golden_template import make_golden_template
 from rag_titan.evaluation.metrics import (
     matches_evidence,
     ndcg_at_k,
@@ -49,6 +51,7 @@ __all__ = [
     "RootCauseAnalyzer",
     "ScoreAggregator",
     "as_questions",
+    "build_dataset",
     "check_golden",
     "collect_dataset",
     "compare_setups",
@@ -61,6 +64,7 @@ __all__ = [
     "format_report",
     "load_golden",
     "load_questions",
+    "make_golden_template",
     "matches_evidence",
     "ndcg_at_k",
     "parse_evidence_id",

@@ -140,7 +140,7 @@ ReportManager().save_markdown(report, "my-live-report.md")
 
 This shorter API saves the report. Use `collect_dataset()` as in the downloadable
 script when you also want the input data. The CLI's `--files --questions` mode
-compares setups; it does **not** provide a `--stages` option in 0.8.1.
+compares setups; it does **not** provide a `--stages` option in 0.8.2.
 
 ## Common live-run problems
 

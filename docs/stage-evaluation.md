@@ -68,6 +68,8 @@ dependencies.
     ```
 
     Try it with the sample: `examples/rag_evaluation_sample.json`.
+    Have logs from your own RAG? `build_dataset()` turns them and your golden
+    questions into this file, see [Evaluate your own RAG](cookbook/any-rag.md).
 
 === "A rag-titan pipeline"
 

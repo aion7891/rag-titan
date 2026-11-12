@@ -13,7 +13,13 @@ ReportManager: save, load, print and compare evaluation reports.
 import json
 from pathlib import Path
 
-from rag_titan.evaluation.reports.compare import find_regressions, flatten, trends
+from rag_titan.evaluation.reports.compare import (
+    LATENCY_MIN_MS,
+    LATENCY_SHARE,
+    find_regressions,
+    flatten,
+    trends,
+)
 from rag_titan.evaluation.reports.failures import failed_queries
 from rag_titan.evaluation.reports.markdown import to_markdown
 
@@ -56,9 +62,10 @@ class ReportManager:
         """Return every numeric stage metric as {"stage.metric": value}."""
         return flatten(report)
 
-    def regressions(self, report, baseline, tolerance=0.02):
+    def regressions(self, report, baseline, tolerance=0.02, latency_share=LATENCY_SHARE,
+                    latency_min_ms=LATENCY_MIN_MS):
         """List the metrics that got worse than in the baseline (see find_regressions)."""
-        return find_regressions(report, baseline, tolerance)
+        return find_regressions(report, baseline, tolerance, latency_share, latency_min_ms)
 
     def trends(self, reports):
         """Return the first-to-last change of every metric over reports, oldest first."""
