@@ -9,7 +9,9 @@ theme:
   logo: assets/images/logo.svg
   favicon: assets/images/logo.svg
   features:
-    - navigation.sections
+    # no navigation.sections: groups stay collapsible dropdowns in the sidebar
+    - navigation.indexes   # a group whose first page is index.md opens that page on click
+    - navigation.top       # "back to top" button on long pages
     - content.code.copy
   palette:
     - scheme: default
@@ -47,32 +49,37 @@ exclude_docs: |
 
 nav:
   - Home: index.md
-  - Getting started: getting-started.md
-  - Evaluation cookbook:
+  - Get started:
+      - Install and first answer: getting-started.md
+      - Configuration: configuration.md
+      - Command line: cli.md
+  - Evaluate your RAG:
       - Start here: cookbook/index.md
       - Your first evaluation: cookbook/first-evaluation.md
       - Diagnose a bad answer: cookbook/diagnose.md
       - Catch regressions: cookbook/regressions.md
-      - Evaluate another RAG: cookbook/any-rag.md
+      - Evaluate your own RAG: cookbook/any-rag.md
       - Evaluate a live pipeline: cookbook/live-pipeline.md
       - Build a golden set: cookbook/golden-set.md
-  - RAG types: rag-types.md
-  - Building blocks: building-blocks.md
-  - Evaluating RAG: evaluation.md
-  - Evaluating every stage: stage-evaluation.md
-  - Evaluation metrics: evaluation-metrics.md
-  - Chunking methods: chunking.md
-  - Chunk playground: playground.md
-  - RAG playground: rag-playground.md
-  - Configuration: configuration.md
-  - Command line: cli.md
-  - Agents: agents.md
-  - Extending rag-titan: extending.md
-  - API reference:
-      - RAGTitan and factory: api/core.md
-      - RAG types: api/rag-types.md
-      - Building blocks: api/building-blocks.md
-  - Roadmap: roadmap.md
+  - Evaluation reference:
+      - Every stage: stage-evaluation.md
+      - Metrics: evaluation-metrics.md
+      - Compare chunkers and RAG types: evaluation.md
+  - Build a RAG:
+      - RAG types: rag-types.md
+      - Building blocks: building-blocks.md
+      - Chunking methods: chunking.md
+      - Agents: agents.md
+  - Playgrounds:
+      - RAG playground: rag-playground.md
+      - Chunk playground: playground.md
+  - Advanced:
+      - Extending rag-titan: extending.md
+      - API reference:
+          - RAGTitan and factory: api/core.md
+          - RAG types: api/rag-types.md
+          - Building blocks: api/building-blocks.md
+      - Roadmap: roadmap.md
 
 hooks:
   - hooks/cache_bust.py   # adds ?v=<version> to our CSS/JS so browsers get new copies
