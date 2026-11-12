@@ -31,6 +31,7 @@ plugins:
 
 markdown_extensions:
   - admonition
+  - attr_list   # buttons: [text](link){ .md-button }
   - pymdownx.arithmatex:
       generic: true
   - pymdownx.highlight
@@ -40,9 +41,21 @@ markdown_extensions:
   - pymdownx.tasklist
   - tables
 
+# files of the cookbook starter kit that are not pages of the site
+exclude_docs: |
+  assets/cookbook/handbook.md
+
 nav:
   - Home: index.md
   - Getting started: getting-started.md
+  - Evaluation cookbook:
+      - Start here: cookbook/index.md
+      - Your first evaluation: cookbook/first-evaluation.md
+      - Diagnose a bad answer: cookbook/diagnose.md
+      - Catch regressions: cookbook/regressions.md
+      - Evaluate another RAG: cookbook/any-rag.md
+      - Evaluate a live pipeline: cookbook/live-pipeline.md
+      - Build a golden set: cookbook/golden-set.md
   - RAG types: rag-types.md
   - Building blocks: building-blocks.md
   - Evaluating RAG: evaluation.md
@@ -68,6 +81,7 @@ hooks:
 extra_css:
   - assets/stylesheets/extra.css
   - assets/stylesheets/rag-flow.css
+  - assets/stylesheets/cookbook.css
 
 # chunking page: formulas (pymdownx.arithmatex + MathJax) and the chunk playground
 extra_javascript:
@@ -78,4 +92,6 @@ extra_javascript:
   - assets/javascripts/rag-flow.js
   - assets/javascripts/rag-cards.js
   - assets/javascripts/rag-playground.js
+  - assets/javascripts/cookbook-commands.js
+  - assets/javascripts/cookbook-lab.js
   - https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js

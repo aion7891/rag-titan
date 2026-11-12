@@ -1,5 +1,8 @@
 # Evaluating RAG
 
+New to evaluation? Start with the [evaluation cookbook](cookbook/index.md): runnable
+examples, animated stage walkthroughs and command builders for your terminal.
+
 A RAG answer can only be as good as the chunks it is given. Before you change
 the chunker, the retriever or the RAG type, **measure** how well it works on
 your own questions, then compare. No method is best for every set of documents.

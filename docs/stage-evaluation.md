@@ -1,5 +1,8 @@
 # Evaluating every stage
 
+For a guided first run, use the [evaluation cookbook](cookbook/index.md). It includes
+a downloadable starter kit, interactive failure examples and copyable CLI commands.
+
 When a RAG answer is wrong, **which part failed?** The chunker cut the fact in
 two, the search missed it, the reranker pushed it down, it did not fit in the
 prompt, or the LLM ignored it. Stage evaluation scores each part on its own, so

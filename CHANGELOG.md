@@ -6,6 +6,11 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- Beginner evaluation cookbook: six runnable recipes, downloadable teaching data and
+  live Ollama scripts, interactive stage walkthroughs using real evaluator results,
+  and Bash/PowerShell command builders for scoring and regression checks.
+
 ## [0.8.0] - 2026-11-12
 
 ### Added
