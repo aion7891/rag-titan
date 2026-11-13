@@ -91,7 +91,7 @@ def test_generation_summary():
         query(required_facts=["25 days", "annual"], citations=["c1", "c9"],
               expected_citations=["c1", "c2"], task_success=True, generation_latency_ms=100,
               verified_claims=[{"supported": True}, {"supported": False}],
-              answerable=False, abstained=False),
+              answerable=True, abstained=False),
         query(id="q2", answer="I do not know", expected_answer=None, answerable=False,
               abstained=True, task_success=False, generation_latency_ms=300),
         {"id": "q3"},                                      # no answer: not scored
@@ -105,7 +105,7 @@ def test_generation_summary():
     assert summary["required_fact_coverage"] == 0.5
     assert summary["citation_precision"] == 0.5
     assert summary["annotated_claim_support"] == 0.5
-    assert summary["abstention_accuracy"] == 0.5           # q1 answered an unanswerable question
+    assert summary["abstention_accuracy"] == 1             # q1 answered, q2 rightly refused
     assert summary["task_success"] == 0.5
     assert summary["p50_latency_ms"] == 200
     assert summary["context_grounding"] is None            # no context given

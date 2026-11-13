@@ -65,7 +65,22 @@ DEMOS = {
          "# 4. See what to fix",
          "python inspect_report.py live-report.json"],
     ),
+    "complete-guide": (
+        "Evaluate your RAG, start to finish",
+        "A small stand-in RAG answers five golden questions and logs what it did; the logs become"
+        " one data file, and rag-titan scores every stage.",
+        ["# Your RAG answers the golden questions and saves what it did",
+         "python my_rag.py",
+         "# Join the logs with golden.json, then add chunking and embedding inputs",
+         "python make_data.py",
+         "python add_stages.py",
+         "# Score every stage",
+         EVALUATE.format("eval-data.json", "baseline.json", 3)],
+    ),
 }
+
+# demos that run in the complete guide's kit folder instead of the starter data
+KIT = {"complete-guide": DATA / "your-rag"}
 
 # demos that call Ollama: answers change between runs, so they are only
 # redrawn with --live and never compared by --check
@@ -102,9 +117,13 @@ def build(name):
     """Run one demo in a fresh copy of the starter data and return its SVG text."""
     title, description, commands = DEMOS[name]
     with tempfile.TemporaryDirectory() as folder:
-        extras = ["inspect_report.py", "check_golden.py", "live_evaluation.py", "handbook.md"]
-        for path in list(DATA.glob("*.json")) + [DATA / extra for extra in extras]:
-            shutil.copy(path, folder)
+        if name in KIT:
+            folder = shutil.copytree(KIT[name], Path(folder) / "kit",
+                                     ignore=shutil.ignore_patterns("expected", "__pycache__"))
+        else:
+            extras = ["inspect_report.py", "check_golden.py", "live_evaluation.py", "handbook.md"]
+            for path in list(DATA.glob("*.json")) + [DATA / extra for extra in extras]:
+                shutil.copy(path, folder)
         demo = run_commands(commands, folder)
     return render(f"rag-titan: {title}", description, demo)
 

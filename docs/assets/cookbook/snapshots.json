@@ -1,5 +1,5 @@
 {
-  "version": "0.8.4",
+  "version": "0.8.5",
   "cases": {
     "sample": {
       "query": {
@@ -516,8 +516,8 @@
       "runs": {
         "1": {
           "overall": {
-            "score": 64.17,
-            "score_0_1": 0.6417,
+            "score": 64.86,
+            "score_0_1": 0.6486,
             "rating": "Average",
             "status": "Action Required",
             "message": "Several checks need improvement before wider use. One or more critical quality checks failed.",
@@ -695,7 +695,7 @@
               "citation_f1": 1.0,
               "annotated_claim_support": 1.0,
               "abstention_accuracy": 0.5,
-              "context_grounding": 0.5,
+              "context_grounding": 1.0,
               "unsupported_number_rate": 0.0,
               "task_success": 0.5,
               "p50_latency_ms": 600.0,
@@ -705,8 +705,8 @@
         },
         "2": {
           "overall": {
-            "score": 63.1,
-            "score_0_1": 0.631,
+            "score": 63.79,
+            "score_0_1": 0.6379,
             "rating": "Average",
             "status": "Action Required",
             "message": "Several checks need improvement before wider use. One or more critical quality checks failed.",
@@ -884,7 +884,7 @@
               "citation_f1": 1.0,
               "annotated_claim_support": 1.0,
               "abstention_accuracy": 0.5,
-              "context_grounding": 0.5,
+              "context_grounding": 1.0,
               "unsupported_number_rate": 0.0,
               "task_success": 0.5,
               "p50_latency_ms": 600.0,
@@ -894,8 +894,8 @@
         },
         "3": {
           "overall": {
-            "score": 62.51,
-            "score_0_1": 0.6251,
+            "score": 63.21,
+            "score_0_1": 0.6321,
             "rating": "Average",
             "status": "Action Required",
             "message": "Several checks need improvement before wider use. One or more critical quality checks failed.",
@@ -1073,7 +1073,7 @@
               "citation_f1": 1.0,
               "annotated_claim_support": 1.0,
               "abstention_accuracy": 0.5,
-              "context_grounding": 0.5,
+              "context_grounding": 1.0,
               "unsupported_number_rate": 0.0,
               "task_success": 0.5,
               "p50_latency_ms": 600.0,

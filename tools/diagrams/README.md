@@ -57,3 +57,20 @@ It **runs the real evaluator** on `missed-evidence.json`, so every score is real
 python tools/diagrams/make_eval_flow.py           # draw the image
 python tools/diagrams/make_eval_flow.py --check   # fail if it is out of date
 ```
+
+# Complete guide: the step diagram and its terminal
+
+`make_eval_steps.py` draws `docs/assets/images/eval-steps.svg`: the seven steps of
+[the complete guide](../../docs/cookbook/complete-guide.md), who does each one and
+what it produces. The two scores in the last step are read from the **real run** of
+the guide's example (`docs/assets/cookbook/your-rag/expected/complete-run.txt`,
+written by `tools/cookbook/build_examples.py`).
+
+```bash
+python tools/cookbook/build_examples.py            # first: run the example, save its output
+python tools/diagrams/make_eval_steps.py           # draw the image
+python tools/diagrams/make_eval_steps.py --check   # fail if it is out of date
+```
+
+The guide's terminal (`eval-terminal/complete-guide.svg`) is one of the demos of
+`make_terminal_demos.py`: it runs the kit in `docs/assets/cookbook/your-rag/`.
