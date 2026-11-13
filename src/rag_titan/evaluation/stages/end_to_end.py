@@ -11,7 +11,7 @@ End-to-end evaluation: what the user experienced, from request to answer.
 """
 
 from rag_titan.evaluation.stages.answer_metrics import exact_match, token_scores
-from rag_titan.evaluation.stages.queries import check_queries
+from rag_titan.evaluation.stages.queries import check_queries, reference_answer
 from rag_titan.evaluation.stages.text import average, is_number, percentile
 
 
@@ -35,7 +35,9 @@ class EndToEndEvaluator:
         """
         check_queries(queries)
         observed = [query for query in queries if "answer" in query]
-        with_reference = [query for query in observed if query.get("expected_answer") is not None]
+        # questions the documents cannot answer have no reference answer
+        with_reference = [dict(query, expected_answer=reference_answer(query))
+                          for query in observed if reference_answer(query) is not None]
         outcomes = [query["task_success"] for query in observed
                     if query.get("task_success") is not None]
         times = self._numbers(observed, "latency_ms")

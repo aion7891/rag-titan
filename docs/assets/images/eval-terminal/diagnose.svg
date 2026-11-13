@@ -65,7 +65,7 @@
   <text class="t l0" x="44" y="90" fill="#e2e8f0"><tspan fill="#f472b6">$ </tspan>rag-titan evaluate --input missed-evidence.json --output missed-report.json --k 3</text>
 <g clip-path="url(#screen)"><rect class="cover c0" x="60.9" y="73" width="696" height="24" fill="#0f172a"/></g>
   <text class="t l1" x="44" y="114" fill="#94a3b8">Reports saved: missed-report.json and missed-report.md</text>
-  <text class="t l2" x="44" y="138" fill="#fdba74">Overall score: 62.5/100 (Average)</text>
+  <text class="t l2" x="44" y="138" fill="#fdba74">Overall score: 63.2/100 (Average)</text>
   <text class="t l3" x="44" y="162" fill="#94a3b8">Status: Action Required | Measurement coverage: 97%</text>
   <text class="t l4" x="44" y="186" fill="#fdba74">First failing stage: retrieval</text>
   <text class="t l5" x="44" y="210" fill="#94a3b8">Queries to look at:</text>

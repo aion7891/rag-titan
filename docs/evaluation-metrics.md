@@ -181,6 +181,13 @@ Context Grounding and Unsupported Number Rate are **hints, not proof**: an
 answer can reuse the context's words and still be wrong. For a hard check of
 faithfulness, label the claims yourself (`verified_claims`).
 
+**Refusals are scored by Abstention Accuracy only.** A question the documents
+cannot answer (`"answerable": false`) has no reference answer, so Exact Match,
+Answer F1 and ROUGE-L are *not measured* for it. A refusal (`"abstained": true`)
+makes no claims, so Context Grounding and Unsupported Number Rate are *not
+measured* for it. An answer that should have been a refusal still fails: its
+Abstention Accuracy is 0 and its grounding is measured.
+
 Exact Match and token F1 are the standard question-answering metrics of the
 SQuAD evaluation.
 

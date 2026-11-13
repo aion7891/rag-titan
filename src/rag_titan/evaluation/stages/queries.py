@@ -35,6 +35,19 @@ def check_queries(queries):
     return queries
 
 
+def reference_answer(query):
+    """
+    Return the reference answer of a query, or None when there is none.
+
+    A question the documents cannot answer ("answerable": False) has no
+    reference: the right reply is a refusal, and Abstention Accuracy scores
+    that. Comparing a refusal with an empty reference would call it wrong.
+    """
+    if query.get("answerable") is False:
+        return None
+    return query.get("expected_answer")
+
+
 def relevance_of(query):
     """
     Return the gold labels of a query as {chunk_id: grade}.

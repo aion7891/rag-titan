@@ -185,7 +185,7 @@
       "citation_f1": 1.0,
       "annotated_claim_support": 1.0,
       "abstention_accuracy": 0.5,
-      "context_grounding": 0.5,
+      "context_grounding": 1.0,
       "unsupported_number_rate": 0.0,
       "task_success": 0.5,
       "p50_latency_ms": 600.0,
@@ -206,7 +206,7 @@
         "annotated_claim_support": null,
         "abstention_accuracy": 0.0,
         "task_success": 0.0,
-        "context_grounding": 0.0,
+        "context_grounding": null,
         "unsupported_number_rate": null,
         "latency_ms": 400
       },
@@ -269,8 +269,8 @@
   },
   "scorecard": {
     "overall": {
-      "score": 62.51,
-      "score_0_1": 0.6251,
+      "score": 63.21,
+      "score_0_1": 0.6321,
       "rating": "Average",
       "status": "Action Required",
       "message": "Several checks need improvement before wider use. One or more critical quality checks failed.",
@@ -821,10 +821,10 @@
       "generation": {
         "name": "Answer quality",
         "description": "Answers compared with validated references and labels.",
-        "score": 66.95,
-        "score_0_1": 0.6695,
-        "rating": "Average",
-        "message": "Several checks need improvement before wider use. Main improvement areas: answer f1, required fact coverage.",
+        "score": 70.34,
+        "score_0_1": 0.7034,
+        "rating": "Good",
+        "message": "Results look promising, but some areas need improvement. Main improvement areas: answer f1, required fact coverage.",
         "evaluation_coverage": 1.0,
         "metrics_scored": 14,
         "metrics_expected": 14,
@@ -908,11 +908,11 @@
             "contribution": 1.0
           },
           "context_grounding": {
-            "value": 0.5,
-            "normalized_score": 0.5,
+            "value": 1.0,
+            "normalized_score": 1.0,
             "weight": 2,
             "direction": "high",
-            "contribution": 1.0
+            "contribution": 2.0
           },
           "unsupported_number_rate": {
             "value": 0.0,

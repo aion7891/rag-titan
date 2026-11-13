@@ -5,6 +5,10 @@ model or vector database. **Requirements:** the installation from
 [recipe 1](first-evaluation.md) and access to your system's logged outputs.
 Evaluation itself does not need access to the model or database.
 
+!!! tip "Want the whole path on one page?"
+    [The complete guide](complete-guide.md) goes from preparing documents to
+    chunking and embedding scores, with a small RAG you can run.
+
 ## What you will see
 
 ![Evaluate any RAG: your logs and golden labels go into rag-titan evaluate, which scores every stage and names the first failing stage](../assets/images/eval-flow.svg)

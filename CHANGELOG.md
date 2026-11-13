@@ -6,6 +6,36 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.8.5] - 2026-11-13
+
+### Added
+- Docs: [Evaluate your RAG: the complete guide](https://aion7891.github.io/rag-titan/cookbook/complete-guide/),
+  one page from the smallest input file to a report on all seven stages: prepare
+  documents, golden questions, capture your RAG's logs, `build_dataset()`, chunking
+  and embedding inputs, read the report, improve and compare with a baseline. With a
+  step diagram, a cheat sheet of what to pass, a complete data file that uses every
+  input (`full-data.json`, 100% measurement coverage) with every key explained,
+  and a runnable example
+  (`your-rag/` in the starter ZIP) that needs no model. Every command, output and
+  score on the page is checked against a real run by the tests.
+
+### Fixed
+- A correct refusal is no longer scored as a wrong answer. For a question the
+  documents cannot answer (`"answerable": false`) Exact Match, Answer F1 and ROUGE-L
+  are now *not measured*, in the generation and end-to-end stages: Abstention
+  Accuracy scores the reply. Before, "I don't know" got Answer F1 0 against the empty
+  reference and was listed under "Queries to look at".
+- A refusal (`"abstained": true`) is no longer checked against the context: Context
+  Grounding and Unsupported Number Rate are *not measured* for it. Before, a RAG that
+  learned to refuse correctly lost Context Grounding, and `--fail-on-regression`
+  reported a regression for an improvement.
+
+### Changed
+- Scores can move for data with refusals or unanswerable questions. In the cookbook's
+  `missed-evidence.json` (one question is refused) the overall score goes from 62.5
+  to 63.2. Reports saved with an older version may show a difference in
+  `context_grounding` or `answer_f1` when used as a `--baseline`: save a new baseline.
+
 ## [0.8.4] - 2026-11-12
 
 ### Fixed

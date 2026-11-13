@@ -34,6 +34,7 @@ plugins:
 markdown_extensions:
   - admonition
   - attr_list   # buttons: [text](link){ .md-button }
+  - pymdownx.details   # collapsible blocks: ??? note "title"
   - pymdownx.arithmatex:
       generic: true
   - pymdownx.highlight
@@ -46,6 +47,8 @@ markdown_extensions:
 # files of the cookbook starter kit that are not pages of the site
 exclude_docs: |
   assets/cookbook/handbook.md
+  assets/cookbook/your-rag/documents/
+  assets/cookbook/your-rag/expected/scorecard.md
 
 nav:
   - Home: index.md
@@ -55,6 +58,7 @@ nav:
       - Command line: cli.md
   - Evaluate your RAG:
       - Start here: cookbook/index.md
+      - The complete guide: cookbook/complete-guide.md
       - Your first evaluation: cookbook/first-evaluation.md
       - Diagnose a bad answer: cookbook/diagnose.md
       - Catch regressions: cookbook/regressions.md

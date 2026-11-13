@@ -15,6 +15,9 @@ from rag_titan import __version__
 from rag_titan.evaluation import RAGEvaluator, check_golden
 from rag_titan.evaluation.reports import summary_text
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))    # tools/ is not a package
+from your_rag_example import your_rag_files  # noqa: E402
+
 ROOT = Path(__file__).resolve().parents[2]
 DEST = ROOT / "docs/assets/cookbook"
 
@@ -89,6 +92,7 @@ def generated_files():
                             "answer": "Employees get 25 days of annual leave.",
                             "expected_answer": "Employees get 25 days of annual leave."}]}
     files["minimal.json"] = encoded(minimal)
+    files.update(your_rag_files(files["minimal.json"]))    # the complete guide's example
     files["README.txt"] = (
         "rag-titan evaluation cookbook\n\n"
         "Teaching data: fictional company policies, hand-written answers and toy vectors.\n"
@@ -100,7 +104,9 @@ def generated_files():
         "--baseline baseline.json --k 3 --fail-on-regression\n"
         "The comparison intentionally exits with code 1.\n\n"
         "Optional live recipe: pull gemma3:4b and nomic-embed-text in Ollama, then run\n"
-        "python live_evaluation.py. It uses real models; scores and timings vary.\n"
+        "python live_evaluation.py. It uses real models; scores and timings vary.\n\n"
+        "your-rag/: the complete guide, step by step, on a tiny stand-in RAG (no model\n"
+        "needed). Its expected/ folder holds the real output of every command.\n"
         "Guide: https://aion7891.github.io/rag-titan/cookbook/\n"
     ).encode()
     return files

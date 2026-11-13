@@ -38,7 +38,7 @@ python inspect_report.py missed-report.json
 Expected summary:
 
 ```text
-Overall score: 62.5/100 (Average)
+Overall score: 63.2/100 (Average)
 Status: Action Required | Measurement coverage: 97%
 First failing stage: retrieval
 Queries to look at:

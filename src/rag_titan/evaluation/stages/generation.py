@@ -23,7 +23,7 @@ from rag_titan.evaluation.stages.answer_metrics import (
     token_scores,
     unsupported_number_rate,
 )
-from rag_titan.evaluation.stages.queries import check_queries
+from rag_titan.evaluation.stages.queries import check_queries, reference_answer
 from rag_titan.evaluation.stages.spans import normalize_chunks
 from rag_titan.evaluation.stages.text import average, percentile
 
@@ -48,7 +48,10 @@ class GenerationEvaluator:
                 "expected_citations" (source ids), "verified_claims" (list of
                 {"supported": True/False}), "answerable" and "abstained",
                 "task_success", "generation_latency_ms", and the context as
-                "context" (text) or "context_ids".
+                "context" (text) or "context_ids". With "answerable": False
+                the answer is not compared with a reference, and with
+                "abstained": True it is not checked against the context:
+                Abstention Accuracy scores those replies.
             chunks: the chunks, needed only to turn "context_ids" into text.
 
         Returns:
@@ -75,13 +78,15 @@ class GenerationEvaluator:
             raise ValueError(f"Query {query['id']!r}: 'answer' must be a text")
 
         scores = {"query_id": query["id"]}
-        scores.update(self._reference_scores(answer, query.get("expected_answer")))
+        scores.update(self._reference_scores(answer, reference_answer(query)))
         scores["required_fact_coverage"] = required_fact_coverage(
             answer, query.get("required_facts"))
         scores.update(citation_scores(query.get("citations"), query.get("expected_citations")))
         scores.update(self._label_scores(query))
 
-        context = self._context_text(query, texts)
+        # a refusal ("I don't know") makes no claims, so there is nothing to ground
+        refused = query.get("abstained") is True
+        context = None if refused else self._context_text(query, texts)
         scores["context_grounding"] = context_grounding(answer, context)
         scores["unsupported_number_rate"] = unsupported_number_rate(answer, context)
         scores["latency_ms"] = query.get("generation_latency_ms")

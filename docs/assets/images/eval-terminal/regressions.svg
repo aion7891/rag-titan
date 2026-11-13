@@ -73,12 +73,12 @@
   <text class="t l6" x="44" y="248" fill="#e2e8f0">    --k 3 --fail-on-regression</text>
 <g clip-path="url(#screen)"><rect class="cover c6" x="60.9" y="231" width="249" height="24" fill="#0f172a"/></g>
   <text class="t l7" x="44" y="272" fill="#94a3b8">Reports saved: candidate.json and candidate.md</text>
-  <text class="t l8" x="44" y="296" fill="#fdba74">Overall score: 62.5/100 (Average)</text>
+  <text class="t l8" x="44" y="296" fill="#fdba74">Overall score: 63.2/100 (Average)</text>
   <text class="t l9" x="44" y="320" fill="#94a3b8">Status: Action Required | Measurement coverage: 97%</text>
   <text class="t l10" x="44" y="344" fill="#fdba74">First failing stage: retrieval</text>
   <text class="t l11" x="44" y="368" fill="#94a3b8">Queries to look at:</text>
   <text class="t l12" x="44" y="392" fill="#94a3b8">  - q1 (retrieval): no relevant chunk in the top K</text>
-  <text class="t l13" x="44" y="416" fill="#fca5a5">Regressions against the baseline: retrieval.precision_at_k, retrieval.recall_at_k, … (+30 more)</text>
+  <text class="t l13" x="44" y="416" fill="#fca5a5">Regressions against the baseline: retrieval.precision_at_k, retrieval.recall_at_k, … (+29 more)</text>
   <text class="t l14" x="44" y="454" fill="#e2e8f0"><tspan fill="#f472b6">$ </tspan>echo $?</text>
 <g clip-path="url(#screen)"><rect class="cover c14" x="60.9" y="437" width="71" height="24" fill="#0f172a"/></g>
   <text class="t l15" x="44" y="478" fill="#fca5a5">1</text>

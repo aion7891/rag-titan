@@ -20,6 +20,9 @@ Recorded from a real run with Ollama (`gemma3:4b`, `nomic-embed-text`). Live ans
 
     ![Evaluate any RAG: your logs and golden labels go into rag-titan evaluate, which scores every stage and names the first failing stage](../assets/images/eval-flow.svg)
 
+    **Want every step on one page, with a runnable example?**
+    → [Evaluate your RAG: the complete guide](complete-guide.md)
+
     1. **Install:** `pip install rag-titan`
     2. **Write golden questions:** `rag-titan golden --questions questions.txt --files your-docs.md`
        writes a draft; you review it. → [Build a golden set](golden-set.md#prepare-golden-data-step-by-step)
@@ -50,6 +53,7 @@ system found the right evidence or used it correctly.
 
 | Your situation | Recipe | What you finish with |
 |---|---|---|
+| “Show me everything, start to finish.” | [The complete guide](complete-guide.md) | Your own RAG scored on all seven stages, and a baseline to compare with |
 | “I have never evaluated a RAG.” | [1. Your first evaluation](first-evaluation.md) | A JSON report and a readable Markdown report |
 | “The answer is wrong. Where do I look?” | [2. Diagnose a bad answer](diagnose.md) | A stage to investigate and a concrete next experiment |
 | “I changed something. Is it better?” | [3. Catch regressions](regressions.md) | A baseline comparison and a command that fails on regression |
