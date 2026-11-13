@@ -62,6 +62,7 @@ def test_the_json_examples_are_real():
     shown = [json.loads(block) for block in blocks("json")]
 
     assert json.loads(kit("minimal.json")) in shown
+    assert json.loads(kit("full-data.json")) in shown                    # the complete file
     assert json.loads(kit("expected/golden-draft.json"))[1] in shown     # the draft of q2
     assert json.loads(kit("golden.json"))[1] in shown                    # q2 after review
     first_run = json.loads(kit("expected/my_rag_logs.json"))["runs"][0]
@@ -78,3 +79,23 @@ def test_the_scorecard_and_the_scores_are_real():
     for row in rows:
         assert row in page, row
     assert f"**{scores[-2]} → {scores[-1]}**" in page    # baseline -> improved
+
+
+def test_the_complete_data_file_uses_every_input():
+    """full-data.json is the template of the page: a new input must be added to it."""
+    from rag_titan.evaluation.dataset import RUN_KEYS
+    from rag_titan.evaluation.rag_evaluator import CHUNK_OPTIONS, EMBEDDING_KEYS
+
+    data = json.loads(kit("full-data.json"))
+    page = PAGE.read_text(encoding="utf-8")
+    top_level = set(CHUNK_OPTIONS) - {"chunk_vectors"}       # default: embeddings["vectors"]
+    per_query = set(RUN_KEYS) - {"question", "context", "raw_answer"}    # other spellings
+
+    assert top_level | {"documents", "chunks", "queries", "embeddings",
+                        "max_context_tokens"} <= set(data)
+    assert set(data["embeddings"]) == set(EMBEDDING_KEYS)
+    assert per_query <= set(data["queries"][0])
+    for key in set(data) | set(data["embeddings"]) | set(data["queries"][0]) | \
+            set(data["chunks"][0]):
+        assert f"`{key}`" in page, key                        # every key is explained
+    assert "Measurement coverage: 100%" in kit("expected/complete-run.txt")

@@ -13,7 +13,9 @@ and the project uses [Semantic Versioning](https://semver.org/).
   one page from the smallest input file to a report on all seven stages: prepare
   documents, golden questions, capture your RAG's logs, `build_dataset()`, chunking
   and embedding inputs, read the report, improve and compare with a baseline. With a
-  step diagram, a cheat sheet of what to pass, and a runnable example
+  step diagram, a cheat sheet of what to pass, a complete data file that uses every
+  input (`full-data.json`, 100% measurement coverage) with every key explained,
+  and a runnable example
   (`your-rag/` in the starter ZIP) that needs no model. Every command, output and
   score on the page is checked against a real run by the tests.
 

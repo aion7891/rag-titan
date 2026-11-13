@@ -28,6 +28,8 @@ EVALUATE = "rag-titan evaluate --input {} --output {} --k {}"
 FIRST_RUN = [
     "# 1. The minimum: one chunk, one question",
     EVALUATE.format("minimal.json", "minimal-report.json", 1),
+    "# The complete data file: every input rag-titan accepts",
+    EVALUATE.format("full-data.json", "full-report.json", 2),
     "# 2. Prepare your documents",
     "python prepare_docs.py",
     "# 3. Golden questions: rag-titan drafts, you review, then check",

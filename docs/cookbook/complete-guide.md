@@ -33,6 +33,7 @@ Extract it and open a terminal **inside `rag-titan-cookbook/your-rag`**.
 | `documents/` | the texts your RAG indexes | you already have them |
 | `questions.txt` | five test questions, one per line | you |
 | `golden.json` | the correct answers, already reviewed | you (step 3) |
+| `minimal.json`, `full-data.json` | the smallest and the most complete input file | templates to copy |
 | `my_rag.py` | a tiny stand-in for **your RAG** | you already have yours |
 | `prepare_docs.py`, `check_golden.py`, `make_data.py`, `add_stages.py` | the four small scripts of this guide | copy and adapt them |
 | `expected/` | the real output of every command below | to compare with yours |
@@ -587,8 +588,195 @@ More: [Catch regressions](regressions.md).
 Leave out what you do not have. Never fill a gap with a zero or an empty text:
 a missing value is reported as "not measured", a zero is scored as a failure.
 
-All input keys: [Evaluating every stage](../stage-evaluation.md#the-data).
+Every key, in one real file: [the complete data file](#the-complete-data-file-everything-you-can-pass) below.
 All metrics and formulas: [Metrics](../evaluation-metrics.md).
+
+## The complete data file: everything you can pass
+
+`full-data.json` in the kit uses **every input rag-titan accepts**, on a small
+example: one document, three chunks, two questions (one that can be answered,
+one that cannot) and tiny three-number vectors so it stays readable. Copy it
+as a template and delete what you do not have.
+
+```json
+{
+  "documents": {
+    "travel_policy.md": "Economy class is required for all flights under six hours. Business class is allowed for flights of six hours or longer.\n\nThe daily meal allowance is 40 euros. Receipts are needed for every meal above 15 euros.\n\nAllowed extras:\n- a taxi to the airport\n- one checked bag\n"
+  },
+  "chunks": [
+    {
+      "id": "c1",
+      "text": "Economy class is required for all flights under six hours. Business class is allowed for flights of six hours or longer.",
+      "doc_id": "travel_policy.md",
+      "start": 0,
+      "end": 120,
+      "metadata": {"source": "travel_policy.md", "page": 1}
+    },
+    {
+      "id": "c2",
+      "text": "The daily meal allowance is 40 euros. Receipts are needed for every meal above 15 euros.",
+      "doc_id": "travel_policy.md",
+      "start": 122,
+      "end": 210,
+      "metadata": {"source": "travel_policy.md", "page": 1}
+    },
+    {
+      "id": "c3",
+      "text": "Allowed extras:\n- a taxi to the airport\n- one checked bag",
+      "doc_id": "travel_policy.md",
+      "start": 212,
+      "end": 269,
+      "metadata": {"source": "travel_policy.md", "page": 1}
+    }
+  ],
+  "queries": [
+    {
+      "id": "q1",
+      "text": "How much is the daily meal allowance?",
+      "expected_chunk_ids": ["c2"],
+      "relevance": {"c2": 3, "c3": 1},
+      "expected_evidence": ["The daily meal allowance is 40 euros."],
+      "retrieved_ids": ["c3", "c2", "c1"],
+      "reranked_ids": ["c2", "c3", "c1"],
+      "context_ids": ["c2", "c3"],
+      "answer": "The daily meal allowance is 40 euros.",
+      "expected_answer": "The daily meal allowance is 40 euros.",
+      "required_facts": ["40"],
+      "citations": ["c2"],
+      "expected_citations": ["c2"],
+      "verified_claims": [
+        {"text": "The daily meal allowance is 40 euros.", "supported": true}
+      ],
+      "answerable": true,
+      "abstained": false,
+      "task_success": true,
+      "retrieval_latency_ms": 12,
+      "generation_latency_ms": 840,
+      "latency_ms": 852,
+      "cost_usd": 0.0004,
+      "total_tokens": 310
+    },
+    {
+      "id": "q2",
+      "text": "Is there a gym allowance?",
+      "expected_chunk_ids": [],
+      "retrieved_ids": ["c2", "c3", "c1"],
+      "reranked_ids": ["c2", "c3", "c1"],
+      "context_ids": ["c2", "c3"],
+      "answer": "I don't know based on the documents.",
+      "answerable": false,
+      "abstained": true,
+      "task_success": true,
+      "retrieval_latency_ms": 11,
+      "generation_latency_ms": 420,
+      "latency_ms": 431,
+      "cost_usd": 0.0002,
+      "total_tokens": 190
+    }
+  ],
+  "embeddings": {
+    "vectors": {"c1": [0.9, 0.1, 0.1], "c2": [0.1, 0.9, 0.2], "c3": [0.1, 0.3, 0.9]},
+    "query_vectors": {"q1": [0.1, 0.9, 0.3], "q2": [0.3, 0.6, 0.6]},
+    "relevant_ids": {"q1": ["c2"]},
+    "indexed_ids": ["c1", "c2", "c3"],
+    "index_results": {"q1": ["c2", "c3"], "q2": ["c3", "c2"]}
+  },
+  "sentence_vectors": {
+    "c1": [[0.9, 0.1, 0.0], [0.8, 0.2, 0.1]],
+    "c2": [[0.1, 0.9, 0.1], [0.2, 0.8, 0.3]],
+    "c3": [[0.1, 0.3, 0.9], [0.0, 0.2, 0.9]]
+  },
+  "expected_chunks": [
+    "Economy class is required for all flights under six hours. Business class is allowed for flights of six hours or longer.",
+    "The daily meal allowance is 40 euros. Receipts are needed for every meal above 15 euros.",
+    "Allowed extras:\n- a taxi to the airport\n- one checked bag"
+  ],
+  "expected_evidence": ["The daily meal allowance is 40 euros."],
+  "structural_blocks": ["- a taxi to the airport\n- one checked bag"],
+  "required_metadata": ["source", "page"],
+  "expected_metadata": {"c1": {"page": 1}, "c2": {"page": 1}, "c3": {"page": 1}},
+  "size_limits": [5, 60],
+  "boundary_tolerance": 2,
+  "max_context_tokens": 80
+}
+```
+
+```bash
+rag-titan evaluate --input full-data.json --output full-report.json --k 2
+```
+
+```text
+Reports saved: full-report.json and full-report.md
+Overall score: 94.0/100 (Excellent)
+Status: Evaluated | Measurement coverage: 100%
+First failing stage: none
+```
+
+With everything passed, coverage is **100%**, the status is `Evaluated` instead
+of `Provisional`, and the "Not measured" list is gone.
+
+### Top level
+
+| Key | Needed? | What it is |
+|---|---|---|
+| `chunks` | **yes** | the chunks of your index |
+| `queries` | **yes** | one entry per test question: your labels and what your RAG did |
+| `documents` | recommended | `{name: text}` of the source documents. For a single document you can pass `document_text` instead |
+| `embeddings` | optional | the vectors and what your vector index returned |
+| `sentence_vectors` | optional | `{chunk id: [one vector per sentence]}`: is a chunk about one topic? |
+| `chunk_vectors` | optional | `{chunk id: vector}`. Not in the file above: taken from `embeddings.vectors` when missing |
+| `expected_chunks` | optional | the ideal chunks, marked by a person: are the cuts in the right places? |
+| `expected_evidence` | optional | quotes that must not be cut in two by a chunk boundary |
+| `structural_blocks` | optional | lists, tables or code that must stay in one chunk |
+| `required_metadata` | optional | metadata keys every chunk must have |
+| `expected_metadata` | optional | `{chunk id: {key: value}}`: the correct metadata values |
+| `size_limits` | optional | `[min, max]` words of a valid chunk |
+| `boundary_tolerance` | optional | how many characters a cut may be off and still count as right |
+| `max_context_tokens` | optional | your prompt budget, in words |
+
+### One chunk
+
+| Key | Needed? | What it is |
+|---|---|---|
+| `id` | **yes** | a unique name; the questions refer to it |
+| `text` | **yes** | the chunk text |
+| `doc_id` | with several documents | the name of its document in `documents` |
+| `start`, `end` | optional | character positions in the document (`end` not included). Found by searching for `text` when missing; `build_dataset()` adds them |
+| `metadata` | optional | what your index stores with the chunk, for example source and page |
+
+### One question
+
+| Key | Needed? | From | What it is |
+|---|---|---|---|
+| `id` | **yes** | you | a unique name; keep it the same between runs |
+| `text` | optional | you | the question, for your own reading |
+| `expected_chunk_ids` | **yes**, or evidence | you | the chunks that hold the answer |
+| `relevance` | optional | you | graded labels instead: 3 = perfect, 1 = related |
+| `expected_evidence` | optional | you | the exact quotes that prove the answer |
+| `retrieved_ids` | **yes** | your RAG | search results, best first |
+| `reranked_ids` | with a reranker | your RAG | the order after reranking |
+| `context_ids` | recommended | your RAG | the chunks put into the prompt. Pass the prompt text as `context` instead if you have no ids |
+| `answer` | **yes** | your RAG | the answer as written |
+| `expected_answer` | recommended | you | the correct answer |
+| `required_facts` | optional | you | words the answer must contain |
+| `citations` | optional | your RAG | the chunk ids the answer cites |
+| `expected_citations` | optional | you | the chunk ids it should cite |
+| `verified_claims` | optional | you | each claim of the answer, marked supported or not |
+| `answerable` | optional | you | `false` when the documents cannot answer it |
+| `abstained` | optional | your RAG | `true` when it refused to answer |
+| `task_success` | optional | you | your verdict on the whole reply |
+| `retrieval_latency_ms`, `generation_latency_ms`, `latency_ms` | optional | your RAG | search time, LLM time, total time |
+| `cost_usd`, `total_tokens` | optional | your RAG | what the request cost |
+
+### `embeddings`
+
+| Key | Needed? | What it is |
+|---|---|---|
+| `vectors` | **yes**, when you pass `embeddings` | `{chunk id: vector}` |
+| `query_vectors` | optional | `{question id: vector}` |
+| `relevant_ids` | optional | `{question id: [correct chunk ids]}` |
+| `indexed_ids` | optional | the chunk ids really stored in your vector index |
+| `index_results` | optional | `{question id: [chunk ids the index returned]}` |
 
 ## On your own RAG
 

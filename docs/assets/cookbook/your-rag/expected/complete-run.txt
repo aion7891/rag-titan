@@ -12,6 +12,13 @@ Not measured (null in the report) - to measure it:
   - refusals: add a question with "answerable": false and "abstained"
   - end-to-end time and cost: add "latency_ms", "cost_usd", "total_tokens"
 
+# The complete data file: every input rag-titan accepts
+$ rag-titan evaluate --input full-data.json --output full-report.json --k 2
+Reports saved: full-report.json and full-report.md
+Overall score: 94.0/100 (Excellent)
+Status: Evaluated | Measurement coverage: 100%
+First failing stage: none
+
 # 2. Prepare your documents
 $ python prepare_docs.py
 Documents: 3
