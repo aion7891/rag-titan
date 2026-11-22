@@ -6,6 +6,51 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.14.0] - 2026-11-23
+
+### Added
+- **Corrective RAG** (`rag_type="corrective"`): the model grades every retrieved
+  chunk from 0 to 10 in one call. *Correct* evidence (a chunk at least
+  `CRAG_UPPER`, default 7) is kept; *ambiguous* evidence keeps its good chunks and
+  is searched again with a rewritten question; *incorrect* evidence (every chunk
+  below `CRAG_LOWER`, default 3) is thrown away and searched again. Only the
+  useful sentences of the chunks the model reads are kept, word for word
+  (`CRAG_REFINE`, default on), so citations still point to real text. At most
+  `CRAG_MAX_RETRIES` searches again (default 1); with nothing good left the answer
+  is "I don't know". `CorrectiveRAG(..., fallback_retriever=...)` searches
+  somewhere else when the evidence is weak (for example your own web search).
+  Inspired by Yan et al. (2024).
+- **Iterative RAG** (`rag_type="iterative"`): search, let the model write what is
+  still missing and its next search query (or DONE), search again, and answer once
+  from everything found. Every search keeps its own best `TOP_N` chunks, so a
+  second hop worded unlike the question is not dropped. At most
+  `ITERATIVE_MAX_STEPS` rounds (default 3). Inspired by IRCoT (Trivedi et al. 2022).
+- **Loop limits** (`rag_titan.rag_types.loops.LoopLimit`): both types cap their
+  rounds, stop when a search finds no new chunk, and say why they stopped in
+  `result["loop"]` (`max steps`, `no new chunks`, `model said done`,
+  `evidence is good`).
+- Settings, `.env` and CLI flags: `CRAG_UPPER`, `CRAG_LOWER`, `CRAG_REFINE`,
+  `CRAG_MAX_RETRIES`, `ITERATIVE_MAX_STEPS` (`--crag-upper`, `--crag-lower`,
+  `--crag-refine`/`--no-crag-refine`, `--crag-max-retries`,
+  `--iterative-max-steps`). They change only the search, so `evaluate` never
+  re-indexes for them.
+- Playground pages for both types with their knobs: the grade of every chunk, the
+  sentences kept, each thought and next search, and how the loop ended.
+- `examples/corrective_rag.py`, `examples/iterative_rag.py`, and two-hop help desk
+  documents (`examples/multihop_docs/`, `examples/multihop_questions.json`). Guide
+  with a real comparison:
+  [RAG types](https://aion7891.github.io/rag-titan/rag-types/#corrective-rag-corrective).
+  On the two-hop questions with keyword search, Iterative RAG got every needed file
+  (recall 1.000, Simple RAG 0.700); on the help desk questions with keyword search,
+  Corrective RAG lifted recall from 0.500 to 0.833.
+
+### Changed
+- Flow diagrams route every arrow that skips a row around a side, so it never
+  crosses a box. The diagram code is split into `rag-flow.js` (layout, drawing)
+  and `rag-flow-play.js` (lighting up a run); each RAG type's playground knobs live
+  in `rag-knobs.js`.
+- Playground runs include `"loop"` (`None` for RAG types without a loop).
+
 ## [0.13.0] - 2026-11-22
 
 ### Added
