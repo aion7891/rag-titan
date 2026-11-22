@@ -4,7 +4,12 @@ an LLM that replies by prompt, and a retriever that returns prepared lists.
 """
 
 from rag_titan.llm import BaseLLM
-from rag_titan.prompts import LLM_RERANK_PROMPT, QUERY_REWRITE_PROMPT, REFINE_PROMPT
+from rag_titan.prompts import (
+    LLM_RERANK_PROMPT,
+    NEXT_STEP_PROMPT,
+    QUERY_REWRITE_PROMPT,
+    REFINE_PROMPT,
+)
 
 
 class ScriptLLM(BaseLLM):
@@ -58,3 +63,22 @@ def assert_follows_flow(rag, result):
     assert set(steps) <= {node["id"] for node in flow["nodes"]}
     for pair in zip(steps, steps[1:]):
         assert pair in edges, f"no FLOW edge {pair}"
+
+
+class ThinkLLM(BaseLLM):
+    """Replies to the "think" prompt from a list (the last one repeats), else the answer."""
+
+    def __init__(self, steps, answer="the answer"):
+        super().__init__("think-fake")
+        self.steps = list(steps)
+        self.answer = answer
+        self.calls = []
+
+    def chat(self, messages, tools=None):
+        system, user = messages[0]["content"], messages[1]["content"]
+        self.calls.append((system, user))
+        if system == NEXT_STEP_PROMPT:
+            reply = self.steps.pop(0) if len(self.steps) > 1 else self.steps[0]
+        else:
+            reply = self.answer
+        return {"content": reply, "tool_calls": [], "message": {"role": "assistant"}}

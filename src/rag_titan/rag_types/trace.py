@@ -102,6 +102,11 @@ def _short(value, brief=False):
                            else f"{chunk['id']} ?" for chunk in value["chunks"])
         return f"{value['verdict']}: {grades or value.get('note', 'no chunks')}"
 
+    # the next step (Iterative RAG): "search 'Facilities team lead'" or "done"
+    if isinstance(value, dict) and "thought" in value and "search" in value:
+        decision = f"search {value['search']!r}" if value["search"] else "done"
+        return decision + (f" ({value['note']})" if value.get("note") else "")
+
     # several result lists by name (fuse_queries): "query_1 8 chunks, query_2 8 chunks"
     if isinstance(value, dict) and value and all(isinstance(item, list) for item in value.values()):
         return ", ".join(f"{name} {_count(items)}" for name, items in value.items())
