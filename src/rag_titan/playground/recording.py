@@ -34,6 +34,11 @@ PRESET_GRID = {
              "reranker": RERANKER_VALUES},
     "rag_fusion": {"top_k": [3, 5, 8], "top_n": [1, 2, 3], "fusion_queries": [1, 3, 5],
                    "reranker": RERANKER_VALUES},
+    "corrective": {"top_k": [3, 5, 8], "top_n": [1, 2, 3], "crag_upper": [5, 7, 9],
+                   "crag_lower": [1, 3, 5], "crag_refine": [True, False],
+                   "crag_max_retries": [0, 1, 2], "reranker": RERANKER_VALUES},
+    "iterative": {"top_k": [2, 3, 5], "top_n": [1, 2, 3], "iterative_max_steps": [0, 1, 3],
+                  "reranker": RERANKER_VALUES},
 }
 
 

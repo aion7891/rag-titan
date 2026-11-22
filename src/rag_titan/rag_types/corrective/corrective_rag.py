@@ -52,7 +52,7 @@ class CorrectiveRAG(BaseRAG):
             {"id": "grade", "label": "Grade chunks", "kind": "llm"},
             {"id": "rewrite", "label": "Rewrite query", "kind": "llm"},
             {"id": "rerank", "label": "Rerank", "kind": "search"},
-            {"id": "refine", "label": "Keep useful sentences", "kind": "llm"},
+            {"id": "refine", "label": "Keep key sentences", "kind": "llm"},
             {"id": "generate", "label": "Generate answer", "kind": "output"},
             {"id": "give_up", "label": "No answer", "kind": "output"},
         ],

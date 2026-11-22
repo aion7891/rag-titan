@@ -41,7 +41,10 @@ const RagCards = (() => {
     }
     const files = [...new Set(run.sources)].join(", ") || "none";
     const given = run.recorded === false ? "files the model would read" : "files given to the LLM";
-    return `${evidence} · ${run.steps.length} steps · ${Math.round(run.ms)} ms · ${given}: ${files}`;
+    // Corrective and Iterative RAG: how their loop went, e.g. "1 of 1 rounds, stopped: evidence is good"
+    const loop = run.loop ? ` · loop: ${RagSteps.describe(run.loop)}` : "";
+    return `${evidence} · ${run.steps.length} steps · ${Math.round(run.ms)} ms · ${given}: ${files}`
+      + loop;
   }
 
   // The answer, or why there is none: a run past the recording stops at a model step.
@@ -70,8 +73,11 @@ const RagCards = (() => {
     // (or the step where a run past the recording stopped)
     const has = (id) => flow.nodes.some((node) => node.id === id);
     const search = has("fuse") ? "fuse" : "retrieve";
-    // a type's own step says the most: Parent-Child's expansion, HyDE's and RAG-Fusion's fusing
-    const open = run.stopped_at || ["expand", "fuse_queries"].find(has) || search;
+    // a type's own step says the most: Parent-Child's expansion, HyDE's and RAG-Fusion's
+    // fusing, Corrective's grades, Iterative's thinking (when this run used it)
+    const used = (id) => has(id) && run.steps.some((step) => step.step === id);
+    const open = run.stopped_at || ["expand", "fuse_queries", "grade", "think"].find(used)
+      || search;
     return { box, play: (delay) => diagram.play(run.steps, delay || 650)
       .then(() => diagram.select(open)) };
   }

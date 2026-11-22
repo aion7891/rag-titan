@@ -2,6 +2,7 @@
 //   const diagram = RagFlow.render(element, AdaptiveRAG_FLOW, { onSelect });
 //   diagram.play(result.steps);            // or diagram.show(steps) without animation
 // The layout comes from FLOW alone, so a new RAG type needs no diagram code.
+// This file lays out and draws; rag-flow-play.js (loaded first) lights up a run.
 
 const RagFlow = (() => {
   const SIZE = { w: 150, h: 46, gapX: 26, gapY: 40, pad: 14, loop: 54 };
@@ -77,9 +78,15 @@ const RagFlow = (() => {
       return `M${a.x + SIZE.w} ${a.y + SIZE.h / 2} C${x} ${a.y + SIZE.h / 2} ${x} ${b.y + SIZE.h / 2} `
         + `${b.x + SIZE.w + 4} ${b.y + SIZE.h / 2}`;
     }
-    if (b.y - a.y > SIZE.h + SIZE.gapY && Math.abs(a.x - b.x) < 1) {
-      // skips a row in the same column: round the left side, not through the box between
-      const x = a.x - SIZE.loop + 10;
+    if (b.y - a.y > SIZE.h + SIZE.gapY) {
+      // skips a row: go round a side, never through the boxes in between. Right when the
+      // target lies right and under the right side (Iterative's rerank -> no answer), else left
+      const right = a.x + SIZE.w + 24;
+      if (b.x > a.x + 1 && right >= b.x + 10 && right <= b.x + SIZE.w - 10) {
+        return `M${a.x + SIZE.w} ${a.y + SIZE.h / 2} C${right} ${a.y + SIZE.h / 2} ${right} `
+          + `${b.y - 30} ${right} ${b.y - 4}`;
+      }
+      const x = Math.min(a.x, b.x) - SIZE.loop + 10;
       return `M${a.x} ${a.y + SIZE.h / 2} C${x} ${a.y + SIZE.h / 2} ${x} ${b.y + SIZE.h / 2} `
         + `${b.x - 4} ${b.y + SIZE.h / 2}`;
     }
@@ -99,17 +106,6 @@ const RagFlow = (() => {
       svg("path", { d: "M0 0 L10 5 L0 10 z", class: `rf-head rf-head-${kind}` }, head);
     });
     return ids;
-  }
-
-  // step numbers of a node's visits, runs shortened: [2, 3, 4, 5] -> "2–5", [2, 5] -> "2 · 5"
-  function badgeText(numbers) {
-    const parts = [];
-    numbers.forEach((n, i) => {
-      const last = parts[parts.length - 1];
-      if (i > 0 && n === numbers[i - 1] + 1) last[1] = n; else parts.push([n, n]);
-    });
-    return parts.map(([a, b]) => (a === b ? `${a}` : b === a + 1 ? `${a} · ${b}` : `${a}–${b}`))
-      .join(" · ");
   }
 
   function render(container, flow, options) {
@@ -144,58 +140,7 @@ const RagFlow = (() => {
     });
 
     container.replaceChildren(root);
-    return diagramApi(nodes, edges, opts.onSelect);
-  }
-
-  function diagramApi(nodes, edges, onSelect) {
-    let timer = null;
-    const reset = () => {
-      clearTimeout(timer);
-      Object.values(nodes).forEach((n) => { n.visits = []; n.badge.textContent = "";
-        n.group.classList.remove("rf-visited", "rf-current", "rf-failed"); });
-      Object.values(edges).forEach((edge) => {
-        edge.classList.remove("rf-taken");
-        if (edge.dataset.plain) edge.setAttribute("marker-end", edge.dataset.plain);
-      });
-    };
-    const light = (steps, i) => {
-      const step = steps[i];
-      const node = nodes[step.step];
-      if (!node) throw new Error(`Step "${step.step}" is not in this FLOW`);
-      Object.values(nodes).forEach((n) => n.group.classList.remove("rf-current"));
-      node.visits.push({ number: i + 1, step });
-      node.badge.textContent = badgeText(node.visits.map((v) => v.number));
-      node.group.classList.add("rf-visited", "rf-current");
-      // a step that failed (a model reply not recorded) is drawn dashed
-      if (step.output && typeof step.output === "object" && "error" in step.output) {
-        node.group.classList.add("rf-failed");
-      }
-      const edge = i > 0 && edges[`${steps[i - 1].step}>${step.step}`];
-      if (edge) {
-        edge.dataset.plain = edge.dataset.plain || edge.getAttribute("marker-end");
-        edge.classList.add("rf-taken");
-        edge.setAttribute("marker-end", edge.dataset.taken);
-      }
-    };
-    const still = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    return {
-      reset,
-      // open a node's details from code, as if it was clicked
-      select(id) { if (onSelect && nodes[id]) onSelect(id, nodes[id].visits); },
-      show(steps) { reset(); steps.forEach((_, i) => light(steps, i)); },
-      play(steps, delay) {
-        reset();
-        if (still()) { steps.forEach((_, i) => light(steps, i)); return Promise.resolve(); }
-        return new Promise((done) => {
-          const next = (i) => {
-            if (i === steps.length) { done(); return; }
-            light(steps, i);
-            timer = setTimeout(() => next(i + 1), delay || 650);
-          };
-          next(0);
-        });
-      },
-    };
+    return RagFlowPlay.api(nodes, edges, opts.onSelect);   // lighting up a run: rag-flow-play.js
   }
 
   return { render, layout };

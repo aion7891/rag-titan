@@ -83,6 +83,8 @@ nav:
       - Parent-Child RAG: rag-playground/parent-child.md
       - HyDE RAG: rag-playground/hyde.md
       - RAG-Fusion: rag-playground/rag-fusion.md
+      - Corrective RAG: rag-playground/corrective.md
+      - Iterative RAG: rag-playground/iterative.md
       - Chunk playground: playground.md
   - Advanced:
       - Extending rag-titan: extending.md
@@ -107,10 +109,12 @@ extra_javascript:
   - assets/javascripts/chunk-core.js
   - assets/javascripts/chunk-playground.js
   - assets/javascripts/rag-steps.js
+  - assets/javascripts/rag-flow-play.js
   - assets/javascripts/rag-flow.js
   - assets/javascripts/rag-cards.js
   - assets/javascripts/rag-python.js
   - assets/javascripts/rag-playground.js
+  - assets/javascripts/rag-knobs.js
   - assets/javascripts/rag-type-playground.js
   - assets/javascripts/cookbook-commands.js
   - assets/javascripts/cookbook-lab.js
