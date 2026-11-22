@@ -39,7 +39,7 @@ PAGE = """<!doctype html>
 <h1>RAG flow demo</h1>
 <p>Real {model} runs, replayed. Click a step for its input and output.</p>
 <div id="runs"></div>
-<script src="{steps_js}"></script><script src="{flow_js}"></script>
+<script src="{steps_js}"></script><script src="{play_js}"></script><script src="{flow_js}"></script>
 <script>
 const DATA = {data};
 DATA.runs.forEach((run) => {{
@@ -82,6 +82,7 @@ def main(out):
     page = PAGE.format(model=presets["model"], data=data,
                        css=(ASSETS / "stylesheets" / "rag-flow.css").as_uri(),
                        steps_js=(ASSETS / "javascripts" / "rag-steps.js").as_uri(),
+                       play_js=(ASSETS / "javascripts" / "rag-flow-play.js").as_uri(),
                        flow_js=(ASSETS / "javascripts" / "rag-flow.js").as_uri())
     Path(out).write_text(page, encoding="utf-8")
     print(f"Wrote {out}: {len(runs)} runs of {sorted(flows)} ({len(RAG_TYPES)} RAG types)")

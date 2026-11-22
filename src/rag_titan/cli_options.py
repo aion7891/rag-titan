@@ -9,6 +9,11 @@ Each one wins over its setting in .env, for that command only:
     --parent-budget    PARENT_BUDGET          parent_child: characters given to the model
     --no-hyde-with-question  HYDE_WITH_QUESTION   hyde: search the made-up answer only
     --fusion-queries 4 FUSION_QUERIES         rag_fusion: rewordings to search with
+    --crag-upper 8     CRAG_UPPER             corrective: grade that makes evidence good
+    --crag-lower 2     CRAG_LOWER             corrective: below it for all = bad evidence
+    --no-crag-refine   CRAG_REFINE            corrective: give the model whole chunks
+    --crag-max-retries CRAG_MAX_RETRIES       corrective: times to search again
+    --iterative-max-steps ITERATIVE_MAX_STEPS iterative: think-then-search rounds
 """
 
 import argparse
@@ -16,7 +21,9 @@ import argparse
 # option -> the setting it changes
 TUNING = {"top_k": "top_k", "top_n": "top_n", "max_attempts": "adaptive_max_attempts",
           "parent_size": "parent_size", "parent_budget": "parent_budget",
-          "hyde_with_question": "hyde_with_question", "fusion_queries": "fusion_queries"}
+          "hyde_with_question": "hyde_with_question", "fusion_queries": "fusion_queries",
+          "crag_upper": "crag_upper", "crag_lower": "crag_lower", "crag_refine": "crag_refine",
+          "crag_max_retries": "crag_max_retries", "iterative_max_steps": "iterative_max_steps"}
 
 
 def positive_int(text):
@@ -27,6 +34,25 @@ def positive_int(text):
         raise argparse.ArgumentTypeError(f"must be a whole number, got {text!r}")
     if value <= 0:
         raise argparse.ArgumentTypeError(f"must be above 0, got {value}")
+    return value
+
+
+def whole_number(text):
+    """argparse type: a whole number of 0 or more (0 turns a loop off)."""
+    try:
+        value = int(text)
+    except ValueError:
+        raise argparse.ArgumentTypeError(f"must be a whole number, got {text!r}")
+    if value < 0:
+        raise argparse.ArgumentTypeError(f"must be 0 or more, got {value}")
+    return value
+
+
+def grade(text):
+    """argparse type: a grade from 0 to 10, as Corrective RAG gives its chunks."""
+    value = whole_number(text)
+    if value > 10:
+        raise argparse.ArgumentTypeError(f"must be from 0 to 10, got {value}")
     return value
 
 
@@ -45,11 +71,11 @@ def add_tuning_options(command, search=True):
     if not search:
         return
     command.add_argument("--top-k", type=positive_int,
-                         help="chunks to search (default: TOP_K, else simple 5, adaptive 4, "
-                              "parent_child 8)")
+                         help="chunks to search (default: TOP_K, else the type's own: "
+                              "simple 5, adaptive 4, parent_child 8, iterative 3, others 5)")
     command.add_argument("--top-n", type=positive_int,
-                         help="chunks to keep after reranking (default: TOP_N, else simple 2, "
-                              "adaptive 2, parent_child 4)")
+                         help="chunks to keep after reranking (default: TOP_N, else the "
+                              "type's own: parent_child 4, others 2)")
     command.add_argument("--max-attempts", type=positive_int,
                          help="adaptive: searches before giving up (default: "
                               "ADAPTIVE_MAX_ATTEMPTS, 2)")
@@ -62,6 +88,26 @@ def add_tuning_options(command, search=True):
     command.add_argument("--fusion-queries", type=positive_int,
                          help="rag_fusion: rewordings of the question to search with, "
                               "1 to 10 (default: FUSION_QUERIES, 3)")
+    add_correction_options(command)
+
+
+def add_correction_options(command):
+    """The options of the RAG types that correct themselves (corrective, iterative)."""
+    command.add_argument("--crag-upper", type=grade,
+                         help="corrective: a chunk graded this or more (0-10) makes the "
+                              "evidence good (default: CRAG_UPPER, 7)")
+    command.add_argument("--crag-lower", type=grade,
+                         help="corrective: every chunk graded below this (0-10) makes the "
+                              "evidence bad, so it is searched again (default: CRAG_LOWER, 3)")
+    command.add_argument("--crag-refine", action=argparse.BooleanOptionalAction,
+                         help="corrective: keep only the useful sentences of each chunk "
+                              "(default: CRAG_REFINE, on)")
+    command.add_argument("--crag-max-retries", type=whole_number,
+                         help="corrective: times to search again with a rewritten question, "
+                              "0 grades only (default: CRAG_MAX_RETRIES, 1)")
+    command.add_argument("--iterative-max-steps", type=whole_number,
+                         help="iterative: think-then-search rounds after the first search, "
+                              "0 searches once (default: ITERATIVE_MAX_STEPS, 3)")
 
 
 def tuning_settings(args):

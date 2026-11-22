@@ -25,7 +25,8 @@ def run_question(rag, question):
 
     Returns:
         {"answer", "steps", "sources", "recall", "ndcg", "answered", "ms",
-        "recorded", "stopped_at"}. When a model reply was not recorded:
+        "recorded", "stopped_at", "loop"}. "loop" is how a correcting RAG type's
+        loop went (rounds, cap, stop reason), else None. When a model reply was not recorded:
         "recorded" is False, "answer" and "answered" are None, "stopped_at"
         names the step, and the scores are those of the chunks the model
         would have been given (when the run got as far as the answer).
@@ -42,7 +43,8 @@ def run_question(rag, question):
             "sources": scores["sources"], "recall": scores["recall"],
             "ndcg": scores["ndcg"],
             "answered": result["answer"].strip() not in NOT_ANSWERED,
-            "ms": (time.perf_counter() - start) * 1000, "recorded": True, "stopped_at": None}
+            "ms": (time.perf_counter() - start) * 1000, "recorded": True, "stopped_at": None,
+            "loop": result.get("loop")}
 
 
 def _stopped(question, steps, ms):
@@ -60,7 +62,7 @@ def _stopped(question, steps, ms):
             "recall": scores["recall"] if scores else None,
             "ndcg": scores["ndcg"] if scores else None,
             "answered": None, "ms": ms, "recorded": False,
-            "stopped_at": failed["step"] if failed else None}
+            "stopped_at": failed["step"] if failed else None, "loop": None}
 
 
 def summarize_questions(rows):

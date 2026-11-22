@@ -8,8 +8,9 @@ hide:
 Run the RAG types **in your browser** and watch every step. This page compares
 setups side by side; each RAG type also has its own page with **tuning knobs**:
 [Simple](rag-playground/simple.md), [Adaptive](rag-playground/adaptive.md),
-[Parent-Child](rag-playground/parent-child.md), [HyDE](rag-playground/hyde.md) and
-[RAG-Fusion](rag-playground/rag-fusion.md). Pick one or more
+[Parent-Child](rag-playground/parent-child.md), [HyDE](rag-playground/hyde.md),
+[RAG-Fusion](rag-playground/rag-fusion.md), [Corrective](rag-playground/corrective.md) and
+[Iterative](rag-playground/iterative.md). Pick one or more
 chunkers, retrievers and RAG types, choose a question, and each setup runs side
 by side on its own flow diagram: the steps light up in the order they ran, with
 step numbers, and the path taken turns orange. **Click any step** to see what

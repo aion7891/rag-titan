@@ -16,4 +16,10 @@
 
 ::: rag_titan.rag_types.rag_fusion_rag
 
+::: rag_titan.rag_types.loops
+
+::: rag_titan.rag_types.corrective
+
+::: rag_titan.rag_types.iterative
+
 ::: rag_titan.rag_types.rag_registry

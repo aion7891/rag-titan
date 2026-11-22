@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 620" width="960" height="620" role="img" aria-labelledby="title desc">
+  <title id="title">Iterative RAG</title>
+  <desc id="desc">A two-hop question. The first search finds offices.md: Berlin hardware requests go to the Facilities team. The model searches for the Facilities team and finds teams.md: led by Ana Weber, who signs every order. A third search finds nothing new and the loop stops. The answer is Ana Weber.</desc>
+  <defs>
+    <style>
+      .bg { fill: #ffffff; stroke: #e2e8f0; }
+      .title { font: 700 22px system-ui, -apple-system, "Segoe UI", sans-serif; fill: #0f172a; }
+      .sub { font: 400 13px system-ui, -apple-system, "Segoe UI", sans-serif; fill: #475569; }
+      .h { font: 700 15px system-ui, -apple-system, "Segoe UI", sans-serif; fill: #0f172a; }
+      .cls { font: 12px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #0e7490; }
+      .ex { font: 12px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #334155; white-space: pre; }
+      .sm { font: 11px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #334155; white-space: pre; }
+      .tag { font: 700 11px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #b45309; }
+      .note { font: 12px system-ui, -apple-system, "Segoe UI", sans-serif; fill: #475569; }
+      .big { font: 600 15px system-ui, -apple-system, "Segoe UI", sans-serif; fill: #0f172a; }
+      .keep { fill: #15803d; font-weight: 700; }
+      .drop { fill: #94a3b8; }
+      .code { font: 13px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #e2e8f0; white-space: pre; }
+      .cm { fill: #94a3b8; }
+      .st { fill: #86efac; }
+      .q { fill: #f8fafc; stroke: #94a3b8; stroke-width: 1.5; }
+      .search { fill: #ecfeff; stroke: #06b6d4; stroke-width: 1.5; }
+      .gen { fill: #f0fdf4; stroke: #22c55e; stroke-width: 1.5; }
+      .child { fill: #cffafe; stroke: #06b6d4; stroke-width: 1; }
+      .llm { fill: #fffbeb; stroke: #f59e0b; stroke-width: 1.5; }
+      .made { fill: #fef3c7; stroke: #d97706; stroke-width: 1; stroke-dasharray: 4 3; }
+      .flow { fill: none; stroke: #64748b; stroke-width: 2; stroke-dasharray: 6 5; animation: dash 0.9s linear infinite; }
+      .hl { fill: none; stroke: #f97316; stroke-width: 3; opacity: 0; animation: glow 10s infinite; }
+      .grow { animation: grow 10s infinite; transform-box: fill-box; transform-origin: top; }
+      @keyframes dash { to { stroke-dashoffset: -11; } }
+      @keyframes glow { 0% { opacity: 0; } 2% { opacity: 1; } 18% { opacity: 1; } 21% { opacity: 0; } 100% { opacity: 0; } }
+      @keyframes grow { 0%, 59% { transform: scaleY(0.25); } 66%, 100% { transform: scaleY(1); } }
+      @media (prefers-reduced-motion: reduce) { .flow, .hl, .grow { animation: none; } }
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#64748b"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0.5" y="0.5" width="959" height="619" rx="16"/>
+  <text class="title" x="30" y="44">Iterative RAG: search, think, search again</text>
+  <text class="sub" x="30" y="66">The model says what is missing and searches for it. rag_type="iterative"</text>
+
+  <rect class="q" x="30" y="84" width="900" height="44" rx="10"/>
+  <text class="big" x="48" y="112">Question:  “Who has to approve a new monitor for a Berlin employee?”</text>
+  <text class="note" x="912" y="112" text-anchor="end">RETRIEVER=bm25 (exact words)</text>
+
+  <path class="flow" d="M135 130 V154" marker-end="url(#arrow)"/>
+  <path class="flow" d="M242 290 H256" marker-end="url(#arrow)"/>
+  <path class="flow" d="M472 290 H486" marker-end="url(#arrow)"/>
+  <path class="flow" d="M702 290 H716" marker-end="url(#arrow)"/>
+  <path class="flow" d="M825 424 V448" marker-end="url(#arrow)"/>
+  <rect class="search" x="30" y="160" width="210" height="262" rx="10"/>
+  <text class="h" x="44" y="186">1 · Search</text>
+  <text class="cls" x="44" y="206">BM25Retriever, top_n=2</text>
+  <text class="ex" x="44" y="234">offices.md <tspan class="keep">✓</tspan></text>
+  <text class="sm" x="44" y="252">Hardware requests from</text>
+  <text class="sm" x="44" y="270">Berlin staff are handled</text>
+  <text class="sm" x="44" y="288">by the Facilities team.</text>
+  <text class="ex drop" x="44" y="306">teams.md: not found,</text>
+  <text class="ex drop" x="44" y="324">no word in common</text>
+  <text class="note" x="44" y="398">hop 1 of 2</text>
+
+  <rect class="llm" x="260" y="160" width="210" height="262" rx="10"/>
+  <text class="h" x="274" y="186">2 · Think</text>
+  <text class="cls" x="274" y="206">NEXT_STEP_PROMPT → LLM</text>
+  <text class="sm" x="274" y="234">…handled by the</text>
+  <text class="sm" x="274" y="252">Facilities team, but it</text>
+  <text class="sm" x="274" y="270">doesn't specify who</text>
+  <text class="sm" x="274" y="288">… can approve</text>
+  <text class="tag" x="274" y="306">SEARCH:</text>
+  <text class="sm" x="274" y="324">Facilities team</text>
+  <text class="sm" x="274" y="342">approval process</text>
+  <text class="note" x="274" y="398">the model's own query</text>
+
+  <rect class="search" x="490" y="160" width="210" height="262" rx="10"/>
+  <text class="h" x="504" y="186">3 · Search again</text>
+  <text class="cls" x="504" y="206">BM25Retriever</text>
+  <text class="ex" x="504" y="234">teams.md <tspan class="keep">✓</tspan></text>
+  <text class="sm" x="504" y="252">The Facilities team is</text>
+  <text class="sm" x="504" y="270">led by Ana Weber. Ana</text>
+  <text class="sm" x="504" y="288">signs every order …</text>
+  <text class="note" x="504" y="306">think → search once</text>
+  <text class="note" x="504" y="324">more: nothing new,</text>
+  <text class="note" x="504" y="342">so the loop stops</text>
+  <text class="note" x="504" y="398">loop: no new chunks</text>
+
+  <rect class="gen" x="720" y="160" width="210" height="262" rx="10"/>
+  <text class="h" x="734" y="186">4 · Generate</text>
+  <text class="cls" x="734" y="206">GroundedGenerator → LLM</text>
+  <text class="sm" x="734" y="234"><tspan class="tag">QUESTION</tspan> the original</text>
+  <text class="sm" x="734" y="252"><tspan class="tag">CONTEXT</tspan> both hops:</text>
+  <text class="sm" x="734" y="270">offices.md, teams.md</text>
+  <text class="big" x="734" y="306">Ana Weber</text>
+  <text class="note" x="734" y="398">from teams.md</text>
+
+  <rect class="gen" x="30" y="454" width="900" height="64" rx="10"/>
+  <text class="big" x="48" y="480">Answer: “Ana Weber [chunk_3].”</text>
+  <text class="note" x="48" y="502">3 LLM calls: think twice, answer. Every hop keeps its own best chunks; the loop stopped when a search found nothing new.</text>
+  <rect class="hl" x="30" y="84" width="900" height="44" rx="10" style="animation-delay:0s"/>
+  <rect class="hl" x="30" y="160" width="210" height="262" rx="10" style="animation-delay:2s"/>
+  <rect class="hl" x="260" y="160" width="210" height="262" rx="10" style="animation-delay:4s"/>
+  <rect class="hl" x="490" y="160" width="210" height="262" rx="10" style="animation-delay:6s"/>
+  <rect class="hl" x="720" y="160" width="210" height="262" rx="10" style="animation-delay:8s"/>
+
+  <rect x="30" y="534" width="900" height="66" rx="12" fill="#0f172a"/>
+  <text class="code" x="52" y="562">rag = RAGTitan(rag_type=<tspan class="st">"iterative"</tspan>, settings={<tspan class="st">"retriever"</tspan>: <tspan class="st">"bm25"</tspan>, <tspan class="st">"iterative_max_steps"</tspan>: 3})</text>
+  <text class="code" x="52" y="584">rag.index(files); rag.ask(<tspan class="st">"Who has to approve a new monitor for a Berlin employee?"</tspan>)</text>
+</svg>

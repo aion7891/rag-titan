@@ -12,19 +12,7 @@
   app.replaceChildren(status);
   const python = RagPython.start(status);
 
-  // [setting, label, min, max, step, what it does], or [setting, label, "on/off", what it does]
-  const KNOBS = {
-    all: [["top_k", "top_k", 1, 12, 1, "chunks the search finds"],
-          ["top_n", "top_n", 1, 12, 1, "chunks kept after reranking (at most top_k)"]],
-    adaptive: [["adaptive_max_attempts", "max attempts", 1, 4, 1,
-                "searches (with a rewritten question) before giving up"]],
-    parent_child: [["parent_budget", "parent budget", 200, 4000, 100,
-                    "most characters of parent sections given to the model"]],
-    hyde: [["hyde_with_question", "search the question too", "on/off",
-            "fuse the question's search with the made-up answer's"]],
-    rag_fusion: [["fusion_queries", "queries", 1, 5, 1,
-                  "rewordings of the question, each one searched next to it"]],
-  };
+  const { KNOBS, PAIRS } = RagKnobs;   // each type's knobs: rag-knobs.js
 
   function select(label, options, value) {
     const input = el("select", "rp-input");
@@ -104,10 +92,16 @@
       runOnce(info, setup(), result, code);
     }, 300);
 
-    const topK = sliders.find((s) => s.key === "top_k"), topN = sliders.find((s) => s.key === "top_n");
-    // top_n can never be more than top_k: move it down with top_k
-    topK.input.addEventListener("input", () => {
-      if (topN.value() > topK.value()) { topN.input.value = topK.value(); topN.update(); }
+    // top_n can never be more than top_k (nor the lower grade above the upper one):
+    // moving one knob of a pair past the other moves the other along
+    PAIRS.forEach(([big, small]) => {
+      const a = sliders.find((s) => s.key === big), b = sliders.find((s) => s.key === small);
+      if (!a || !b) return;
+      const follow = (moved, other) => () => {
+        if (b.value() > a.value()) { other.input.value = moved.value(); other.update(); }
+      };
+      a.input.addEventListener("input", follow(a, b));
+      b.input.addEventListener("input", follow(b, a));
     });
     [question, chunker, parentSize, retriever, reranker, ...sliders].filter(Boolean)
       .forEach((c) => c.input.addEventListener(c.input.type === "range" ? "input" : "change", rerun));

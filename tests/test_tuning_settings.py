@@ -62,7 +62,7 @@ def test_only_top_k_keeps_top_n_within_it():
 def test_class_defaults_are_the_documented_ones():
     sizes = {name: (cls.DEFAULT_TOP_K, cls.DEFAULT_TOP_N) for name, cls in CLASSES.items()}
     assert sizes == {"simple": (5, 2), "adaptive": (4, 2), "parent_child": (8, 4), "hyde": (5, 2),
-                     "rag_fusion": (5, 2)}
+                     "rag_fusion": (5, 2), "corrective": (5, 2), "iterative": (3, 2)}
 
 
 def test_build_rag_reads_the_tuning_from_the_parts(parts):

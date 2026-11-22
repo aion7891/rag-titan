@@ -2,7 +2,7 @@
 
 ## Supported RAG types
 
-rag-titan supports **5 RAG types**. Every one has the same methods,
+rag-titan supports **7 RAG types**. Every one has the same methods,
 `answer(question)` and [`run(question)`](#seeing-every-step-run), and with
 `RAGTitan` you pick one using `rag_type`. Each one has its own
 [playground page](rag-playground.md) with tuning knobs.
@@ -14,18 +14,20 @@ rag-titan supports **5 RAG types**. Every one has the same methods,
 | ✅ Available | [**Parent-Child RAG**](#parent-child-rag-parent_child)<br>`rag_type="parent_child"` | Retrieve small chunks → Rerank → Expand to their sections → Generate | Answers that span a section: steps, lists, rules with exceptions | 1 |
 | ✅ Available | [**HyDE RAG**](#hyde-rag-hyde)<br>`rag_type="hyde"` | Write a made-up answer → Search with it and the question → Fuse → Rerank → Generate | Questions worded unlike the documents | 2 |
 | ✅ Available | [**RAG-Fusion**](#rag-fusion-rag_fusion)<br>`rag_type="rag_fusion"` | Write rewordings → Search each and the question → Fuse → Rerank → Generate | Questions worded unlike the documents, keyword search | 2 |
+| ✅ Available | [**Corrective RAG**](#corrective-rag-corrective)<br>`rag_type="corrective"` | Retrieve → Grade each chunk → Keep, or rewrite & search again → Keep key sentences → Generate | Weak or off-topic search results | 3–5 |
+| ✅ Available | [**Iterative RAG**](#iterative-rag-iterative)<br>`rag_type="iterative"` | Retrieve → Think: what is missing? → Search again → … → Generate | Questions that need two hops | 2–4 |
 
 ```python
 from rag_titan import RAG_TYPES, RAGTitan
 
-print(RAG_TYPES)   # ['simple', 'adaptive', 'parent_child', 'hyde', 'rag_fusion']
+print(RAG_TYPES)   # ['simple', 'adaptive', 'parent_child', 'hyde', 'rag_fusion', 'corrective', 'iterative']
 rag = RAGTitan(rag_type="adaptive")   # any value from RAG_TYPES
 ```
 
 Asking for a type that does not exist yet raises a clear error:
 
 ```text
-ValueError: Unknown RAG type: graph. Choose from ['simple', 'adaptive', 'parent_child', 'hyde', 'rag_fusion']
+ValueError: Unknown RAG type: graph. Choose from ['simple', 'adaptive', 'parent_child', 'hyde', 'rag_fusion', 'corrective', 'iterative']
 ```
 
 Every RAG type is tuned with the same settings, in `.env`, in
@@ -590,6 +592,303 @@ rag_fusion + paragraph + bm25      0.833     0.833     0.833       50%       8.0
 embeddings of several, plus the question's) and fuses the two searches by rank;
 RAG-Fusion fuses with plain RRF (`k = 60`), with no weights per query.
 
+## Corrective RAG (`"corrective"`)
+
+```
+Question -> Retrieve -> Grade each chunk (0-10)
+   correct   (a chunk >= upper)      -> keep the good chunks
+   ambiguous (in between)            -> keep the good chunks, rewrite, search again
+   incorrect (every chunk < lower)   -> throw them away, rewrite, search again
+-> Rerank -> Keep key sentences -> Generate      (nothing kept: "I don't know")
+```
+
+Simple RAG answers from whatever the search found, even when it is off-topic.
+Corrective RAG first asks the model to **grade every chunk** from 0 to 10 (one
+call for all of them), and acts on the grades: good evidence is kept, weak
+evidence is searched again with a rewritten question, and only the
+**sentences that help** reach the answer, word for word. Inspired by
+*Corrective Retrieval Augmented Generation* (Yan et al. 2024; RAG handbook 2026,
+Corrective RAG).
+
+![Corrective RAG flow](assets/images/corrective-rag.svg)
+
+- **Good for:** search results that are often weak or off-topic; questions
+  worded unlike the documents with keyword search.
+- **Watch out:** a small model's grades are rough (the playground's hotel
+  question: the chunk that answers it gets a 5). Every search again costs two
+  calls (rewrite, grade), and on documents that already match the questions
+  well, searching again rarely finds anything better: the
+  [playground](rag-playground/corrective.md) shows where the gain really comes
+  from.
+- **LLM calls per question:** 3 (grade, key sentences, answer) + 2 for every
+  search again (rewrite, grade): 3 to 5 with the defaults; `crag_refine=False`
+  saves one, and grading an empty search needs none
+- **Knobs:** `top_k`, `top_n` (default 5 and 2), `crag_upper` (7), `crag_lower`
+  (3), `crag_refine` (on), `crag_max_retries` (1)
+- **Your own fallback:** the paper searches the web when the evidence is
+  incorrect. Pass any retriever (for example your own web search) as
+  `CorrectiveRAG(..., fallback_retriever=my_search)`; by default the same index
+  is searched again.
+- **Try it:** [Corrective RAG playground](rag-playground/corrective.md)
+
+Every knob, set and explained (`examples/corrective_rag.py`):
+
+```python
+"""
+Corrective RAG with every knob set and explained: the model grades every chunk
+the search found (0-10), and when the evidence is weak the question is rewritten
+and searched again. Only the useful sentences of the good chunks reach the answer.
+
+The question uses other words than the documents ("gear", "newcomer" for
+"equipment", "new employees"), and keyword search (bm25) only finds shared words,
+so the first search finds nothing and the evidence is graded "incorrect".
+
+Before running (Ollama installed and running):
+    ollama pull gemma3:4b
+    ollama pull nomic-embed-text
+
+Run (from the repo root):
+    python examples/corrective_rag.py
+"""
+
+from pathlib import Path
+
+from rag_titan import RAGTitan
+
+files = sorted((Path(__file__).parent / "retrieval_docs").glob("*.md"))
+question = "What gear does a newcomer receive?"
+
+settings = {
+    # how the files are cut (CHUNKER, CHUNK_SIZE, CHUNK_OVERLAP)
+    "chunker": "paragraph",
+    "chunk_size": 300,
+    "chunk_overlap": 0,
+    # how chunks are found and chosen (RETRIEVER, RERANKER, TOP_K, TOP_N)
+    "retriever": "bm25",       # exact words: the rewritten question brings other words
+    "reranker": "keyword",     # orders the kept chunks against the original question
+    "top_k": 5,                # chunks each search finds
+    "top_n": 2,                # chunks the model reads
+    # Corrective RAG's own knobs
+    "crag_upper": 7,           # CRAG_UPPER: a chunk graded 7+ makes the evidence "correct"
+    "crag_lower": 3,           # CRAG_LOWER: all chunks below 3 make it "incorrect"
+    "crag_refine": True,       # CRAG_REFINE: give the model only the useful sentences
+    "crag_max_retries": 1,     # CRAG_MAX_RETRIES: times to search again (0: grade only)
+}
+
+rag = RAGTitan(rag_type="corrective", settings=settings)
+rag.index(files)
+result = rag.run(question)
+
+print(f"Question: {question}")
+for step in result["steps"]:
+    if step["step"] == "grade":
+        grades = ", ".join(f"{chunk['source']} {chunk['grade']:g}"
+                           for chunk in step["output"]["chunks"] if "grade" in chunk)
+        print(f"Grade: {step['output']['verdict']} ({grades or 'nothing found'})")
+    if step["step"] == "rewrite":
+        print(f"Rewritten question (only used to search): {step['output']}")
+for chunk in result["sources"]:
+    print(f"The model reads from {chunk['source']} ({chunk.get('refine_note', 'whole chunk')}): "
+          f"{' '.join(chunk['text'].split())}")
+print(f"Loop: {result['loop']}")
+print(f"Answer: {result['answer']}")
+```
+
+A real run (`gemma3:4b`). Keyword search finds nothing for the question, so the
+evidence is *incorrect*; the rewritten question uses the documents' words and
+finds `new_starters.md`, graded 10. The model reads 2 of its 4 sentences.
+
+```text
+Question: What gear does a newcomer receive?
+Grade: incorrect (nothing found)
+Rewritten question (only used to search): Newcomer equipment distribution; initial starter kit; onboarding supplies; new employee provisions
+Grade: correct (new_starters.md 10, account_errors.md 0)
+The model reads from new_starters.md (kept 2 of 4 sentences): # New employees On your first day the service desk hands out your laptop, badge and headset.
+Loop: {'steps': 1, 'max_steps': 1, 'stop_reason': 'evidence is good'}
+Answer: On your first day the service desk hands out your laptop, badge and headset [chunk_3].
+```
+
+**What is simplified:** the paper trains a small evaluator model (T5) to grade
+and searches the web for *incorrect* evidence; here the chat model grades, and
+"search again" is your own index with a rewritten question unless you pass a
+`fallback_retriever`. The paper splits documents into strips and filters them
+with the evaluator; here the model picks the useful sentences in one call.
+
+## Iterative RAG (`"iterative"`)
+
+```
+Question -> Retrieve -> Rerank -> Think: what is missing?
+                                    SEARCH: <next query> -> Retrieve -> Rerank -> Think ...
+                                    DONE                 -> Generate (from everything found)
+```
+
+Some questions need two searches: the first one shows **what** to look up next.
+*"Who has to approve a new monitor for a Berlin employee?"* first finds that
+Berlin hardware requests go to the Facilities team, and only then can a search
+find who leads that team. Iterative RAG lets the model read what was found, say
+what is still missing, and search for it with its own query. Every search keeps
+its own best `top_n` chunks, so the second hop is not dropped for using other
+words than the question, and the model answers once, from all of them. Inspired
+by *Interleaving Retrieval with Chain-of-Thought Reasoning* (IRCoT, Trivedi et
+al. 2022; RAG handbook 2026, IRCoT / Iterative RAG).
+
+![Iterative RAG flow](assets/images/iterative-rag.svg)
+
+- **Good for:** multi-hop questions, where the answer is in a document the
+  question itself does not lead to.
+- **Watch out:** the loop must be stopped from outside. Small models rarely say
+  DONE (in the playground `gemma3:4b` did in 3 of 54 runs) and sometimes repeat a
+  search; the loop stops at `iterative_max_steps`, or as soon as a search finds
+  no new chunk, and `result["loop"]` says which. Finding the evidence is not
+  using it: a long chunk can still hide the answer from a small model.
+- **LLM calls per question:** 1 per round (think) + 1 (the answer): 2 to 4 with
+  the default `iterative_max_steps=3`
+- **Knobs:** `top_k`, `top_n` (default 3 and 2, per search),
+  `iterative_max_steps` (3)
+- **Try it:** [Iterative RAG playground](rag-playground/iterative.md)
+
+Every knob, set and explained (`examples/iterative_rag.py`, with the two-hop
+documents in `examples/multihop_docs/`):
+
+```python
+"""
+Iterative RAG with every knob set and explained: search, let the model say what
+is still missing, search again with the model's own query, then answer from
+everything found.
+
+A two-hop question: offices.md says Berlin hardware requests go to the
+Facilities team, and only teams.md says who leads that team. The question shares
+no word with teams.md, so one search cannot find it.
+
+Before running (Ollama installed and running):
+    ollama pull gemma3:4b
+    ollama pull nomic-embed-text
+
+Run (from the repo root):
+    python examples/iterative_rag.py
+"""
+
+from pathlib import Path
+
+from rag_titan import RAGTitan
+
+files = sorted((Path(__file__).parent / "multihop_docs").glob("*.md"))
+question = "Who has to approve a new monitor for a Berlin employee?"
+
+settings = {
+    # how the files are cut (CHUNKER, CHUNK_SIZE, CHUNK_OVERLAP)
+    "chunker": "paragraph",
+    "chunk_size": 300,
+    "chunk_overlap": 0,
+    # how chunks are found and chosen (RETRIEVER, RERANKER, TOP_K, TOP_N)
+    "retriever": "bm25",       # exact words: the second hop needs the model's own query
+    "reranker": "keyword",     # ranks each search's chunks against that search's query
+    "top_k": 3,                # chunks each search finds
+    "top_n": 2,                # chunks kept from each search; the model reads all of them
+    # Iterative RAG's own knob (ITERATIVE_MAX_STEPS): think-then-search rounds
+    # after the first search; 0 searches once, like Simple RAG
+    "iterative_max_steps": 3,
+}
+
+rag = RAGTitan(rag_type="iterative", settings=settings)
+rag.index(files)
+result = rag.run(question)
+
+print(f"Question: {question}")
+searches = [step for step in result["steps"] if step["step"] == "retrieve"]
+for number, search in enumerate(searches, start=1):
+    found = sorted({chunk["source"] for chunk in search["output"]})
+    print(f"Search {number}: {search['input']['query']!r} finds {', '.join(found) or 'nothing'}")
+for step in result["steps"]:
+    if step["step"] == "think":
+        decision = step["output"]["search"] or "DONE"
+        print(f"Think: {step['output']['thought']} -> {decision}")
+print(f"The model reads: {', '.join(chunk['source'] for chunk in result['sources'])}")
+print(f"Loop: {result['loop']}")
+print(f"Answer: {result['answer']}")
+```
+
+A real run. The first search finds only `offices.md`; the model's own query
+finds `teams.md`, the second hop. It did not say DONE: its third search found
+nothing new, which stopped the loop.
+
+```text
+Question: Who has to approve a new monitor for a Berlin employee?
+Search 1: 'Who has to approve a new monitor for a Berlin employee?' finds offices.md
+Search 2: 'Facilities team approval process' finds offices.md, teams.md
+Search 3: 'Who is the Facilities team?' finds offices.md, teams.md
+Think: The passage states that hardware requests from Berlin staff are handled by the Facilities team, but it doesn't specify who within that team has the authority to approve a new monitor. -> Facilities team approval process
+Think: The passages state that the Facilities team, led by Ana Weber, handles hardware requests from Berlin staff and that Ana Weber signs every order before it is placed, so we still need to know who the Facilities team is. -> Who is the Facilities team?
+The model reads: offices.md, teams.md
+Loop: {'steps': 2, 'max_steps': 3, 'stop_reason': 'no new chunks'}
+Answer: Ana Weber [chunk_3].
+```
+
+**What is simplified:** IRCoT writes a chain of thought one sentence at a time
+and searches with each new sentence; here one call per round writes a short
+thought and the next search query, and the answer is written once at the end.
+
+### Corrective and Iterative against Simple and Adaptive
+
+Two sets of questions, each compared with one command. First, five questions on
+the two-hop documents in `examples/multihop_docs/` (three need two files, two
+need one):
+
+```bash
+rag-titan evaluate --files examples/multihop_docs/*.md --questions examples/multihop_questions.json \
+    --rag-type simple adaptive corrective iterative --retriever dense bm25 --chunker paragraph
+```
+
+One real run (`gemma3:4b`, `nomic-embed-text`; "Recall" is the share of the
+needed files that reached the model, "Answered" the share of questions not
+answered with "I don't know", right or wrong):
+
+```text
+setup                             Recall       MRR      nDCG  Answered     Steps     p50 s
+------------------------------------------------------------------------------------------
+simple + paragraph + dense         0.700     1.000     0.768       80%       3.0      0.54
+adaptive + paragraph + dense       0.800     0.800     0.775       80%       8.2      1.49
+corrective + paragraph + dense     1.000     1.000     1.000      100%       5.6      1.72
+iterative + paragraph + dense      1.000     1.000     0.968      100%       9.6      2.99
+simple + paragraph + bm25          0.700     1.000     0.845       80%       3.0      0.43
+adaptive + paragraph + bm25        0.500     0.600     0.523       60%       6.6      0.92
+corrective + paragraph + bm25      0.700     1.000     1.000       80%       6.8      1.43
+iterative + paragraph + bm25       1.000     1.000     0.968      100%       8.4      2.04
+```
+
+Then the six help desk questions from above (three error codes, three worded
+unlike the documents), same command with `examples/retrieval_docs/*.md` and
+`examples/retrieval_questions.json`:
+
+```text
+setup                             Recall       MRR      nDCG  Answered     Steps     p50 s
+------------------------------------------------------------------------------------------
+simple + paragraph + dense         1.000     1.000     1.000       83%       3.0      0.76
+adaptive + paragraph + dense       0.667     0.667     0.667       83%       5.2      1.18
+corrective + paragraph + dense     1.000     1.000     1.000       83%       5.0      1.82
+iterative + paragraph + dense      1.000     1.000     1.000       83%       8.7      3.18
+simple + paragraph + bm25          0.500     0.500     0.500       50%       3.0      0.36
+adaptive + paragraph + bm25        0.500     0.500     0.500       67%       6.5      1.57
+corrective + paragraph + bm25      0.833     0.833     0.833       83%       6.2      1.75
+iterative + paragraph + bm25       0.667     0.667     0.667       67%       6.5      1.75
+```
+
+- **Two hops: Iterative RAG** got both files for every question, with keyword
+  search too, where nothing else did: the second file shares no word with the
+  question, so only the model's own follow-up search can find it.
+- **Weak search: Corrective RAG** lifted keyword search's recall from 0.500 to
+  0.833: two of the three questions worded unlike the documents found nothing,
+  were graded *incorrect*, and the rewritten question used the documents' words
+  (the third, about a "notebook", still found nothing). On the two-hop questions with
+  vector search it reached 1.000 by grading: the second file was among the five
+  chunks found, and its grade kept it.
+- **What it costs:** two to three times the steps of Simple RAG, and a median of
+  1.4 to 3.2 seconds per question instead of 0.4 to 0.8, on a laptop with a
+  4-billion-parameter model.
+- **Small sets, one run:** five and six questions are enough to show where each
+  type helps, not to rank them; a small model's replies also vary from run to
+  run. Measure on your own questions with `rag-titan evaluate`.
+
 ## Comparing RAG types
 
 `rag-titan evaluate` runs every RAG type on your test questions and scores them
@@ -597,7 +896,7 @@ RAG-Fusion fuses with plain RRF (`k = 60`), with no weights per query.
 index of its own, so the other types keep their chunks:
 
 ```bash
-rag-titan evaluate --files *.md --questions questions.json --rag-type simple adaptive parent_child hyde rag_fusion
+rag-titan evaluate --files *.md --questions questions.json --rag-type simple adaptive parent_child hyde rag_fusion corrective iterative
 ```
 
 In Python, build the parts for each type (Parent-Child RAG needs its own index):
@@ -678,7 +977,6 @@ so code that uses `RAGTitan` keeps working.
 
 | Status | RAG type | Idea |
 |---|---|---|
-| 🔜 Planned | Corrective RAG (CRAG) | Grade each chunk and fall back to web search when they are weak |
 | 🔜 Planned | Self-RAG | The model checks and improves its own answer |
 | 🔜 Planned | Graph RAG | Search a knowledge graph built from your documents |
 | 🔜 Planned | Agentic RAG | An agent decides when and what to search |
