@@ -1,0 +1,12 @@
+[
+  {"id": "hop_1", "question": "Who has to approve a new monitor for a Berlin employee?",
+   "required_evidence_ids": ["offices.md", "teams.md"]},
+  {"id": "hop_2", "question": "How long does a Lisbon employee wait for a new keyboard?",
+   "required_evidence_ids": ["offices.md", "teams.md"]},
+  {"id": "hop_3", "question": "Who decides on hardware for people in the Lisbon office?",
+   "required_evidence_ids": ["offices.md", "teams.md"]},
+  {"id": "one_1", "question": "Where is the Berlin office?",
+   "required_evidence_ids": ["offices.md"]},
+  {"id": "one_2", "question": "How much does a parking card cost?",
+   "required_evidence_ids": ["parking.md"]}
+]

@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 620" width="960" height="620" role="img" aria-labelledby="title desc">
+  <title id="title">Corrective RAG</title>
+  <desc id="desc">Keyword search finds nothing for the question, so the evidence is graded incorrect. The question is rewritten and searched again: new_starters.md is graded 10, account_errors.md 0, so the evidence is correct. The model reads 2 of the 4 sentences of new_starters.md and answers: laptop, badge and headset.</desc>
+  <defs>
+    <style>
+      .bg { fill: #ffffff; stroke: #e2e8f0; }
+      .title { font: 700 22px system-ui, -apple-system, "Segoe UI", sans-serif; fill: #0f172a; }
+      .sub { font: 400 13px system-ui, -apple-system, "Segoe UI", sans-serif; fill: #475569; }
+      .h { font: 700 15px system-ui, -apple-system, "Segoe UI", sans-serif; fill: #0f172a; }
+      .cls { font: 12px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #0e7490; }
+      .ex { font: 12px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #334155; white-space: pre; }
+      .sm { font: 11px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #334155; white-space: pre; }
+      .tag { font: 700 11px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #b45309; }
+      .note { font: 12px system-ui, -apple-system, "Segoe UI", sans-serif; fill: #475569; }
+      .big { font: 600 15px system-ui, -apple-system, "Segoe UI", sans-serif; fill: #0f172a; }
+      .keep { fill: #15803d; font-weight: 700; }
+      .drop { fill: #94a3b8; }
+      .code { font: 13px ui-monospace, SFMono-Regular, Menlo, monospace; fill: #e2e8f0; white-space: pre; }
+      .cm { fill: #94a3b8; }
+      .st { fill: #86efac; }
+      .q { fill: #f8fafc; stroke: #94a3b8; stroke-width: 1.5; }
+      .search { fill: #ecfeff; stroke: #06b6d4; stroke-width: 1.5; }
+      .gen { fill: #f0fdf4; stroke: #22c55e; stroke-width: 1.5; }
+      .child { fill: #cffafe; stroke: #06b6d4; stroke-width: 1; }
+      .llm { fill: #fffbeb; stroke: #f59e0b; stroke-width: 1.5; }
+      .made { fill: #fef3c7; stroke: #d97706; stroke-width: 1; stroke-dasharray: 4 3; }
+      .flow { fill: none; stroke: #64748b; stroke-width: 2; stroke-dasharray: 6 5; animation: dash 0.9s linear infinite; }
+      .hl { fill: none; stroke: #f97316; stroke-width: 3; opacity: 0; animation: glow 10s infinite; }
+      .grow { animation: grow 10s infinite; transform-box: fill-box; transform-origin: top; }
+      @keyframes dash { to { stroke-dashoffset: -11; } }
+      @keyframes glow { 0% { opacity: 0; } 2% { opacity: 1; } 18% { opacity: 1; } 21% { opacity: 0; } 100% { opacity: 0; } }
+      @keyframes grow { 0%, 59% { transform: scaleY(0.25); } 66%, 100% { transform: scaleY(1); } }
+      @media (prefers-reduced-motion: reduce) { .flow, .hl, .grow { animation: none; } }
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#64748b"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0.5" y="0.5" width="959" height="619" rx="16"/>
+  <text class="title" x="30" y="44">Corrective RAG: grade the evidence, then repair it</text>
+  <text class="sub" x="30" y="66">Every chunk is graded 0-10; weak evidence is searched again. rag_type="corrective"</text>
+
+  <rect class="q" x="30" y="84" width="900" height="44" rx="10"/>
+  <text class="big" x="48" y="112">Question:  “What gear does a newcomer receive?”</text>
+  <text class="note" x="912" y="112" text-anchor="end">RETRIEVER=bm25 (exact words)</text>
+
+  <path class="flow" d="M135 130 V154" marker-end="url(#arrow)"/>
+  <path class="flow" d="M242 290 H256" marker-end="url(#arrow)"/>
+  <path class="flow" d="M472 290 H486" marker-end="url(#arrow)"/>
+  <path class="flow" d="M702 290 H716" marker-end="url(#arrow)"/>
+  <path class="flow" d="M825 424 V448" marker-end="url(#arrow)"/>
+  <rect class="search" x="30" y="160" width="210" height="262" rx="10"/>
+  <text class="h" x="44" y="186">1 · Search + grade</text>
+  <text class="cls" x="44" y="206">BM25Retriever, then grade</text>
+  <text class="ex drop" x="44" y="234">nothing found: no word</text>
+  <text class="ex drop" x="44" y="252">in common with the files</text>
+  <text class="tag" x="44" y="270">VERDICT</text>
+  <text class="ex" x="44" y="288">incorrect</text>
+  <text class="note" x="44" y="306">every chunk &lt; CRAG_LOWER (3),</text>
+  <text class="note" x="44" y="324">or none at all</text>
+  <text class="note" x="44" y="398">nothing to keep</text>
+
+  <rect class="llm" x="260" y="160" width="210" height="262" rx="10"/>
+  <text class="h" x="274" y="186">2 · Rewrite, search</text>
+  <text class="h" x="274" y="204">again</text>
+  <text class="cls" x="274" y="224">QUERY_REWRITE_PROMPT → LLM</text>
+  <text class="sm" x="274" y="252">Newcomer equipment</text>
+  <text class="sm" x="274" y="270">distribution; initial</text>
+  <text class="sm" x="274" y="288">starter kit; onboarding</text>
+  <text class="sm" x="274" y="306">supplies; new employee</text>
+  <text class="sm" x="274" y="324">provisions</text>
+  <text class="ex" x="274" y="342">finds new_starters.md</text>
+  <text class="ex" x="274" y="360">   + account_errors.md</text>
+  <text class="note" x="274" y="398">only used to search</text>
+
+  <rect class="llm" x="490" y="160" width="210" height="262" rx="10"/>
+  <text class="h" x="504" y="186">3 · Grade again</text>
+  <text class="cls" x="504" y="206">LLM_RERANK_PROMPT → LLM</text>
+  <text class="ex" x="504" y="234">new_starters.md  <tspan class="keep">10</tspan></text>
+  <text class="ex drop" x="504" y="252">account_errors.md 0</text>
+  <text class="tag" x="504" y="270">VERDICT</text>
+  <text class="ex" x="504" y="288">correct</text>
+  <text class="note" x="504" y="306">a chunk ≥ CRAG_UPPER (7)</text>
+  <text class="note" x="504" y="324">graded against the</text>
+  <text class="note" x="504" y="342">original question</text>
+  <text class="note" x="504" y="398">loop: evidence is good</text>
+
+  <rect class="gen" x="720" y="160" width="210" height="262" rx="10"/>
+  <text class="h" x="734" y="186">4 · Key sentences,</text>
+  <text class="h" x="734" y="204">generate</text>
+  <text class="cls" x="734" y="224">REFINE_PROMPT, then answer</text>
+  <text class="tag" x="734" y="252">KEPT 2 OF 4 SENTENCES</text>
+  <text class="sm" x="734" y="270"># New employees</text>
+  <text class="sm" x="734" y="288">On your first day the</text>
+  <text class="sm" x="734" y="306">service desk hands out</text>
+  <text class="sm" x="734" y="324">your laptop, badge and</text>
+  <text class="sm" x="734" y="342">headset.</text>
+  <text class="note" x="734" y="398">word for word, cited</text>
+
+  <rect class="gen" x="30" y="454" width="900" height="64" rx="10"/>
+  <text class="big" x="48" y="480">Answer: “On your first day the service desk hands out your laptop, badge and headset.”</text>
+  <text class="note" x="48" y="502">4 LLM calls: rewrite, grade, key sentences, answer (grading the empty first search needs none). Simple RAG with bm25 finds nothing here.</text>
+  <rect class="hl" x="30" y="84" width="900" height="44" rx="10" style="animation-delay:0s"/>
+  <rect class="hl" x="30" y="160" width="210" height="262" rx="10" style="animation-delay:2s"/>
+  <rect class="hl" x="260" y="160" width="210" height="262" rx="10" style="animation-delay:4s"/>
+  <rect class="hl" x="490" y="160" width="210" height="262" rx="10" style="animation-delay:6s"/>
+  <rect class="hl" x="720" y="160" width="210" height="262" rx="10" style="animation-delay:8s"/>
+
+  <rect x="30" y="534" width="900" height="66" rx="12" fill="#0f172a"/>
+  <text class="code" x="52" y="562">rag = RAGTitan(rag_type=<tspan class="st">"corrective"</tspan>, settings={<tspan class="st">"retriever"</tspan>: <tspan class="st">"bm25"</tspan>, <tspan class="st">"crag_max_retries"</tspan>: 1})</text>
+  <text class="code" x="52" y="584">rag.index(files); rag.ask(<tspan class="st">"What gear does a newcomer receive?"</tspan>)</text>
+</svg>

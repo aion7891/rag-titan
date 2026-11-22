@@ -43,7 +43,7 @@ rag-titan ask --question "What do I have to do before my last day?" --vector-sto
     --rag-type parent_child --top-k 8 --top-n 2 --parent-budget 2000 --reranker llm --trace
 ```
 
-`--rag-type` is `simple` (default), `adaptive`, `parent_child`, `hyde` or `rag_fusion`. Parent-Child RAG
+`--rag-type` is `simple` (default), `adaptive`, `parent_child`, `hyde`, `rag_fusion`, `corrective` or `iterative`. Parent-Child RAG
 needs an index with parent sections, so index with `--rag-type parent_child` too.
 The tuning options win over `.env` for one command; leave them out and each RAG
 type uses its own defaults (see [Tuning a RAG type](configuration.md#tuning-a-rag-type)).
@@ -108,7 +108,7 @@ you add `--force`. See [Build a golden set](cookbook/golden-set.md).
 | Option        | Used by     | Meaning                                   |
 |---------------|-------------|-------------------------------------------|
 | `--files`     | ask, chat, evaluate | PDF, DOCX, MD or TXT files (required, except with `--input`) |
-| `--rag-type`  | ask, chat, index, evaluate | `simple` (default), `adaptive`, `parent_child`, `hyde` or `rag_fusion`; evaluate takes several |
+| `--rag-type`  | ask, chat, index, evaluate | `simple` (default), `adaptive`, `parent_child`, `hyde`, `rag_fusion`, `corrective` or `iterative`; evaluate takes several |
 | `--retriever` | ask, chat, evaluate | `dense`, `bm25` or `hybrid`; evaluate takes several |
 | `--reranker`  | ask, chat, evaluate | `keyword`, `none`, `mmr`, `llm` or `cross_encoder`; evaluate takes several |
 | `--top-k`, `--top-n` | ask, chat, evaluate | chunks searched and kept (default: each RAG type's own; `--top-k` 5 with `--retrieval-only`) |
@@ -117,6 +117,10 @@ you add `--force`. See [Build a golden set](cookbook/golden-set.md).
 | `--parent-budget` | ask, chat, evaluate | parent_child: most characters of sections given to the model (default 3000) |
 | `--hyde-with-question`, `--no-hyde-with-question` | ask, chat, evaluate | hyde: also search with the question (default on) |
 | `--fusion-queries` | ask, chat, evaluate | rag_fusion: rewordings of the question to search with (default 3) |
+| `--crag-upper`, `--crag-lower` | ask, chat, evaluate | corrective: grades (0-10) that make the evidence correct / incorrect (default 7 and 3) |
+| `--crag-refine`, `--no-crag-refine` | ask, chat, evaluate | corrective: give the model only the useful sentences (default on) |
+| `--crag-max-retries` | ask, chat, evaluate | corrective: times to search again, `0` grades only (default 1) |
+| `--iterative-max-steps` | ask, chat, evaluate | iterative: think-then-search rounds after the first search, `0` searches once (default 3) |
 | `--vector-store`, `--store-path` | ask, chat, index | a [saved index](vector-stores.md) |
 | `--add`       | index       | add to the saved index instead of starting over |
 | `--log-level` | ask, chat, evaluate | `DEBUG`, `INFO` or `WARNING` (default) |

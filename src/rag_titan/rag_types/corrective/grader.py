@@ -48,9 +48,9 @@ class ChunkGrader:
         Grade the chunks against the question.
 
         Returns:
-            {"verdict": "correct" | "ambiguous" | "incorrect",
-             "chunks": copies of the chunks in search order, each with "grade" (0-10),
-             "note": why, when something went wrong (optional)}
+            A dict with "verdict" ("correct", "ambiguous" or "incorrect"),
+            "chunks" (copies of the chunks in search order, each with its
+            "grade" from 0 to 10) and, when something went wrong, "note" (why).
         """
         if not chunks:
             return {"verdict": INCORRECT, "chunks": [], "note": NOTHING_FOUND_NOTE}

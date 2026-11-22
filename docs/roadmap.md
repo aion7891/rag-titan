@@ -7,9 +7,11 @@
 - [x] Simple RAG (`"simple"`), available since 0.1.0
 - [x] Adaptive RAG (`"adaptive"`), available since 0.1.0
 - [x] Parent-Child RAG (`"parent_child"`): search small chunks, answer with their sections, available since 0.12.0
-- [ ] Corrective RAG (CRAG): grade chunks, fall back to web search
 - [x] HyDE RAG (`"hyde"`): search with a made-up answer and the question, available since 0.13.0
 - [x] RAG-Fusion (`"rag_fusion"`): search several rewordings, fuse with RRF, available since 0.13.0
+- [x] Corrective RAG (`"corrective"`): grade every chunk, search again when the evidence is weak, keep the key sentences, available since 0.14.0
+- [x] Iterative RAG (`"iterative"`): search, think about what is missing, search again, available since 0.14.0
+- [ ] Corrective RAG with a built-in web search fallback (today: plug in any retriever as `fallback_retriever`)
 - [ ] Self-RAG: the model critiques its own answer
 - [ ] Graph RAG: use a knowledge graph
 - [ ] Agentic RAG: an agent decides when and what to search

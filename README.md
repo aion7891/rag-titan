@@ -175,7 +175,7 @@ and the guide is **[Evaluating every stage →](https://aion7891.github.io/rag-t
 
 ## Supported RAG types
 
-**rag-titan supports 5 RAG types.** Pick one with `rag_type`. Every type has `answer()`, and
+**rag-titan supports 7 RAG types.** Pick one with `rag_type`. Every type has `answer()`, and
 `run()` that also returns every step it took ([see the steps](https://aion7891.github.io/rag-titan/rag-types/#seeing-every-step-run)):
 
 | Status | RAG type | How it works | Best for | LLM calls |
@@ -185,15 +185,17 @@ and the guide is **[Evaluating every stage →](https://aion7891.github.io/rag-t
 | ✅ Available | [**Parent-Child RAG**](https://aion7891.github.io/rag-titan/rag-types/#parent-child-rag-parent_child)<br>`rag_type="parent_child"` | Retrieve small chunks → Rerank → Expand to their sections → Generate | Answers that span a section | 1 |
 | ✅ Available | [**HyDE RAG**](https://aion7891.github.io/rag-titan/rag-types/#hyde-rag-hyde)<br>`rag_type="hyde"` | Write a made-up answer → Search with it and the question → Fuse → Generate | Questions worded unlike the documents | 2 |
 | ✅ Available | [**RAG-Fusion**](https://aion7891.github.io/rag-titan/rag-types/#rag-fusion-rag_fusion)<br>`rag_type="rag_fusion"` | Write rewordings → Search each and the question → Fuse → Generate | Questions worded unlike the documents | 2 |
+| ✅ Available | [**Corrective RAG**](https://aion7891.github.io/rag-titan/rag-types/#corrective-rag-corrective)<br>`rag_type="corrective"` | Retrieve → Grade each chunk → Keep, or rewrite & search again → Keep key sentences → Generate | Weak or off-topic search results | 3–5 |
+| ✅ Available | [**Iterative RAG**](https://aion7891.github.io/rag-titan/rag-types/#iterative-rag-iterative)<br>`rag_type="iterative"` | Retrieve → Think: what is missing? → Search again → … → Generate | Questions that need two hops | 2–4 |
 
 ```python
 from rag_titan import RAG_TYPES
-print(RAG_TYPES)        # ['simple', 'adaptive', 'parent_child', 'hyde', 'rag_fusion']
+print(RAG_TYPES)        # ['simple', 'adaptive', 'parent_child', 'hyde', 'rag_fusion', 'corrective', 'iterative']
 ```
 
 Every type can be tuned (`TOP_K`, `TOP_N`, retriever, reranker, ...) and has its own [playground page](https://aion7891.github.io/rag-titan/rag-playground/) with knobs.
 
-**Coming next** (not available yet): Corrective RAG · Self-RAG · Graph RAG · Agentic RAG. → [Roadmap](https://aion7891.github.io/rag-titan/roadmap/)
+**Coming next** (not available yet): Self-RAG · Graph RAG · Agentic RAG. → [Roadmap](https://aion7891.github.io/rag-titan/roadmap/)
 
 > Also included: a tool-calling [agent](https://aion7891.github.io/rag-titan/agents/) loop. It's a separate feature, not a `rag_type`.
 
@@ -215,6 +217,14 @@ Every type can be tuned (`TOP_K`, `TOP_N`, retriever, reranker, ...) and has its
 
 <p align="center">
   <a href="https://aion7891.github.io/rag-titan/rag-types/#rag-fusion-rag_fusion"><img src="https://cdn.jsdelivr.net/gh/aion7891/rag-titan@main/docs/assets/images/rag-fusion-rag.svg" alt="RAG-Fusion: several rewordings, one fused list" width="100%"></a>
+</p>
+
+<p align="center">
+  <a href="https://aion7891.github.io/rag-titan/rag-types/#corrective-rag-corrective"><img src="https://cdn.jsdelivr.net/gh/aion7891/rag-titan@main/docs/assets/images/corrective-rag.svg" alt="Corrective RAG: grade every chunk, search again when the evidence is weak" width="100%"></a>
+</p>
+
+<p align="center">
+  <a href="https://aion7891.github.io/rag-titan/rag-types/#iterative-rag-iterative"><img src="https://cdn.jsdelivr.net/gh/aion7891/rag-titan@main/docs/assets/images/iterative-rag.svg" alt="Iterative RAG: search, think about what is missing, search again" width="100%"></a>
 </p>
 
 ## Explore the docs

@@ -222,7 +222,11 @@ A retriever made of several steps can draw them: see `SEARCH_FLOW` and
    A RAG type that searches with several queries made from the question (like
    HyDE and RAG-Fusion) can inherit `QueryTransformRAG` instead and only write
    `search_queries(query, trace)`: the searching, fusing, reranking and answer
-   come with it
+   come with it. A type that loops (searches again, like Corrective and
+   Iterative RAG) should count its rounds with `LoopLimit` from
+   `rag_types/loops.py`: it caps the rounds, stops when a search finds no new
+   chunk, and says why the loop stopped (put `limit.summary()` in
+   `result["loop"]`)
 5. export it in `rag_types/__init__.py`
 6. add tests in `tests/` (use `FakeLLM` and `FakeEmbedder` from `conftest.py`).
    `tests/test_traces.py` already checks every type in `RAG_TYPES`: it fails
@@ -232,9 +236,11 @@ A retriever made of several steps can draw them: see `SEARCH_FLOW` and
 9. give it a playground page: copy `docs/rag-playground/simple.md` to
    `docs/rag-playground/<your-type>.md`, set `data-rag-type="<your_type>"`, add it
    to the nav in `mkdocs.yml`, and list its knob values in `PRESET_GRID`
-   (`playground/recording.py`). Then record the
+   (`playground/recording.py`). Its own knobs get one line each in `KNOBS` in
+   `docs/assets/javascripts/rag-knobs.js` (`top_k`, `top_n`, the retriever and
+   the reranker are there for every type). Then record the
    [RAG playground](rag-playground.md) examples again, so your type shows up with
-   its diagram and tuning knobs (no JavaScript to write):
+   its diagram and tuning knobs:
 
     ```bash
     python tools/playground/record_traces.py          # needs Ollama, about 10 minutes

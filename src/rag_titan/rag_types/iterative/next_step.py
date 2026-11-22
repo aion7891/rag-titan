@@ -43,10 +43,17 @@ class NextStepThinker:
 
     def think(self, query, chunks, searches):
         """
+        Ask the model what to search for next, from what was found so far.
+
+        Args:
+            query: the user's question.
+            chunks: every chunk kept so far.
+            searches: the queries searched so far, the question first.
+
         Returns:
-            {"thought": the model's sentence,
-             "search": the next search query, or None when the model is done,
-             "note": why the loop stopped, when the reply was not usable (optional)}
+            A dict with "thought" (the model's sentence), "search" (the next
+            search query, or None when the model is done) and, when the reply
+            was not usable, "note" (why the loop stopped).
         """
         reply = self.llm.ask(NEXT_STEP_PROMPT, build_input(query, chunks, searches))
         return parse_next_step(reply)

@@ -38,12 +38,17 @@ cp .env.example .env
 | `RETRIEVER`       | `retriever`       | `dense`                  | `dense`, `bm25` or `hybrid`: see [Retrieval](retrieval.md) |
 | `RERANKER`        | `reranker`        | `keyword`                | `keyword`, `none`, `mmr` (relevant, not repetitive), `llm` (the chat model rates the chunks) or `cross_encoder` (needs `[rerank]`) |
 | `RERANK_MODEL`    | `rerank_model`    | `cross-encoder/ms-marco-MiniLM-L-6-v2` | Hugging Face cross-encoder (`cross_encoder` only) |
-| `TOP_K`           | `top_k`           | type's own (5 / 4 / 8)   | Chunks searched (simple / adaptive / parent_child) |
-| `TOP_N`           | `top_n`           | type's own (2 / 2 / 4)   | Chunks kept after reranking; at most `TOP_K` |
+| `TOP_K`           | `top_k`           | type's own (see below)   | Chunks searched (each search, for the types that search more than once) |
+| `TOP_N`           | `top_n`           | type's own (see below)   | Chunks kept after reranking; at most `TOP_K` |
 | `ADAPTIVE_MAX_ATTEMPTS` | `adaptive_max_attempts` | `2`          | `adaptive`: searches before giving up      |
 | `PARENT_BUDGET`   | `parent_budget`   | `3000`                   | `parent_child`: most characters of parent text given to the model |
 | `HYDE_WITH_QUESTION` | `hyde_with_question` | `true`             | `hyde`: also search with the question and fuse it with the made-up answer's search |
 | `FUSION_QUERIES`  | `fusion_queries`  | `3`                      | `rag_fusion`: rewordings of the question to search with (1 to 10) |
+| `CRAG_UPPER`      | `crag_upper`      | `7`                      | `corrective`: a chunk graded this or more (0-10) makes the evidence correct |
+| `CRAG_LOWER`      | `crag_lower`      | `3`                      | `corrective`: every chunk graded below this makes it incorrect; chunks below it are never kept |
+| `CRAG_REFINE`     | `crag_refine`     | `true`                   | `corrective`: give the model only the useful sentences of each chunk |
+| `CRAG_MAX_RETRIES` | `crag_max_retries` | `1`                    | `corrective`: times to search again with a rewritten question; `0` grades only |
+| `ITERATIVE_MAX_STEPS` | `iterative_max_steps` | `3`              | `iterative`: think-then-search rounds after the first search; `0` searches once |
 | `GENERATOR`       | `generator`       | `grounded`               | How answers are written                        |
 | `LOG_LEVEL`       | –                 | `INFO`                   | Used by `setup_logging()`                      |
 
@@ -68,6 +73,8 @@ reranking. Left empty, each type uses its own sizes:
 | `parent_child` | 8       | 4       | `PARENT_SIZE` (1500, used when indexing), `PARENT_BUDGET` (3000) |
 | `hyde`         | 5       | 2       | `HYDE_WITH_QUESTION` (true): also search with the question |
 | `rag_fusion`   | 5       | 2       | `FUSION_QUERIES` (3): rewordings to search with |
+| `corrective`   | 5       | 2       | `CRAG_UPPER` (7), `CRAG_LOWER` (3), `CRAG_REFINE` (true), `CRAG_MAX_RETRIES` (1) |
+| `iterative`    | 3       | 2       | `ITERATIVE_MAX_STEPS` (3). `TOP_N` is kept from **each** search; the model reads all of them |
 
 `TOP_N` can never be more than `TOP_K`. Set only `TOP_K` and `TOP_N` follows:
 it keeps the type's own size, or `TOP_K` when that is smaller.
