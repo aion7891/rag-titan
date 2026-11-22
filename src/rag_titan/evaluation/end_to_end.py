@@ -36,7 +36,8 @@ from rag_titan.factory import (
 # settings that change how the chunks are searched and used, not the chunks themselves
 SEARCH_ONLY = ("retriever", "reranker", "rerank_model", "top_k", "top_n",
                "adaptive_max_attempts", "parent_budget", "hyde_with_question",
-               "fusion_queries")
+               "fusion_queries", "crag_upper", "crag_lower", "crag_refine", "crag_max_retries",
+               "iterative_max_steps")
 
 RAG_COLUMNS = [
     ("Recall", "recall", "{:.3f}"),

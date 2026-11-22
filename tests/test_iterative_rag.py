@@ -131,12 +131,24 @@ def test_zero_steps_searches_once_like_simple_rag():
     assert NEXT_STEP_PROMPT not in [system for system, _ in llm.calls]
 
 
+def test_an_empty_first_search_lets_the_model_suggest_a_better_one():
+    rag, _, retriever = iterative(["Nothing yet.\nSEARCH: new starter equipment", "DONE"],
+                                  {"new starter equipment": [LEAD]})
+
+    result = rag.run(QUESTION)
+
+    assert retriever.queries == [QUESTION, "new starter equipment"]
+    assert [source["id"] for source in result["sources"]] == ["lead"]
+    assert result["loop"]["stop_reason"] == MODEL_DONE
+    assert_follows_flow(rag, result)
+
+
 def test_nothing_found_gives_up_honestly():
     rag, llm, _ = iterative(["DONE"], {})
 
     result = rag.run(QUESTION)
 
-    assert names(result) == ["retrieve", "rerank", "give_up"]
+    assert names(result) == ["retrieve", "rerank", "think", "give_up"]
     assert result["answer"] == NO_ANSWER and result["sources"] == []
     assert GROUNDED_ANSWER_PROMPT not in [system for system, _ in llm.calls]
     assert_follows_flow(rag, result)

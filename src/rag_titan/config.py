@@ -152,6 +152,14 @@ def _tuning_settings():
         "hyde_with_question": _get_bool("HYDE_WITH_QUESTION", True),
         # rag_fusion: rewordings of the question to search with (1 to 10)
         "fusion_queries": _get_int("FUSION_QUERIES", 3),
+        # corrective: grades (0-10) that make the evidence good / bad, keep only useful
+        # sentences, and how many times to search again
+        "crag_upper": _get_int("CRAG_UPPER", 7),
+        "crag_lower": _get_int("CRAG_LOWER", 3),
+        "crag_refine": _get_bool("CRAG_REFINE", True),
+        "crag_max_retries": _get_int("CRAG_MAX_RETRIES", 1),
+        # iterative: think-then-search rounds after the first search
+        "iterative_max_steps": _get_int("ITERATIVE_MAX_STEPS", 3),
     }
 
 

@@ -110,8 +110,13 @@ class IterativeRAG(BaseRAG):
 
         while True:
             found = trace.search(self.retriever, query=search_query, top_k=self.top_k)
-            # only chunks not seen before count; none new stops the loop
-            fresh = limit.new_chunks(found)
+            if len(searches) == 1:
+                # the first search may find nothing: the model can still suggest a better one
+                limit.remember(found)
+                fresh = found
+            else:
+                # later searches: only chunks not seen before count; none new stops the loop
+                fresh = limit.new_chunks(found)
             collected += trace.record("rerank", self.reranker.rerank,
                                       query=search_query, matches=fresh, top_n=self.top_n)
             if not limit.next_step():
