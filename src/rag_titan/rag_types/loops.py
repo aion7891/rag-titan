@@ -4,7 +4,8 @@ Loop limits for the RAG types that search more than once (Corrective, Iterative)
 A loop that asks a model "search again?" must never run away, so every loop:
     - has a hard cap on its rounds (max_steps);
     - stops when a search brings no chunk it did not already have (no progress);
-    - can be stopped by the model ("I have what I need").
+    - can be stopped by the model ("I have what I need"), or because the
+      evidence is already good (Corrective RAG's grades).
 
 The reason it stopped is kept, so the trace can say "stopped: no new chunks
 after step 2" (handbook #28: "needs loop cap and trace evaluation").
@@ -21,7 +22,8 @@ after step 2" (handbook #28: "needs loop cap and trace evaluation").
 MAX_STEPS = "max steps"
 NO_NEW_CHUNKS = "no new chunks"
 MODEL_DONE = "model said done"
-STOP_REASONS = [MAX_STEPS, NO_NEW_CHUNKS, MODEL_DONE]
+EVIDENCE_GOOD = "evidence is good"
+STOP_REASONS = [MAX_STEPS, NO_NEW_CHUNKS, MODEL_DONE, EVIDENCE_GOOD]
 
 
 class LoopLimit:

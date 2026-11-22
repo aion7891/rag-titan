@@ -13,6 +13,7 @@ from rag_titan.app import RAGTitan
 from rag_titan.config import get_settings
 from rag_titan.factory import RAG_TYPES, build_rag, build_rag_parts
 from rag_titan.rag_types.adaptive.adaptive_rag import AdaptiveRAG
+from rag_titan.rag_types.corrective.corrective_rag import CorrectiveRAG
 from rag_titan.rag_types.hyde_rag import HyDERAG
 from rag_titan.rag_types.parent_child_rag import ParentChildRAG
 from rag_titan.rag_types.rag_fusion_rag import RAGFusionRAG
@@ -28,6 +29,7 @@ __all__ = [
     "ParentChildRAG",
     "HyDERAG",
     "RAGFusionRAG",
+    "CorrectiveRAG",
     "RAG_TYPES",
     "build_rag",
     "build_rag_parts",

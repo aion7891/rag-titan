@@ -20,7 +20,7 @@ logger = get_logger(__name__)
 
 CORRECT, AMBIGUOUS, INCORRECT = "correct", "ambiguous", "incorrect"
 
-NOTHING_FOUND_NOTE = "the search found nothing"
+NOTHING_FOUND_NOTE = "there were no chunks to grade"
 UNGRADED_NOTE = "the model's grades could not be read, so the evidence counts as ambiguous"
 NOT_GRADED_NOTE = "the model gave no grade for this chunk, so it counts as 0"
 

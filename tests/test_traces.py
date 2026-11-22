@@ -150,3 +150,13 @@ def test_describe_steps_log(parts):
     # timings change on every run, so show them all as 0.00 (same width)
     hidden = re.sub(r"\d+\.\d\d(?= ms)", lambda m: "0.00".rjust(len(m.group())), log)
     assert hidden == EXPECTED_LOG
+
+
+def test_graded_chunks_are_shown_short():
+    step = {"step": "grade", "input": {}, "ms": 0.0,
+            "output": {"verdict": "ambiguous", "chunks": [{"id": "a", "grade": 5.0},
+                                                          {"id": "b", "grade": 0.5}, {"id": "c"}]}}
+    empty = {**step, "output": {"verdict": "incorrect", "chunks": [], "note": "nothing to grade"}}
+
+    assert describe_steps([step]).endswith("-> ambiguous: a 5, b 0.5, c ?")
+    assert describe_steps([empty]).endswith("-> incorrect: nothing to grade")

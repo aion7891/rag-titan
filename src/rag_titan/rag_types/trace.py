@@ -95,6 +95,13 @@ def _short(value, brief=False):
     if isinstance(value, list) and all(isinstance(item, dict) and "id" in item for item in value):
         return _count(value) if brief else _describe_chunks(value)
 
+    # graded chunks (Corrective RAG): "ambiguous: chunk_3 5, chunk_7 0"
+    if isinstance(value, dict) and "verdict" in value and "chunks" in value:
+        # "?" when the grades could not be read
+        grades = ", ".join(f"{chunk['id']} {chunk['grade']:g}" if "grade" in chunk
+                           else f"{chunk['id']} ?" for chunk in value["chunks"])
+        return f"{value['verdict']}: {grades or value.get('note', 'no chunks')}"
+
     # several result lists by name (fuse_queries): "query_1 8 chunks, query_2 8 chunks"
     if isinstance(value, dict) and value and all(isinstance(item, list) for item in value.values()):
         return ", ".join(f"{name} {_count(items)}" for name, items in value.items())
