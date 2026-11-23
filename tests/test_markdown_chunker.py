@@ -45,6 +45,18 @@ def test_a_big_table_repeats_its_header_and_never_cuts_a_row():
     assert any(not c.rstrip().endswith("|") for c in HeadingChunker(120).split_text(TABLE))
 
 
+def test_a_table_right_under_its_heading_repeats_its_header_too():
+    # the commonest case: no lead-in, so the section body starts with a blank line
+    text = "# Errors\n\n| Code | Meaning |\n|------|---------|\n" + "".join(
+        f"| E-{n} | Something went wrong |\n" for n in range(1, 9))
+
+    chunks = MarkdownChunker(120).split_text(text)
+
+    assert len(chunks) > 1
+    assert all(c.startswith("Errors\n\n| Code | Meaning |\n|------|---------|\n| E-")
+               for c in chunks)
+
+
 def test_the_offsets_of_a_repeated_header_point_at_the_rows():
     spans = MarkdownChunker(120).split_spans(TABLE)
 
@@ -68,6 +80,7 @@ def test_oversized_block_pieces_join_back():
     assert code_lines("```py\na\nb\n```\n") == ["```py\na\n", "b\n```\n"]
     assert table_parts("| a |\n|---|\n| 1 |\n\n") == ("| a |\n|---|\n", ["| 1 |\n\n"])
     assert table_parts("| a |\n| 1 |\n") == ("| a |\n", ["| 1 |\n"])
+    assert table_parts("\n| a |\n|---|\n| 1 |\n") == ("\n| a |\n|---|\n", ["| 1 |\n"])
 
 
 def test_without_path_the_heading_lines_stay():

@@ -21,14 +21,20 @@ TABLE_RULE = re.compile(r"^[ \t]*\|?[ \t]*:?-+:?[ \t]*(\|[ \t]*:?-+:?[ \t]*)*\|?
 
 
 def lines_with_blanks(text):
-    """The lines of `text`; a blank line stays with the line before it."""
-    pieces = []
+    """
+    The lines of `text`; a blank line stays with the line before it, and blank
+    lines at the very start (under a heading) stay with the first line.
+    """
+    pieces, leading = [], ""
     for line in text.splitlines(keepends=True):
-        if pieces and is_blank(line):
+        if not is_blank(line):
+            pieces.append(leading + line)
+            leading = ""
+        elif pieces:
             pieces[-1] += line
         else:
-            pieces.append(line)
-    return pieces
+            leading += line
+    return pieces + [leading] if leading else pieces
 
 
 def list_items(text):
