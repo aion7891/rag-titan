@@ -6,6 +6,49 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.15.0] - 2026-11-23
+
+The first of the 0.15.x series. Every new setting is off by default: with the
+defaults, every search, answer and recorded playground run is the same as in 0.14.0.
+
+### Added
+- **Weighted RRF.** Trust one search more when result lists are fused: a list's
+  votes count `weight / (k + rank)`. `HYBRID_DENSE_WEIGHT` and `HYBRID_BM25_WEIGHT`
+  (default 1.0) for hybrid search; `QUESTION_WEIGHT` (default 1.0) for the
+  question's own search in HyDE and RAG-Fusion. In Python:
+  `HybridRetriever(..., dense_weight=, bm25_weight=)`,
+  `HyDERAG(..., question_weight=)`, `RAGFusionRAG(..., question_weight=)`, and
+  `rrf_fuse` / `fuse_ranked(..., weights=)`, `search_and_fuse(..., weights=)`.
+- **Keep each search's #1** (`RRF_KEEP_TOP`, default off): the best chunk of every
+  fused search always stays in the top results, for hybrid search, HyDE and
+  RAG-Fusion. A chunk kept this way says so in its `score_trace`
+  (`"kept_as_top_of": ["query_2"]`).
+- CLI flags `--hybrid-dense-weight`, `--hybrid-bm25-weight`, `--question-weight`
+  and `--rrf-keep-top` / `--no-rrf-keep-top` (`ask`, `chat`, `evaluate`). They
+  change only the search, so `evaluate` never re-indexes for them.
+- `rag_titan.retrieval.fusion_options`: `check_weight`, `check_weights`,
+  `keep_list_tops`.
+- Playground: question weight and keep-each-search's-#1 knobs on the HyDE and
+  RAG-Fusion pages; vector and keyword search weights on every page while the
+  retriever is `hybrid`. The steps show a list's weight and why a chunk was kept
+  (`query 1 ×2 #1`, `kept as #1 of query 4`).
+- Guides with real numbers:
+  [Retrieval](https://aion7891.github.io/rag-titan/retrieval/#trusting-one-search-more-and-keeping-each-searchs-best)
+  and [RAG types](https://aion7891.github.io/rag-titan/rag-types/#tuning-the-fusion).
+  On the playground's 54 recorded setups per type, keeping each search's #1 with
+  `top_k` 2 raised the setups that found all the evidence from 47 to 49 (HyDE) and
+  from 50 to 53 (RAG-Fusion) and lowered none; with the default `top_k` 5 those
+  counts did not change. `QUESTION_WEIGHT=2` lowered HyDE's count from 47 to 44,
+  and on the help desk example `HYBRID_DENSE_WEIGHT=3` lost one error-code
+  question (Recall@1 1.000 → 0.833): measure before changing a weight.
+
+### Changed
+- **Adaptive RAG** runs its retries under the same `LoopLimit` as Corrective and
+  Iterative RAG, so `result["loop"]` says how many searches ran and why they
+  stopped (`evidence is good` or `max steps`); its playground page shows the loop.
+  The steps and model calls are unchanged: all 540 recorded Adaptive runs replay
+  exactly as before.
+
 ## [0.14.0] - 2026-11-23
 
 ### Added
