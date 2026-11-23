@@ -11,9 +11,17 @@ const RagKnobs = (() => {
     parent_child: [["parent_budget", "parent budget", 200, 4000, 100,
                     "most characters of parent sections given to the model"]],
     hyde: [["hyde_with_question", "search the question too", "on/off",
-            "fuse the question's search with the made-up answer's"]],
+            "fuse the question's search with the made-up answer's"],
+           ["question_weight", "question weight", 0.5, 3, 0.5,
+            "how much the question's search counts against the made-up answer's when fusing"],
+           ["rrf_keep_top", "keep each search's #1", "on/off",
+            "the best chunk of every search stays in the fused top_k"]],
     rag_fusion: [["fusion_queries", "queries", 1, 5, 1,
-                  "rewordings of the question, each one searched next to it"]],
+                  "rewordings of the question, each one searched next to it"],
+                 ["question_weight", "question weight", 0.5, 3, 0.5,
+                  "how much the question's search counts against each rewording's when fusing"],
+                 ["rrf_keep_top", "keep each search's #1", "on/off",
+                  "the best chunk of every search stays in the fused top_k"]],
     corrective: [["crag_upper", "upper grade", 0, 10, 1,
                   "a chunk graded this or more (0-10) makes the evidence correct"],
                  ["crag_lower", "lower grade", 0, 10, 1,
@@ -26,8 +34,23 @@ const RagKnobs = (() => {
                  "think-then-search rounds after the first search (0: search once)"]],
   };
 
+  // the hybrid search's knobs: on every page, shown only while the retriever is hybrid
+  const HYBRID = [["hybrid_dense_weight", "vector search weight", 0.5, 3, 0.5,
+                   "hybrid: how much the vector search's ranking counts when fusing"],
+                  ["hybrid_bm25_weight", "keyword search weight", 0.5, 3, 0.5,
+                   "hybrid: how much the keyword search's ranking counts when fusing"],
+                  ["rrf_keep_top", "keep each search's #1", "on/off",
+                   "hybrid: the best chunk of both searches stays in the results"]];
+
   // [bigger, smaller]: the smaller knob can never be above the bigger one
   const PAIRS = [["top_k", "top_n"], ["crag_upper", "crag_lower"]];
 
-  return { KNOBS, PAIRS };
+  // a page's knobs, in order: [knob, hybridOnly]; a type's own knob wins over a hybrid one
+  function forType(ragType) {
+    const own = [...KNOBS.all, ...(KNOBS[ragType] || [])];
+    const hybrid = HYBRID.filter((knob) => !own.some((mine) => mine[0] === knob[0]));
+    return [...own.map((knob) => [knob, false]), ...hybrid.map((knob) => [knob, true])];
+  }
+
+  return { KNOBS, HYBRID, PAIRS, forType };
 })();

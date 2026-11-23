@@ -3,6 +3,7 @@ The tuning knobs the playground pages offer, checked before a run.
 
     check_tuning({"top_k": 8, "reranker": "mmr"}, parent_sizes=[1500])
     default_tuning()["parent_child"]   # {"top_k": 8, "top_n": 4, "parent_budget": 3000, ...}
+    RETRIEVER_DEFAULTS                 # the hybrid search's knobs, the same on every page
 
 The names are the setting names (see rag_types/rag_registry.py), so a page
 setting and a .env setting mean the same thing.
@@ -14,10 +15,16 @@ from rag_titan.rag_types.rag_registry import CLASSES
 # rerankers that run in the browser: cross_encoder needs torch, which Pyodide cannot load
 BROWSER_RERANKERS = ["keyword", "none", "mmr", "llm"]
 
+# the hybrid retriever's knobs: every RAG type can search with hybrid, so every page
+# has them (they change nothing with the dense or bm25 retriever)
+RETRIEVER_DEFAULTS = {"hybrid_dense_weight": 1.0, "hybrid_bm25_weight": 1.0,
+                      "rrf_keep_top": False}
+
 # every knob a page may send
 TUNING_KEYS = ["reranker", "top_k", "top_n", "adaptive_max_attempts", "parent_budget",
                "parent_size", "hyde_with_question", "fusion_queries", "crag_upper", "crag_lower",
-               "crag_refine", "crag_max_retries", "iterative_max_steps"]
+               "crag_refine", "crag_max_retries", "iterative_max_steps", "question_weight",
+               *RETRIEVER_DEFAULTS]
 
 
 def default_tuning():
@@ -29,6 +36,10 @@ def default_tuning():
     defaults["parent_child"]["parent_size"] = DEFAULT_PARENT_SIZE
     defaults["hyde"]["hyde_with_question"] = CLASSES["hyde"].DEFAULT_WITH_QUESTION
     defaults["rag_fusion"]["fusion_queries"] = CLASSES["rag_fusion"].DEFAULT_QUERIES
+    for name in ("hyde", "rag_fusion"):
+        # rrf_keep_top here also keeps each query's #1 when the query lists are fused
+        defaults[name].update(question_weight=CLASSES[name].DEFAULT_QUESTION_WEIGHT,
+                              rrf_keep_top=CLASSES[name].DEFAULT_KEEP_TOP)
     corrective = CLASSES["corrective"]
     defaults["corrective"].update(crag_upper=corrective.DEFAULT_UPPER,
                                   crag_lower=corrective.DEFAULT_LOWER,

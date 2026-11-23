@@ -12,7 +12,7 @@
   app.replaceChildren(status);
   const python = RagPython.start(status);
 
-  const { KNOBS, PAIRS } = RagKnobs;   // each type's knobs: rag-knobs.js
+  const { PAIRS, forType } = RagKnobs;   // each type's knobs: rag-knobs.js
 
   function select(label, options, value) {
     const input = el("select", "rp-input");
@@ -60,7 +60,7 @@
       RagFlow.render(holder, flows.dense, { label: ragType });
       return;
     }
-    const defaults = info.defaults[ragType];
+    const defaults = { ...info.retriever_defaults, ...info.defaults[ragType] };
     const grid = (info.grid || {})[ragType] || {};
     const question = select("Question", info.questions.map((q) => [q.id, q.question]),
                             info.questions[0].id);
@@ -72,12 +72,16 @@
       info.parent_sizes.map((n) => [n, `${n} characters`]), info.parent_sizes[0]) : null;
     const retriever = select("Retriever", info.retrievers.map((r) => [r, r]), "dense");
     const reranker = select("Reranker", info.rerankers.map((r) => [r, r]), info.reranker);
-    const sliders = [...KNOBS.all, ...(KNOBS[ragType] || [])].map((knob) =>
-      (knob[2] === "on/off" ? toggle : slider)(knob, defaults[knob[0]], grid[knob[0]]));
+    const sliders = forType(ragType).map(([knob, hybridOnly]) => Object.assign(
+      (knob[2] === "on/off" ? toggle : slider)(knob, defaults[knob[0]], grid[knob[0]]),
+      { hybridOnly }));
+    // the hybrid knobs show (and count) only while the retriever is hybrid
+    const showHybrid = () => sliders.filter((s) => s.hybridOnly)
+      .forEach((s) => { s.box.hidden = retriever.value() !== "hybrid"; });
 
     const tuning = () => {
       const values = { reranker: reranker.value() };
-      sliders.forEach((s) => { values[s.key] = s.value(); });
+      sliders.filter((s) => !s.box.hidden).forEach((s) => { values[s.key] = s.value(); });
       if (parentSize) values.parent_size = Number(parentSize.value());
       return values;
     };
@@ -87,6 +91,7 @@
     const knobDefaults = { ...defaults, reranker: info.reranker };
     // a knob changed: the old report no longer fits, so it goes
     const rerun = debounce(() => {
+      showHybrid();
       report.replaceChildren();
       indicator.textContent = recordedText(tuning(), knobDefaults, grid);
       runOnce(info, setup(), result, code);
@@ -120,6 +125,7 @@
     const panel = el("div", "rt-panel");
     panel.append(...[question, chunker, parentSize, retriever, reranker].filter(Boolean).map((c) => c.box),
                  ...sliders.map((s) => s.box), indicator);
+    showHybrid();
     app.append(documentsBox(info.documents), panel, reset, result, evaluate, report,
                el("p", "rp-label", "The same setup in Python"), code);
     status.textContent = `Ready: real ${info.model} replies and ${info.embed_model} vectors, `

@@ -15,7 +15,12 @@ from rag_titan.evaluation.end_to_end import evaluate_rag, format_rag_report
 from rag_titan.factory import PARENT_RAG_TYPES, RAG_TYPES, build_rag, build_reranker
 from rag_titan.playground.presets import replay_parts, with_retriever
 from rag_titan.playground.runs import run_question, summarize_questions
-from rag_titan.playground.tuning import BROWSER_RERANKERS, check_tuning, default_tuning
+from rag_titan.playground.tuning import (
+    BROWSER_RERANKERS,
+    RETRIEVER_DEFAULTS,
+    check_tuning,
+    default_tuning,
+)
 
 
 class Playground:
@@ -49,6 +54,7 @@ class Playground:
             "reranker": self.presets["settings"][first]["reranker"],
             "parent_sizes": self.parent_sizes(),
             "defaults": default_tuning(),
+            "retriever_defaults": dict(RETRIEVER_DEFAULTS),  # hybrid's knobs, every page
             "grid": self.presets.get("grid", {}),             # tuning values recorded
             # flows[rag_type][retriever] for every RAG type: the diagram needs no recording
             "flows": {name: {r: build_rag(name, self._searcher(first, r)).flow()
@@ -104,6 +110,9 @@ class Playground:
         if rag_type in PARENT_RAG_TYPES:
             parent_size = tuning.get("parent_size") or self.parent_sizes()[0]
         parts = self._searcher(chunking, retriever, parent_size)
+        if retriever == "hybrid" and set(tuning) & set(RETRIEVER_DEFAULTS):
+            # a tuned hybrid search: a new retriever on the same index (no re-indexing)
+            parts = with_retriever(parts, retriever, tuning)
 
         reranker = tuning.get("reranker")
         if reranker and reranker != self.presets["settings"][chunking]["reranker"]:
