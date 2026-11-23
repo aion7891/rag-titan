@@ -6,6 +6,9 @@ hide:
 
 ![rag-titan: a Swiss Army knife for RAG](assets/images/banner.svg)
 
+[![PyPI version](https://img.shields.io/pypi/v/rag-titan?label=pypi)](https://pypi.org/project/rag-titan/)
+[![PyPI Downloads](https://static.pepy.tech/personalized-badge/rag-titan?period=total&units=INTERNATIONAL_SYSTEM&left_color=BLACK&right_color=GREEN&left_text=downloads)](https://pepy.tech/projects/rag-titan)
+
 [Already have a RAG? Evaluate it →](cookbook/index.md#choose-your-path){ .md-button .md-button--primary }
 [New here? Get started →](getting-started.md){ .md-button }
 

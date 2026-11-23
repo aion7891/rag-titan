@@ -4,6 +4,7 @@
 
 <p align="center">
   <a href="https://pypi.org/project/rag-titan/"><img src="https://img.shields.io/pypi/v/rag-titan?label=pypi" alt="PyPI version"></a>
+  <a href="https://pepy.tech/projects/rag-titan"><img src="https://static.pepy.tech/personalized-badge/rag-titan?period=total&units=INTERNATIONAL_SYSTEM&left_color=BLACK&right_color=GREEN&left_text=downloads" alt="PyPI Downloads"></a>
   <a href="https://pypi.org/project/rag-titan/"><img src="https://img.shields.io/pypi/pyversions/rag-titan" alt="Python versions"></a>
   <a href="https://github.com/aion7891/rag-titan/actions/workflows/tests.yml"><img src="https://github.com/aion7891/rag-titan/actions/workflows/tests.yml/badge.svg" alt="Tests"></a>
   <a href="https://aion7891.github.io/rag-titan/"><img src="https://img.shields.io/badge/docs-GitHub%20Pages-blue.svg" alt="Documentation"></a>
