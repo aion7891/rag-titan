@@ -29,6 +29,7 @@ cp .env.example .env
 | `CHUNK_OVERLAP`   | `chunk_overlap`   | `30`                     | Units shared by neighbouring chunks            |
 | `CHUNK_ENCODING`  | `chunk_encoding`  | `cl100k_base`            | tiktoken encoding (`token` only)               |
 | `PARENT_SIZE`     | `parent_size`     | `1500`                   | Largest parent section in characters (`parent_child` RAG only) |
+| `TEXTTILING_WINDOW` | `texttiling_window` | `3`                    | `texttiling` chunker: sentences compared on each side of a possible cut |
 | `VECTOR_STORE`    | `vector_store`    | `memory`                 | `memory`, `sqlite`, `chroma`, `qdrant`: see [Vector stores](vector-stores.md) |
 | `VECTOR_STORE_PATH` | `vector_store_path` | store's (`rag_titan.db`) | File (sqlite) or folder (chroma, qdrant) of a saved index |
 | `VECTOR_STORE_URL` | `vector_store_url` | –                       | Chroma or Qdrant server instead of a folder    |
@@ -57,11 +58,12 @@ cp .env.example .env
 | `LOG_LEVEL`       | –                 | `INFO`                   | Used by `setup_logging()`                      |
 
 `CHUNKER` is one of `word`, `character`, `token`, `recursive`, `sentence`,
-`paragraph`, `heading` or `page`. `CHUNK_SIZE` and `CHUNK_OVERLAP` count words
+`paragraph`, `heading`, `page`, `markdown` (whole lists, tables and code) or
+`texttiling` (cuts where the topic changes). `CHUNK_SIZE` and `CHUNK_OVERLAP` count words
 for `word`, model tokens for `token`, and characters for all the others. Change them together
 when you switch: 150 words is roughly 200 tokens or 900 characters, so for
-`recursive`, `paragraph` and `heading` try `CHUNK_SIZE=1000`, for `sentence`
-`500`, and for `page` `2000`. `CHUNKER=token` needs
+`recursive`, `paragraph`, `heading`, `markdown` and `texttiling` try `CHUNK_SIZE=1000`,
+for `sentence` `500`, and for `page` `2000`. `CHUNKER=token` needs
 `pip install "rag-titan[tokens]"`; to use your own tokenizer, see
 [Chunking methods](chunking.md#your-own-tokenizer).
 

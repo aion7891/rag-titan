@@ -16,7 +16,7 @@ Answering:  Retriever -> Reranker -> Generator  (each uses the LLM / Embedder)
 |-----------|-----------------|---------------------------------------------------|------------------------|
 | LLM       | `BaseLLM`       | `OllamaLLM`, `AnthropicLLM`, `FunctionLLM`, `ReplayLLM` | `llm/`                 |
 | Loader    | `BaseLoader`    | `PdfLoader`, `DocxLoader`, `TextLoader`           | `loaders/`             |
-| Chunker   | `BaseChunker`   | 8 chunkers, see [Chunking methods](chunking.md)   | `chunking/`            |
+| Chunker   | `BaseChunker`   | 10 chunkers, see [Chunking methods](chunking.md)  | `chunking/`            |
 | Embedder  | `BaseEmbedder`  | `OllamaEmbedder`, `HashEmbedder`, `FunctionEmbedder`, `ReplayEmbedder` | `embeddings/` |
 | Store     | `BaseStore`     | `MemoryStore`, `SQLiteStore`, `ChromaStore`, `QdrantStore` ([Vector stores](vector-stores.md)) | `vector_stores/` |
 | Retriever | `BaseRetriever` | `DenseRetriever`, `BM25Retriever`, `HybridRetriever` ([Retrieval](retrieval.md)) | `retrieval/` |

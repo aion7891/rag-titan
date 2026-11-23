@@ -6,6 +6,7 @@ Each one wins over its setting in .env, for that command only:
     --top-n 3          TOP_N                  chunks kept after reranking
     --max-attempts 3   ADAPTIVE_MAX_ATTEMPTS  adaptive: searches before giving up
     --parent-size 800  PARENT_SIZE            parent_child: largest section (indexing)
+    --texttiling-window 4  TEXTTILING_WINDOW  texttiling: sentences compared (indexing)
     --parent-budget    PARENT_BUDGET          parent_child: characters given to the model
     --no-hyde-with-question  HYDE_WITH_QUESTION   hyde: search the made-up answer only
     --fusion-queries 4 FUSION_QUERIES         rag_fusion: rewordings to search with
@@ -25,6 +26,7 @@ import argparse
 # option -> the setting it changes
 TUNING = {"top_k": "top_k", "top_n": "top_n", "max_attempts": "adaptive_max_attempts",
           "parent_size": "parent_size", "parent_budget": "parent_budget",
+          "texttiling_window": "texttiling_window",
           "hyde_with_question": "hyde_with_question", "fusion_queries": "fusion_queries",
           "crag_upper": "crag_upper", "crag_lower": "crag_lower", "crag_refine": "crag_refine",
           "crag_max_retries": "crag_max_retries", "iterative_max_steps": "iterative_max_steps",
@@ -81,11 +83,14 @@ def add_tuning_options(command, search=True):
     Args:
         command: the argparse parser of the command.
         search: False for `index`, which only builds the index and so only
-            takes --parent-size.
+            takes the indexing options (--parent-size, --texttiling-window).
     """
     command.add_argument("--parent-size", type=positive_int,
                          help="parent_child: largest parent section in characters, used when "
                               "indexing (default: PARENT_SIZE, 1500)")
+    command.add_argument("--texttiling-window", type=positive_int,
+                         help="texttiling chunker: sentences compared on each side of a gap, "
+                              "used when indexing (default: TEXTTILING_WINDOW, 3)")
     if not search:
         return
     command.add_argument("--top-k", type=positive_int,

@@ -33,7 +33,8 @@
 - [ ] Loaders: HTML, CSV
 - [x] Chunkers: character, token, recursive (`"character"`, `"token"`, `"recursive"`), available since 0.2.0
 - [x] Chunkers: sentence, paragraph, heading, page (`"sentence"`, `"paragraph"`, `"heading"`, `"page"`), available since 0.3.0
-- [ ] Chunkers: element-aware (lists, tables, code), semantic
+- [x] Chunkers: element-aware Markdown (`"markdown"`: whole lists, tables, code) and TextTiling (`"texttiling"`: topic changes, no model), available since 0.15.1
+- [ ] Chunkers: semantic (embedding similarity), LLM boundaries
 - [x] Chunk offsets, page numbers and section paths, with page citations in answers, available since 0.4.0
 - [x] Remove duplicate overlapping chunks from search results (`DEDUPE_OVERLAP`), available since 0.5.0
 - [x] Evaluation helpers: retrieval and end-to-end (`rag-titan evaluate`), available since 0.6.0

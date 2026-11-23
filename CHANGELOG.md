@@ -6,6 +6,53 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.15.1] - 2026-11-23
+
+Two chunkers that need no model. Nothing changes for the existing chunkers.
+
+### Added
+- **Markdown chunker** (`CHUNKER=markdown`, `MarkdownChunker`): element-aware
+  chunking (chunking handbook 3.5 and 3.7). It reads Markdown as blocks
+  (paragraphs, lists, tables, code blocks, quotes such as `> **Warning**`) and packs
+  whole blocks per heading section, with the heading path in front. A code block
+  with blank lines, a table row or a list item is never cut, and a lead-in line
+  ("You get:") stays with the list, table or code after it. A block too big for a
+  chunk is cut at its own lines; a big table gets chunks of its own that each
+  start with the lead-in and the header row (the offsets point at the rows).
+- **TextTiling chunker** (`CHUNKER=texttiling`, `TextTilingChunker`): cuts text
+  without headings where the topic changes, from the words alone (Hearst 1997;
+  handbook 5.1). The words of `TEXTTILING_WINDOW` sentences (default 3) on each
+  side of every gap are compared (cosine, BM25's stopwords left out); it cuts at
+  the deepest valleys (Hearst's cutoff, mean − std / 2), moves a cut onto a
+  nearby paragraph break, and packs each topic on its own, so overlap never
+  crosses a topic change. `tiling()` shows the score and depth of every gap.
+  Simplified from the paper: whole sentences, no smoothing (measured: smoothing
+  moved most cuts by one sentence), cuts only at valleys.
+- `TEXTTILING_WINDOW` setting and `--texttiling-window` (`ask`, `chat`, `index`,
+  `evaluate`); `evaluate --chunker` accepts `markdown` and `texttiling`.
+- Chunk playground: `markdown` and `texttiling` modes, two example texts, a window
+  slider and the topics found; added text (heading path, repeated table header)
+  is shown in grey.
+- `examples/compare_chunkers.py` with a Markdown handbook and meeting notes
+  (`examples/structured_docs/`), gold blocks and topics, and eight questions.
+  Guide with the real run:
+  [Chunking methods](https://aion7891.github.io/rag-titan/chunking/#a-real-comparison).
+  At 300 characters per chunk, `markdown` kept all 13 blocks whole (10 table rows,
+  the list, the code and the warning) and repeated the table header in 5 of 5
+  table chunks (`recursive` 92% and 1 of 4, `paragraph` and `heading` 69% and
+  1 of 3); with
+  `nomic-embed-text` it found the whole answer for 8 of 8 questions in the top 2
+  chunks, like `recursive` (7 of 8 for `paragraph`, `heading` and `texttiling`,
+  which cut a table row in half). On the meeting notes TextTiling scored a
+  boundary F1 of 1.00 with window 4 but 0.29 with the default 3 (`paragraph`
+  0.00): on short texts, try a few windows.
+- A test runs every chunk playground chunker and its Python twin on 407
+  generated texts and requires the same chunks (needs Node; skipped without it).
+
+### Changed
+- `HeadingChunker` has a `section_packer()` hook (what packs one section's text);
+  its chunks are unchanged.
+
 ## [0.15.0] - 2026-11-23
 
 The first of the 0.15.x series. Every new setting is off by default: with the

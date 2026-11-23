@@ -155,7 +155,9 @@ const ChunkCore = (() => {
     word: { run: byWord, count: (t) => t.split(/\s+/).filter(Boolean).length, name: "words" },
   };
 
-  return { fixedWindows, countWindows, splitSentences, splitParagraphs, UNITS };
+  // the helpers are shared with chunk-blocks.js, chunk-markdown.js and chunk-tiling.js
+  return { fixedWindows, countWindows, splitSentences, splitParagraphs, UNITS,
+           chars, cutAfter, fit, pack, packPieces, recursiveSplit };
 })();
 
 if (typeof module !== "undefined") module.exports = ChunkCore;   // for tests in Node

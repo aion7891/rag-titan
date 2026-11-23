@@ -28,8 +28,9 @@ With `rag-titan` you get:
 - **Search by meaning, exact words, or both.** Hybrid search fuses vector and
   BM25 keyword search, so error codes are found as well as reworded questions.
   → [Retrieval](retrieval.md)
-- **Chunking your way.** Eight chunkers, from fixed word windows to whole
-  sentences, paragraphs, heading sections or pages. → [Chunking methods](chunking.md)
+- **Chunking your way.** Ten chunkers, from fixed word windows to whole
+  sentences, paragraphs, heading sections, pages or Markdown tables, lists and
+  code, and TextTiling for text without headings. → [Chunking methods](chunking.md)
 - **Measure, don't guess.** Compare any chunker with any RAG type on your own
   questions in one command. → [Evaluating RAG](evaluation.md)
 - **Find the stage that fails.** Score chunking, embedding, retrieval, reranking,

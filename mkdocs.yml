@@ -107,6 +107,9 @@ extra_css:
 extra_javascript:
   - assets/javascripts/mathjax.js
   - assets/javascripts/chunk-core.js
+  - assets/javascripts/chunk-blocks.js
+  - assets/javascripts/chunk-markdown.js
+  - assets/javascripts/chunk-tiling.js
   - assets/javascripts/chunk-playground.js
   - assets/javascripts/rag-steps.js
   - assets/javascripts/rag-flow-play.js

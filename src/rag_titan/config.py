@@ -142,8 +142,8 @@ def _chunk_settings():
         "chunk_size": _get_int("CHUNK_SIZE", 150),
         "chunk_overlap": _get_int("CHUNK_OVERLAP", 30),
         "chunk_encoding": os.getenv("CHUNK_ENCODING", "cl100k_base"),  # token chunker only
-        # parent_child RAG only: largest parent section, in characters
-        "parent_size": _get_int("PARENT_SIZE", 1500),
+        "parent_size": _get_int("PARENT_SIZE", 1500),  # parent_child RAG: largest parent
+        "texttiling_window": _get_int("TEXTTILING_WINDOW", 3),  # texttiling: sentences per side
     }
 
 

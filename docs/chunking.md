@@ -9,9 +9,10 @@ the retriever can find, so chunking is one of the settings that matters most.
 - Chunks that are **too small** lose context. "It is 20 days" means nothing
   without the sentence before it.
 
-rag-titan ships eight chunkers in two families from the chunking handbook:
-**fixed-size** (section 2) cuts by counting units, and **structure-aware**
-(section 3) keeps the document's own units whole. More families are on the
+rag-titan ships ten chunkers in three families from the chunking handbook:
+**fixed-size** (section 2) cuts by counting units, **structure-aware**
+(section 3) keeps the document's own units whole, and **statistical** (section 5)
+cuts where the words of the text change. More families are on the
 [roadmap](roadmap.md).
 
 | Chunker            | Family          | Counts                 | Setting             | Keeps whole                                |
@@ -24,6 +25,8 @@ rag-titan ships eight chunkers in two families from the chunking handbook:
 | `ParagraphChunker` | structure-aware | characters (or tokens) | `CHUNKER=paragraph` | paragraphs                                 |
 | `HeadingChunker`   | structure-aware | characters (or tokens) | `CHUNKER=heading`   | sections (never mixes two)                 |
 | `PageChunker`      | structure-aware | characters (or tokens) | `CHUNKER=page`      | pages (never spans two)                    |
+| `MarkdownChunker`  | structure-aware | characters             | `CHUNKER=markdown`  | lists, tables, code, quotes; sections      |
+| `TextTilingChunker` | statistical    | characters (or tokens) | `CHUNKER=texttiling` | sentences; never mixes two topics it found |
 
 !!! tip "Try it: chunk playground"
     Paste your own text and watch every chunker on this page cut it, live in
@@ -634,6 +637,49 @@ HeadingChunker(chunk_size=200, include_path=False).split_text(md)
 | **Good for** | Markdown docs, Word files with headings, handbooks, wikis |
 | **Watch out** | text with no headings becomes one section; very short sections make very short chunks |
 
+### MarkdownChunker
+
+Element-aware chunking (handbook 3.5 and 3.7): it reads Markdown as **blocks**
+(paragraphs, lists, tables, code blocks, quotes such as `> **Warning**`) and packs
+whole blocks, section by section like `HeadingChunker`, with the heading path in
+front. What `paragraph` and `heading` cut at blank lines stays together here:
+
+- a code block, even with blank lines or `#` lines inside;
+- a table row, and a list item with its wrapped lines;
+- a lead-in line ending in `:` ("You get:", "Run once:") with the list, table or
+  code block right after it.
+
+```python
+from rag_titan.chunking import HeadingChunker, MarkdownChunker
+
+md = ("# Errors\n\nError codes:\n| Code | Meaning |\n|------|---------|\n"
+      "| E-1 | VPN down |\n| E-2 | Password too old |\n| E-3 | Disk full |\n"
+      "| E-4 | Printer offline |\n| E-5 | Badge blocked |\n\n"
+      "## Setup\n\nRun once:\n\n```bash\n# not a heading\n\nsudo setup\n```\n")
+
+MarkdownChunker(chunk_size=130).split_text(md)
+# ['Errors\n\nError codes:\n| Code | Meaning |\n|------|---------|\n| E-1 | VPN down |\n| E-2 | Password too old |\n| E-3 | Disk full |',
+#  'Errors\n\nError codes:\n| Code | Meaning |\n|------|---------|\n| E-4 | Printer offline |\n| E-5 | Badge blocked |',
+#  'Errors > Setup\n\nRun once:\n\n```bash\n# not a heading\n\nsudo setup\n```']
+
+HeadingChunker(chunk_size=130).split_text(md)[1]
+# 'Errors\n\nE-4 | Printer offline |\n| E-5 | Badge blocked |'    <- a row cut in half
+```
+
+A block too big for one chunk is cut at its own lines: a list into items, code
+and quotes into lines (a ```` ``` ```` fence is never a chunk on its own), a
+paragraph into sentences. A **table** too big for one chunk gets chunks of its
+own, and **each one starts with the lead-in and the header row**, so `| E-4 |
+Printer offline |` still says which column is which. Like the heading path, the
+repeated header is added text: the chunk's offsets point at the rows. When the
+header would take more than half a chunk, the rows go out without it.
+
+| | |
+|---|---|
+| **Settings** | `CHUNKER=markdown`, for example `CHUNK_SIZE=1000`, `CHUNK_OVERLAP=0` (overlap repeats whole blocks) |
+| **Good for** | handbooks, READMEs, wikis and Word files with tables, lists and code |
+| **Watch out** | simple line rules, no Markdown parser: setext headings (underlined with `===`), HTML and footnotes are plain text |
+
 ### PageChunker
 
 Chunks each page on its own, so **a chunk never spans two pages**
@@ -659,6 +705,81 @@ PageChunker(chunk_size=30).split_text(
 | **Good for** | PDFs where answers should cite a page, such as contracts or manuals |
 | **Watch out** | a table or sentence that runs across a page break is cut there; files without pages are one page |
 
+## Statistical chunkers
+
+### TextTilingChunker
+
+For text **without headings**: meeting notes, transcripts, emails, long answers.
+TextTiling (Hearst 1997; handbook 5.1) finds where the **topic changes** from the
+words alone, with no model, and gives the same result every time:
+
+1. cut the text into sentences, and keep each sentence's content words
+   (lowercase, no stopwords: the same words BM25 search uses);
+2. at every gap between two sentences, compare the words of the $w$ sentences
+   before it with the $w$ after it ($w$ = `TEXTTILING_WINDOW`, default 3):
+
+$$
+s_g = \cos(\vec c_{\text{before}}, \vec c_{\text{after}}) \qquad
+d_g = (p_{\text{left}} - s_g) + (p_{\text{right}} - s_g)
+$$
+
+   where $\vec c$ counts each word, and $p$ is the highest score reached by
+   climbing from $g$ to the left or right. A deep valley $d_g$ means the words on
+   the two sides have little in common;
+3. cut at the valleys with $d_g > \bar d - \sigma_d / 2$ (Hearst's cutoff), moving
+   a cut onto a paragraph break when one is a sentence away;
+4. pack each topic into chunks of whole sentences up to `chunk_size`. Overlap
+   repeats sentences only inside a topic, never across a cut.
+
+```python
+from rag_titan.chunking import TextTilingChunker
+
+notes = ("The new laptop arrives on your first day. The laptop comes with a charger and a dock. "
+         "IT installs the laptop software before you start. A broken laptop goes back to IT. "
+         "Travel is booked through the travel portal. Train travel is preferred for short trips. "
+         "Hotel costs for travel are refunded up to 150 euros. Travel receipts go to finance. "
+         "Leave days are requested in the leave tool. Every employee has twenty leave days. "
+         "Unused leave days carry over to March. Sick leave needs a doctor's note.")
+
+chunker = TextTilingChunker(chunk_size=1000)
+[chunk[:30] for chunk in chunker.split_text(notes)]
+# ['The new laptop arrives on your', 'Travel is booked through the t', 'Leave days are requested in th']
+chunker.tiling(notes)["cuts"]
+# [4, 8]    (a new topic starts with sentence 4 and sentence 8, counting from 0)
+```
+
+`tiling()` shows why: the scores and depths of every gap.
+
+| gap (before sentence) | 3 | **4** | 5 | 6 | 7 | **8** | 9 |
+|---|---|---|---|---|---|---|---|
+| score $s_g$ | 0.16 | **0.00** | 0.33 | 0.32 | 0.16 | **0.00** | 0.37 |
+| depth $d_g$ | 0.00 | **0.49** | 0.00 | 0.01 | 0.16 | **0.70** | 0.00 |
+
+Gaps 1, 2, 10 and 11 have no full window on one side, so they get no score; a
+text shorter than $2w$ sentences is one topic. A window without content words
+gives no score either, so text made of stopwords is never cut.
+
+**What is simplified from the paper.** Whole sentences instead of 20-word
+pseudo-sentences; cuts only at valleys instead of a minimum distance between
+cuts; and **no smoothing** of the scores. Hearst averages each score with its
+neighbours because her units are noisy; here each score already covers $w$ whole
+sentences, and on 300 generated texts with planted topic changes smoothing moved
+most cuts by one sentence (window 3: 87% of the changes found exactly without
+it, 53% with it).
+
+**The window matters on short texts.** On the meeting notes of the comparison
+below (16 sentences, 4 topics of 4 sentences), window 4 found all three topic
+changes (boundary F1 1.00), window 3 only one of them exactly (0.29), window 2
+two of them plus extra cuts (0.50). Mark the topics of a few of your own
+documents and measure: `ChunkEvaluator(...).evaluate(chunks, document_text=...,
+expected_chunks=...)["boundary_f1"]`.
+
+| | |
+|---|---|
+| **Settings** | `CHUNKER=texttiling`, `TEXTTILING_WINDOW=3`, for example `CHUNK_SIZE=1000`, `CHUNK_OVERLAP=0` |
+| **Good for** | notes, transcripts and long texts without headings that move through topics |
+| **Watch out** | it sees only shared words: synonyms look like a topic change, and a short topic or a different window can move a cut; use `heading` or `markdown` when there are headings |
+
 ## Choosing a chunker
 
 | If you need...                                  | Use                |
@@ -670,7 +791,9 @@ PageChunker(chunk_size=30).split_text(
 | retrieving exact sentences (FAQs, chat logs)    | `SentenceChunker`  |
 | a strong baseline for reports and documents     | `ParagraphChunker` |
 | chunks that know their section (docs, wikis)    | `HeadingChunker`   |
+| whole tables, lists and code (handbooks, READMEs) | `MarkdownChunker` |
 | answers that cite a page (PDF contracts)        | `PageChunker`      |
+| topics in text without headings (notes, transcripts) | `TextTilingChunker` |
 
 There is no size that is best for every dataset. The handbook suggests treating
 these as experiments, not answers:
@@ -690,6 +813,136 @@ CHUNKER=recursive
 CHUNK_SIZE=1000      # characters
 CHUNK_OVERLAP=150
 ```
+
+### A real comparison
+
+[`examples/compare_chunkers.py`](https://github.com/aion7891/rag-titan/blob/main/examples/compare_chunkers.py)
+cuts an IT handbook in Markdown (a 10-row error table, a list with a lead-in, code
+with blank lines and a warning) and meeting notes with no headings and four
+topics ([`examples/structured_docs/`](https://github.com/aion7891/rag-titan/tree/main/examples/structured_docs)).
+It scores the chunks with `ChunkEvaluator` against
+[`examples/chunker_gold.json`](https://github.com/aion7891/rag-titan/blob/main/examples/chunker_gold.json)
+(the blocks that must stay whole and the four real topics), then searches both
+files with eight questions.
+
+```python
+"""
+Compare chunkers on two kinds of text: an IT handbook in Markdown (a table, a list,
+code and a warning) and meeting notes with no headings that move through four
+topics. What does each chunker keep whole, where does it cut, and does a search
+find the whole answer in one chunk?
+
+Parts 1 and 2 need no model. Part 3 needs the embedder (Ollama running):
+    ollama pull nomic-embed-text
+
+Run (from the repo root):
+    python examples/compare_chunkers.py
+"""
+
+import json
+from pathlib import Path
+
+from rag_titan import RAGTitan
+from rag_titan.chunking import (
+    HeadingChunker,
+    MarkdownChunker,
+    ParagraphChunker,
+    RecursiveChunker,
+    TextTilingChunker,
+)
+from rag_titan.evaluation import ChunkEvaluator
+
+HERE = Path(__file__).parent
+DOCS = HERE / "structured_docs"
+SIZE = 300   # characters per chunk, the same for every chunker
+
+handbook = (DOCS / "it_handbook.md").read_text(encoding="utf-8")
+notes = (DOCS / "meeting_notes.txt").read_text(encoding="utf-8")
+# what must stay whole (table rows, list, code, warning) and the 4 real topics
+gold = json.loads((HERE / "chunker_gold.json").read_text(encoding="utf-8"))
+
+
+def score(chunker, text, **labels):
+    """The chunks of `text` and ChunkEvaluator's scores for them."""
+    spans = chunker.split_spans(text)
+    chunks = [{"text": text[start:end], "start": start, "end": end} for _, start, end in spans]
+    return [chunk for chunk, _, _ in spans], ChunkEvaluator().evaluate(
+        chunks, document_text=text, **labels)
+
+
+# 1. The handbook: are the table rows, the list, the code and the warning kept whole?
+print(f"Handbook, at most {SIZE} characters per chunk:")
+chunkers = [("recursive", RecursiveChunker(SIZE, 0)), ("paragraph", ParagraphChunker(SIZE)),
+            ("heading", HeadingChunker(SIZE)), ("markdown", MarkdownChunker(SIZE))]
+for name, chunker in chunkers:
+    chunks, scores = score(chunker, handbook, structural_blocks=gold["handbook_blocks"])
+    table = [chunk for chunk in chunks if "| E-" in chunk]
+    with_header = sum("| Code | Meaning |" in chunk for chunk in table)
+    print(f"  {name:10} {len(chunks):2} chunks, "
+          f"blocks kept whole {scores['structural_integrity']:.0%}, "
+          f"table chunks with the header row: {with_header} of {len(table)}")
+
+# 2. The meeting notes: do the cuts fall where the topic changes? (1.00 = all of them)
+print("\nMeeting notes, no headings: boundary F1 against the 4 real topics")
+setups = [("paragraph", ParagraphChunker(SIZE))] + [
+    (f"texttiling, window {w}", TextTilingChunker(SIZE, window=w)) for w in (2, 3, 4)]
+for name, chunker in setups:
+    chunks, scores = score(chunker, notes, expected_chunks=gold["meeting_topics"])
+    print(f"  {name:21} {len(chunks)} chunks, boundary F1 {scores['boundary_f1']:.2f}")
+
+# 3. Search both files: is the whole answer inside one of the 2 chunks found?
+questions = json.loads((HERE / "chunker_questions.json").read_text(encoding="utf-8"))
+print(f"\nSearch ({len(questions)} questions): the whole answer in one of the top 2 chunks")
+for name in ["recursive", "paragraph", "heading", "markdown", "texttiling"]:
+    rag = RAGTitan(settings={"chunker": name, "chunk_size": SIZE, "chunk_overlap": 0,
+                             "vector_store": "memory"})
+    rag.index(sorted(DOCS.glob("*")))
+    missed = [q["id"] for q in questions
+              if not any(q["answer"] in found["text"]
+                         for found in rag.parts["retriever"].retrieve(q["question"], 2))]
+    print(f"  {name:10} {len(questions) - len(missed)} of {len(questions)}"
+          + (f", missed {', '.join(missed)}" if missed else ""))
+```
+
+A real run (parts 1 and 2 need no model and are the same everywhere; part 3 used
+`nomic-embed-text` and gave the same result twice):
+
+```text
+Handbook, at most 300 characters per chunk:
+  recursive   7 chunks, blocks kept whole 92%, table chunks with the header row: 1 of 4
+  paragraph   6 chunks, blocks kept whole 69%, table chunks with the header row: 1 of 3
+  heading     7 chunks, blocks kept whole 69%, table chunks with the header row: 1 of 3
+  markdown    9 chunks, blocks kept whole 100%, table chunks with the header row: 5 of 5
+
+Meeting notes, no headings: boundary F1 against the 4 real topics
+  paragraph             4 chunks, boundary F1 0.00
+  texttiling, window 2  6 chunks, boundary F1 0.50
+  texttiling, window 3  5 chunks, boundary F1 0.29
+  texttiling, window 4  4 chunks, boundary F1 1.00
+
+Search (8 questions): the whole answer in one of the top 2 chunks
+  recursive  8 of 8
+  paragraph  7 of 8, missed c_001
+  heading    7 of 8, missed c_001
+  markdown   8 of 8
+  texttiling 7 of 8, missed c_001
+```
+
+What happened:
+
+- **Blocks kept whole.** `markdown` kept all 13 (the 10 rows, the list, the code
+  and the warning), and every one of its 5 table chunks starts with the header
+  row. `recursive` kept 12, because it cuts at line breaks, but only its first
+  table chunk has the header. `paragraph` and `heading` cut rows in half.
+- **Topic changes.** `paragraph` cuts these notes by size only: boundary F1 0.00
+  (`sentence` and `recursive` also score 0.00 here). TextTiling found all three changes
+  with window 4 and one of them with the default window 3: on short notes, try a
+  few windows on documents you marked yourself.
+- **Search.** `paragraph`, `heading` and `texttiling` missed the same question,
+  *What should I do when my backup failed?*: all three cut the E-3002 row in half
+  (*"... plugged in"* | *"overnight |"*), so no chunk holds the whole answer.
+  `recursive` and `markdown` found all eight. Eight questions on two files show
+  the idea, they do not crown a winner: run the same check on your own documents.
 
 ## Parent-child chunking
 
