@@ -36,6 +36,10 @@ cp .env.example .env
 | `QDRANT_API_KEY`  | –                 | –                        | Qdrant Cloud key                               |
 | `DEDUPE_OVERLAP`  | `dedupe_overlap`  | `0.5`                    | Drop near-copy search results; `off` keeps all |
 | `RETRIEVER`       | `retriever`       | `dense`                  | `dense`, `bm25` or `hybrid`: see [Retrieval](retrieval.md) |
+| `HYBRID_DENSE_WEIGHT` | `hybrid_dense_weight` | `1.0`            | `hybrid`: how much the vector search's ranking counts when fused (above 0) |
+| `HYBRID_BM25_WEIGHT` | `hybrid_bm25_weight` | `1.0`              | `hybrid`: how much the keyword search's ranking counts when fused (above 0) |
+| `QUESTION_WEIGHT` | `question_weight` | `1.0`                    | `hyde`, `rag_fusion`: how much the question's own search counts against the made-up queries' |
+| `RRF_KEEP_TOP`    | `rrf_keep_top`    | `false`                  | Keep every search's #1 chunk when lists are fused (`hybrid`, `hyde`, `rag_fusion`) |
 | `RERANKER`        | `reranker`        | `keyword`                | `keyword`, `none`, `mmr` (relevant, not repetitive), `llm` (the chat model rates the chunks) or `cross_encoder` (needs `[rerank]`) |
 | `RERANK_MODEL`    | `rerank_model`    | `cross-encoder/ms-marco-MiniLM-L-6-v2` | Hugging Face cross-encoder (`cross_encoder` only) |
 | `TOP_K`           | `top_k`           | type's own (see below)   | Chunks searched (each search, for the types that search more than once) |
@@ -71,8 +75,8 @@ reranking. Left empty, each type uses its own sizes:
 | `simple`       | 5       | 2       | – |
 | `adaptive`     | 4       | 2       | `ADAPTIVE_MAX_ATTEMPTS` (2). A complex question searches 2 × `TOP_K`; each retry adds `TOP_K` more |
 | `parent_child` | 8       | 4       | `PARENT_SIZE` (1500, used when indexing), `PARENT_BUDGET` (3000) |
-| `hyde`         | 5       | 2       | `HYDE_WITH_QUESTION` (true): also search with the question |
-| `rag_fusion`   | 5       | 2       | `FUSION_QUERIES` (3): rewordings to search with |
+| `hyde`         | 5       | 2       | `HYDE_WITH_QUESTION` (true): also search with the question; `QUESTION_WEIGHT` (1.0), `RRF_KEEP_TOP` (false) |
+| `rag_fusion`   | 5       | 2       | `FUSION_QUERIES` (3): rewordings to search with; `QUESTION_WEIGHT` (1.0), `RRF_KEEP_TOP` (false) |
 | `corrective`   | 5       | 2       | `CRAG_UPPER` (7), `CRAG_LOWER` (3), `CRAG_REFINE` (true), `CRAG_MAX_RETRIES` (1) |
 | `iterative`    | 3       | 2       | `ITERATIVE_MAX_STEPS` (3). `TOP_N` is kept from **each** search; the model reads all of them |
 

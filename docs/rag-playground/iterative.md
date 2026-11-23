@@ -58,6 +58,7 @@ Every result below is a real recorded run you can repeat with the knobs.
 | top_k | `TOP_K` | chunks each search finds (default 3) |
 | top_n | `TOP_N` | chunks kept from each search (default 2); the model reads all the kept ones |
 | max steps | `ITERATIVE_MAX_STEPS` | think-then-search rounds after the first search; 0 searches once, like Simple RAG (default 3) |
+| vector / keyword search weight, keep each search's #1 | `HYBRID_DENSE_WEIGHT`, `HYBRID_BM25_WEIGHT`, `RRF_KEEP_TOP` | shown with retriever `hybrid`: how much each search counts when the two are fused (default 1), and keep each one's #1 (see [Retrieval](../retrieval.md#trusting-one-search-more-and-keeping-each-searchs-best)) |
 
 ## How the answers are made here
 

@@ -60,6 +60,7 @@ section holds the answer.
 | top_k | `TOP_K` | children searched (default 8: children are small, so take more) |
 | top_n | `TOP_N` | children kept (default 4); children of the same section become one parent |
 | parent budget | `PARENT_BUDGET` | most characters of section text given to the model (default 3000). The first section is always kept |
+| vector / keyword search weight, keep each search's #1 | `HYBRID_DENSE_WEIGHT`, `HYBRID_BM25_WEIGHT`, `RRF_KEEP_TOP` | shown with retriever `hybrid`: how much each search counts when the two are fused (default 1), and keep each one's #1 (see [Retrieval](../retrieval.md#trusting-one-search-more-and-keeping-each-searchs-best)) |
 
 The budget is the handbook's warning made into a knob: whole sections can make the
 prompt long ("token inflation"), so sections are added best first until the

@@ -195,6 +195,33 @@ Two details matter in practice:
   the other gives exactly the same RRF score either way round; the chunk with
   more relevance in total wins.
 
+#### Trusting one search more, and keeping each search's best
+
+Two settings change the fusion; with their defaults it is exactly the plain RRF
+above:
+
+| Setting | Default | What it does |
+|---|---|---|
+| `HYBRID_DENSE_WEIGHT`, `HYBRID_BM25_WEIGHT` | `1.0` | a list's votes count `weight / (k + rank)`: with `2.0` a 3rd place counts as much as two 3rd places |
+| `RRF_KEEP_TOP` | `false` | `true`: the #1 chunk of each search always stays in the results, even if the other search did not find it |
+
+```python
+rag = RAGTitan(settings={"retriever": "hybrid", "hybrid_bm25_weight": 2.0})
+```
+
+A weight that is not 1 is shown in `score_trace` (`"bm25_weight": 2.0`), and a
+chunk kept only because it was a search's #1 says so (`"kept_as_top_of": ["bm25"]`).
+
+Weights are a blunt tool, so change them only after measuring. On the help desk
+example below, `HYBRID_DENSE_WEIGHT=2` and `HYBRID_BM25_WEIGHT=2` or `3` still put
+the right file first for all six questions, but `HYBRID_DENSE_WEIGHT=3` loses
+*E-4022* again (Recall@1 0.833, like vector search alone): the VPN errors score
+3/61 + 1/64 = 0.06481, just above the account errors' 3/62 + 1/61 = 0.06478.
+`RRF_KEEP_TOP` changed nothing there (top 1 and top 3). It matters when few
+chunks are kept and the searches disagree: see the
+[HyDE](rag-playground/hyde.md) and [RAG-Fusion](rag-playground/rag-fusion.md)
+playgrounds, where it fuses one list per search query.
+
 The same fusion (`rag_titan.retrieval.fusion`: `rrf_fuse`, `fuse_ranked`,
 `search_and_fuse`) also merges the several searches of
 [HyDE RAG and RAG-Fusion](rag-types.md#hyde-rag-hyde), one list per search query.

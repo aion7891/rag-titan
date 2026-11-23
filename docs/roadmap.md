@@ -11,6 +11,7 @@
 - [x] RAG-Fusion (`"rag_fusion"`): search several rewordings, fuse with RRF, available since 0.13.0
 - [x] Corrective RAG (`"corrective"`): grade every chunk, search again when the evidence is weak, keep the key sentences, available since 0.14.0
 - [x] Iterative RAG (`"iterative"`): search, think about what is missing, search again, available since 0.14.0
+- [x] Adaptive RAG's retries on the shared loop limit, with `result["loop"]`, available since 0.15.0
 - [ ] Corrective RAG with a built-in web search fallback (today: plug in any retriever as `fallback_retriever`)
 - [ ] Self-RAG: the model critiques its own answer
 - [ ] Graph RAG: use a knowledge graph
@@ -24,6 +25,7 @@
 - [x] Saved vector stores: SQLite (built in), Chroma, Qdrant; `rag-titan index`, add/replace files, embedder check, available since 0.10.0
 - [ ] Vector stores: FAISS, LanceDB, pgvector, Pinecone, then Weaviate, Milvus, Elasticsearch, Redis, MongoDB
 - [x] Retrievers: BM25 and hybrid (RRF) next to dense, `RETRIEVER` setting, `evaluate --retriever`, available since 0.11.0
+- [x] Weighted RRF and keep-each-search's-#1 for hybrid, HyDE and RAG-Fusion (`HYBRID_DENSE_WEIGHT`, `HYBRID_BM25_WEIGHT`, `QUESTION_WEIGHT`, `RRF_KEEP_TOP`), available since 0.15.0
 - [x] Rerankers: MMR (`RERANKER=mmr`), available since 0.11.0
 - [x] Rerankers: cross-encoder (`RERANKER=cross_encoder`, `[rerank]` extra) and LLM reranker (`RERANKER=llm`), available since 0.12.0
 - [x] Tuning settings for every RAG type (`TOP_K`, `TOP_N`, `ADAPTIVE_MAX_ATTEMPTS`, `PARENT_SIZE`, `PARENT_BUDGET`) and a playground page per RAG type with knobs, available since 0.12.0
