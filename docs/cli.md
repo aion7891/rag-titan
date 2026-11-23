@@ -114,6 +114,7 @@ you add `--force`. See [Build a golden set](cookbook/golden-set.md).
 | `--top-k`, `--top-n` | ask, chat, evaluate | chunks searched and kept (default: each RAG type's own; `--top-k` 5 with `--retrieval-only`) |
 | `--max-attempts` | ask, chat, evaluate | adaptive: searches before giving up (default 2) |
 | `--parent-size` | ask, chat, index, evaluate | parent_child: largest parent section in characters, when indexing (default 1500) |
+| `--texttiling-window` | ask, chat, index, evaluate | texttiling chunker: sentences compared on each side of a possible cut, when indexing (default 3) |
 | `--parent-budget` | ask, chat, evaluate | parent_child: most characters of sections given to the model (default 3000) |
 | `--hyde-with-question`, `--no-hyde-with-question` | ask, chat, evaluate | hyde: also search with the question (default on) |
 | `--fusion-queries` | ask, chat, evaluate | rag_fusion: rewordings of the question to search with (default 3) |
@@ -130,7 +131,7 @@ you add `--force`. See [Build a golden set](cookbook/golden-set.md).
 | `--question`  | ask         | the question to answer (required)         |
 | `--trace`     | ask         | also print every step taken               |
 | `--questions` | evaluate    | questions JSON file (required with `--files`) |
-| `--chunker`   | evaluate    | one or more chunkers to compare           |
+| `--chunker`   | evaluate    | one or more chunkers to compare, e.g. `paragraph markdown texttiling` |
 | `--chunk-size`, `--chunk-overlap` | evaluate | used by every setup  |
 | `--retrieval-only` | evaluate | score search only, no LLM             |
 | `--input`     | evaluate    | JSON data file to score, instead of `--files` and `--questions` |

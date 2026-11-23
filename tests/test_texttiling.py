@@ -82,6 +82,17 @@ def test_overlap_stays_inside_a_topic():
     assert not any("repair" in chunk and "Travel" in chunk for chunk in chunks)
 
 
+def test_text_without_full_stops_is_not_cut_into_fragments():
+    # a table or list is one long "sentence": it is cut at words only inside its topic
+    rows = "".join(f"| E-{n} | laptop printer badge vpn desk |\n" for n in range(60))
+
+    chunks = TextTilingChunker(200).split_text(rows)
+
+    # the same chunks as with no topic cuts at all (a window bigger than the text)
+    assert chunks == TextTilingChunker(200, window=1000).split_text(rows)
+    assert all(len(chunk) > 150 for chunk in chunks[:-1])
+
+
 def test_chunk_gives_exact_offsets():
     chunks = TextTilingChunker(2000).chunk([{"source": "notes.txt", "text": THREE_TOPICS}])
 

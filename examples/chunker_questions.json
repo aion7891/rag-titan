@@ -1,0 +1,18 @@
+[
+  {"id": "c_001", "question": "What should I do when my backup failed?",
+   "answer": "Leave the laptop on and plugged in overnight"},
+  {"id": "c_002", "question": "My account is locked after too many logins. What now?",
+   "answer": "Wait 15 minutes or call the service desk"},
+  {"id": "c_003", "question": "What do I need before my first login?",
+   "answer": "- your badge\n- the one-time password from your manager's email\n- a wired network connection for the first update"},
+  {"id": "c_004", "question": "Which command joins the device management?",
+   "answer": "sudo company-setup --enroll"},
+  {"id": "c_005", "question": "Can I run the setup script on my own computer?",
+   "answer": "Never run the setup script on a private computer"},
+  {"id": "c_006", "question": "Where does the team move in May?",
+   "answer": "The team moves to the second floor of the north building in May."},
+  {"id": "c_007", "question": "How much is the hotel limit in London?",
+   "answer": "up to 200 euros in London and Paris"},
+  {"id": "c_008", "question": "When must December leave be requested?",
+   "answer": "Leave for December must be requested by the end of October."}
+]

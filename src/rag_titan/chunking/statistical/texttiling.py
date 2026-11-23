@@ -5,7 +5,9 @@ changes, found from the words alone. No model, and the same result every time.
 For text without headings (notes, transcripts, emails): the sentences around
 every gap are compared (see cohesion.py), and a new chunk starts where their
 vocabulary changes most. A cut next to a paragraph break moves onto it. A topic
-longer than chunk_size is packed into several chunks of whole sentences.
+longer than chunk_size is packed into several chunks of whole sentences. Topics
+are found between whole sentences: a sentence too big for a chunk (a table or a
+list has no full stops) is cut into words only afterwards, inside its topic.
 
 Simplified from the paper: whole sentences instead of 20-word pseudo-sentences,
 no smoothing of the scores (see cohesion.py), and cuts only at valleys instead of
@@ -59,10 +61,6 @@ class TextTilingChunker(PieceChunker):
             raise ValueError(f"window must be a whole number of at least 1, got {window!r}")
         self.window = window
 
-    def pieces(self, text):
-        """Sentences, with too-long sentences cut at words."""
-        return self.fit(split_sentences(text), self.word_splitter.split_pieces)
-
     def tiling(self, text):
         """
         What the chunker sees, for showing the cohesion curve.
@@ -71,27 +69,29 @@ class TextTilingChunker(PieceChunker):
             {"sentences": [...], "gaps": [{"gap", "score", "depth"}],
             "cuts": [...]}: a cut at gap i starts a topic with sentence i.
         """
-        pieces = self.pieces(text) if text.strip() else []
-        cuts, gaps = boundaries([content_words(piece) for piece in pieces], self.window)
-        return {"sentences": pieces, "gaps": gaps, "cuts": snap_to_paragraphs(cuts, pieces)}
+        sentences = split_sentences(text) if text.strip() else []
+        cuts, gaps = boundaries([content_words(s) for s in sentences], self.window)
+        return {"sentences": sentences, "gaps": gaps, "cuts": snap_to_paragraphs(cuts, sentences)}
 
-    def topics(self, pieces):
-        """The piece indexes of each topic, e.g. [[0, 1, 2], [3, 4, 5, 6]]."""
-        cuts, _ = boundaries([content_words(piece) for piece in pieces], self.window)
-        edges = [0, *snap_to_paragraphs(cuts, pieces), len(pieces)]
-        return [list(range(start, end)) for start, end in zip(edges, edges[1:]) if end > start]
+    def topics(self, sentences):
+        """The sentences of each topic, e.g. [["A. ", "B. "], ["C. ", "D. ", "E."]]."""
+        cuts, _ = boundaries([content_words(s) for s in sentences], self.window)
+        edges = [0, *snap_to_paragraphs(cuts, sentences), len(sentences)]
+        return [sentences[start:end] for start, end in zip(edges, edges[1:]) if end > start]
 
     def split_spans(self, text):
         """(chunk, start, end) for every chunk; a chunk never holds two topics."""
         if not text.strip():
             return []
 
-        pieces = self.pieces(text)
-        groups = []
-        for topic in self.topics(pieces):
-            sizes = [self.length(pieces[i]) for i in topic]
-            groups += [[topic[i] for i in group]
+        pieces, groups = [], []
+        for topic in self.topics(split_sentences(text)):
+            # too-long sentences are cut at words here, inside their topic
+            topic_pieces = self.fit(topic, self.word_splitter.split_pieces)
+            sizes = [self.length(piece) for piece in topic_pieces]
+            groups += [[len(pieces) + i for i in group]
                        for group in pack(sizes, self.chunk_size, self.overlap)]
+            pieces += topic_pieces
 
         spans = group_spans(text, pieces, groups)
         if spans is None:   # a tokenizer changed the text, so search for the chunks instead

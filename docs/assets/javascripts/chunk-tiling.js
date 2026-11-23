@@ -84,19 +84,21 @@ const ChunkTiling = (() => {
   }
 
   // TextTilingChunker.tiling: the sentences, the scores and the cuts
+  // topics are found between whole sentences (a table or list has no full stops)
   function tiling(text, size, window) {
-    const words = (p) => core.recursiveSplit(p, [" ", ""], size);
-    const pieces = text.trim() ? core.fit(core.splitSentences(text), size, words) : [];
-    const found = boundaries(pieces.map(contentWords), window);
-    return { pieces, ...found, cuts: snapToParagraphs(found.cuts, pieces) };
+    const sentences = text.trim() ? core.splitSentences(text) : [];
+    const found = boundaries(sentences.map(contentWords), window);
+    return { sentences, ...found, cuts: snapToParagraphs(found.cuts, sentences) };
   }
 
   function byTiling(text, size, overlap, window) {
     if (!text.trim()) return [];
-    const { pieces, cuts } = tiling(text, size, window || 3);
-    const edges = [0, ...cuts, pieces.length];
+    const { sentences, cuts } = tiling(text, size, window || 3);
+    const words = (p) => core.recursiveSplit(p, [" ", ""], size);
+    const edges = [0, ...cuts, sentences.length];
+    // a too-long sentence is cut at words only now, inside its topic
     return edges.slice(1).flatMap((end, i) =>
-      core.packPieces(pieces.slice(edges[i], end), size, overlap));
+      core.packPieces(core.fit(sentences.slice(edges[i], end), size, words), size, overlap));
   }
 
   core.UNITS.texttiling = { run: byTiling, count, name: "characters", packed: "sentences", tiling };
