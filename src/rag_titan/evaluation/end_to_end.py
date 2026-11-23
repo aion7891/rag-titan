@@ -37,7 +37,8 @@ from rag_titan.factory import (
 SEARCH_ONLY = ("retriever", "reranker", "rerank_model", "top_k", "top_n",
                "adaptive_max_attempts", "parent_budget", "hyde_with_question",
                "fusion_queries", "crag_upper", "crag_lower", "crag_refine", "crag_max_retries",
-               "iterative_max_steps")
+               "iterative_max_steps", "hybrid_dense_weight", "hybrid_bm25_weight",
+               "question_weight", "rrf_keep_top")
 
 RAG_COLUMNS = [
     ("Recall", "recall", "{:.3f}"),

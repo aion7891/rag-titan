@@ -1,11 +1,26 @@
 """
 The two options of RRF fusion (see fusion.py), kept apart so each file stays short:
 
+    check_weight():   one weight must be a number above 0.
     check_weights():  read {list name: weight}; a list left out counts 1.0.
     keep_list_tops(): make sure every list's #1 chunk is in the fused top_k.
 """
 
 import math
+
+
+def check_weight(weight, name):
+    """
+    Return the weight as a float, or raise a clear ValueError.
+
+    Args:
+        weight: a number above 0 (1.0 = a normal vote, 2.0 = twice as much).
+        name: what the weight is called in the error, e.g. "dense_weight".
+    """
+    is_number = isinstance(weight, (int, float)) and not isinstance(weight, bool)
+    if not is_number or not math.isfinite(weight) or weight <= 0:
+        raise ValueError(f"{name} must be a number above 0, got {weight!r}")
+    return float(weight)
 
 
 def check_weights(weights, names):
@@ -25,9 +40,7 @@ def check_weights(weights, names):
     if unknown:
         raise ValueError(f"weights name unknown lists {unknown}; the lists are {list(names)}")
     for name, weight in weights.items():
-        is_number = isinstance(weight, (int, float)) and not isinstance(weight, bool)
-        if not is_number or not math.isfinite(weight) or weight <= 0:
-            raise ValueError(f"the weight of {name!r} must be a number above 0, got {weight!r}")
+        check_weight(weight, f"the weight of {name!r}")
     return {name: float(weights.get(name, 1.0)) for name in names}
 
 

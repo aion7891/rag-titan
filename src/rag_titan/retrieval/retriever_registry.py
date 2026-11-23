@@ -24,7 +24,8 @@ def build_retriever(settings, embedder, store):
     Create the retriever named in settings["retriever"].
 
     "dense" finds chunks by meaning, "bm25" by exact words, "hybrid" uses both
-    and fuses the rankings (RRF). All of them search the same store.
+    and fuses the rankings (RRF; HYBRID_DENSE_WEIGHT, HYBRID_BM25_WEIGHT and
+    RRF_KEEP_TOP tune it). All of them search the same store.
 
     Args:
         settings: the dict from get_settings().
@@ -42,7 +43,10 @@ def build_retriever(settings, embedder, store):
     if name == "hybrid":
         # each search keeps near-copies; hybrid removes them once, after fusing
         return HybridRetriever(DenseRetriever(embedder, store, dedupe_overlap=None),
-                               BM25Retriever(store, dedupe_overlap=None), dedupe_overlap=dedupe)
+                               BM25Retriever(store, dedupe_overlap=None), dedupe_overlap=dedupe,
+                               dense_weight=settings.get("hybrid_dense_weight", 1.0),
+                               bm25_weight=settings.get("hybrid_bm25_weight", 1.0),
+                               keep_top=settings.get("rrf_keep_top", False))
 
     raise ValueError(f"Unknown retriever: {settings['retriever']!r}. "
                      f"Use one of: {', '.join(RETRIEVERS)}")

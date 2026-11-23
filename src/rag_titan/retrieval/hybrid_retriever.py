@@ -8,11 +8,15 @@ Only ranks are used, never the raw scores, so a BM25 score of 7 and a cosine
 of 0.7 never have to be compared. A chunk found by both searches beats one
 found by only one; k (60 in the original paper) keeps one top rank from
 deciding everything.
+
+dense_weight / bm25_weight trust one search more (both 1.0 by default), and
+keep_top keeps each search's #1 chunk in the results (see retrieval/fusion.py).
 """
 
 from rag_titan.rag_types.trace import Trace
 from rag_titan.retrieval.base_retriever import BaseRetriever
 from rag_titan.retrieval.fusion import fuse_ranked, rrf_fuse
+from rag_titan.retrieval.fusion_options import check_weight
 
 
 class HybridRetriever(BaseRetriever):
@@ -31,6 +35,11 @@ class HybridRetriever(BaseRetriever):
             are removed here, after fusing: removed earlier, each search could
             keep a different copy of the same passage, and the passage would
             lose the "found by both" vote that makes hybrid work.
+        dense_weight: how much the vector search's ranking counts (above 0;
+            default 1.0). 2.0 makes its votes count twice.
+        bm25_weight: the same for the keyword search.
+        keep_top: True keeps the #1 chunk of each search in the results,
+            even when the other search did not find it.
     """
 
     name = "hybrid"
@@ -45,13 +54,19 @@ class HybridRetriever(BaseRetriever):
         "edges": [["vector_search", "keyword_search"], ["keyword_search", "fuse"]],
     }
 
-    def __init__(self, dense, keyword, k=60, pool_size=None, dedupe_overlap=0.5):
+    def __init__(self, dense, keyword, k=60, pool_size=None, dedupe_overlap=0.5,
+                 dense_weight=1.0, bm25_weight=1.0, keep_top=False):
         if not isinstance(k, int) or isinstance(k, bool) or k < 1:
             raise ValueError(f"k must be a whole number of at least 1, got {k!r}")
         if pool_size is not None:
             self._check_top_k(pool_size)
         if dedupe_overlap is not None and not 0 < dedupe_overlap <= 1:
             raise ValueError("dedupe_overlap must be more than 0 and at most 1, or None")
+        if not isinstance(keep_top, bool):
+            raise ValueError(f"keep_top must be True or False, got {keep_top!r}")
+        self.weights = {"dense": check_weight(dense_weight, "dense_weight"),
+                        "bm25": check_weight(bm25_weight, "bm25_weight")}
+        self.keep_top = keep_top
         self.dense, self.keyword = dense, keyword
         self.k, self.pool_size, self.dedupe_overlap = k, pool_size, dedupe_overlap
 
@@ -91,7 +106,7 @@ class HybridRetriever(BaseRetriever):
     def fuse_top(self, dense, keyword, top_k):
         """Fuse the two result lists, drop near-copies, return the top_k scored from 0 to 1."""
         matches = fuse_ranked({"dense": dense, "bm25": keyword}, top_k, self.k,
-                              self.dedupe_overlap)
+                              self.dedupe_overlap, self.weights, self.keep_top)
         return self._with_trace(matches, [match.pop("score_trace") for match in matches])
 
     def fuse(self, lists):
@@ -104,4 +119,4 @@ class HybridRetriever(BaseRetriever):
         Returns:
             A list of (chunk, score_trace) pairs, best fused score first.
         """
-        return rrf_fuse(lists, self.k)
+        return rrf_fuse(lists, self.k, self.weights)
