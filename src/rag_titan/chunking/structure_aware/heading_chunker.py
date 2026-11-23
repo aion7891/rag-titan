@@ -99,5 +99,9 @@ class HeadingChunker(PieceChunker):
         if room < self.chunk_size / 2:
             prefix, room = "", self.chunk_size   # a very long path would crowd out the text
 
-        inner = ParagraphChunker(room, min(self.overlap, room - 1), self.tokenizer)
+        inner = self.section_packer(room)
         return [(prefix + chunk, s, e) for chunk, s, e in shift(inner.split_spans(body), start)]
+
+    def section_packer(self, room):
+        """The chunker used inside one section (whole paragraphs), with `room` to fill."""
+        return ParagraphChunker(room, min(self.overlap, room - 1), self.tokenizer)
