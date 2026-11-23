@@ -142,6 +142,12 @@ not, the question is rewritten into a better search query and the search is
 made wider (`top_k` and `top_n` added once more per retry). After
 `max_attempts` (default 2) it says it does not know.
 
+The retries run under the same loop limit as [Corrective](#corrective-rag-corrective)
+and [Iterative RAG](#iterative-rag-iterative), so every answer says how the loop
+went: `result["loop"]` is `{"steps": 2, "max_steps": 2, "stop_reason": "evidence is good"}`
+for the hotel question below (two searches; `"max steps"` when it gives up). A
+direct reply to a greeting never searches, so it has no `"loop"`.
+
 - **Good for:** mixed questions, avoiding wrong answers.
 - **LLM calls per question:** 2 (greeting) to 5 (one retry), with the default `max_attempts=2`
 - **Knobs:** `top_k`, `top_n` (default 4 and 2), `adaptive_max_attempts` (default 2)
@@ -588,9 +594,35 @@ rag_fusion + paragraph + bm25      0.833     0.833     0.833       50%       8.0
   answered the newcomer question. Better search is half of it; measure the answers
   on your own questions and model.
 
+### Tuning the fusion
+
+Both types fuse their searches with RRF (`k = 60`), every search counting the same.
+Two settings change that, both off by default:
+
+| Setting | Default | What it does |
+|---|---|---|
+| `QUESTION_WEIGHT` | `1.0` | how much the question's own search counts against the made-up queries' (`2.0`: twice as much) |
+| `RRF_KEEP_TOP` | `false` | `true`: every search's #1 chunk stays in the fused `top_k` |
+
+```python
+rag = RAGTitan(rag_type="rag_fusion", settings={"top_k": 2, "rrf_keep_top": True})
+```
+
+On the playground's 54 recorded setups (3 chunkers × 3 retrievers × 6 questions),
+with the default `top_k` 5, neither `RRF_KEEP_TOP` nor a question weight of 0.5 or
+2 changed which setups found all the evidence (`RRF_KEEP_TOP` changed the fused
+five in only 1 HyDE and 3 RAG-Fusion setups). With `top_k` 2 (and `top_n` 2),
+`RRF_KEEP_TOP` raised that count from 47 to 49 for HyDE and from 50 to 53 for
+RAG-Fusion, and never lowered it. `QUESTION_WEIGHT=2` with HyDE lowered it from 47
+to 44: in three setups the question's search pushed out the furniture-money chunk
+the made-up answer had ranked second. Try both in the [HyDE](rag-playground/hyde.md) and
+[RAG-Fusion](rag-playground/rag-fusion.md) playgrounds; with `RETRIEVER=hybrid`,
+`RRF_KEEP_TOP` also keeps each hybrid search's #1 (see [Retrieval](retrieval.md)).
+
 **What is simplified:** HyDE writes one made-up answer (the paper averages the
 embeddings of several, plus the question's) and fuses the two searches by rank;
-RAG-Fusion fuses with plain RRF (`k = 60`), with no weights per query.
+RAG-Fusion fuses with plain RRF (`k = 60`); only the question's search can be
+weighted, every rewording counts the same.
 
 ## Corrective RAG (`"corrective"`)
 

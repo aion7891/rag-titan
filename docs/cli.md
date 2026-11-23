@@ -121,6 +121,9 @@ you add `--force`. See [Build a golden set](cookbook/golden-set.md).
 | `--crag-refine`, `--no-crag-refine` | ask, chat, evaluate | corrective: give the model only the useful sentences (default on) |
 | `--crag-max-retries` | ask, chat, evaluate | corrective: times to search again, `0` grades only (default 1) |
 | `--iterative-max-steps` | ask, chat, evaluate | iterative: think-then-search rounds after the first search, `0` searches once (default 3) |
+| `--hybrid-dense-weight`, `--hybrid-bm25-weight` | ask, chat, evaluate | hybrid: how much each search's ranking counts when fused, above 0 (default 1.0) |
+| `--question-weight` | ask, chat, evaluate | hyde, rag_fusion: how much the question's own search counts against the made-up queries' (default 1.0) |
+| `--rrf-keep-top`, `--no-rrf-keep-top` | ask, chat, evaluate | keep every search's #1 chunk when lists are fused (default off) |
 | `--vector-store`, `--store-path` | ask, chat, index | a [saved index](vector-stores.md) |
 | `--add`       | index       | add to the saved index instead of starting over |
 | `--log-level` | ask, chat, evaluate | `DEBUG`, `INFO` or `WARNING` (default) |

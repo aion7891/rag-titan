@@ -120,7 +120,8 @@ def test_bad_options_raise(options, message):
 
 def test_setting_and_cli(tmp_path, monkeypatch, capsys):
     monkeypatch.setenv("HYDE_WITH_QUESTION", "false")
-    assert rag_options("hyde", get_settings()) == {"with_question": False}
+    assert rag_options("hyde", get_settings()) == {"with_question": False,
+                                                    "question_weight": 1.0, "keep_top": False}
     monkeypatch.delenv("HYDE_WITH_QUESTION")
     assert get_settings()["hyde_with_question"] is True
 

@@ -61,6 +61,15 @@ def _get_bool(name, default):
     return value in ("1", "true", "yes", "on")
 
 
+def _get_float(name, default):
+    """Read a number like 1.5 from the environment, or use the default."""
+    value = os.getenv(name, str(default))
+    try:
+        return float(value)
+    except ValueError:
+        raise ValueError(f"Setting {name} must be a number like 1.5, got '{value}'")
+
+
 def _get_overlap(name, default):
     """Read a share between 0 and 1 (like 0.5), or "off" for None."""
     value = os.getenv(name, str(default)).strip().lower()
@@ -167,6 +176,11 @@ def _store_settings():
     """Read the vector store and retrieval settings from the environment."""
     return {
         "retriever": os.getenv("RETRIEVER", "dense"),         # dense, bm25 or hybrid
+        # fusing ranked lists (RRF): how much each search counts, and keep each one's #1
+        "hybrid_dense_weight": _get_float("HYBRID_DENSE_WEIGHT", 1.0),
+        "hybrid_bm25_weight": _get_float("HYBRID_BM25_WEIGHT", 1.0),
+        "question_weight": _get_float("QUESTION_WEIGHT", 1.0),  # hyde and rag_fusion
+        "rrf_keep_top": _get_bool("RRF_KEEP_TOP", False),
         "vector_store": os.getenv("VECTOR_STORE", "memory"),
         "vector_store_path": os.getenv("VECTOR_STORE_PATH"),  # None: the store's default
         "vector_store_url": os.getenv("VECTOR_STORE_URL"),    # chroma/qdrant server

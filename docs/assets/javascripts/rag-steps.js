@@ -22,15 +22,19 @@ const RagSteps = (() => {
   }
 
   // How a fused score was made: "vector #2 · keyword #1 · rrf 0.0325" (hybrid search) or
-  // "query 1 #3 · query 2 #1 · rrf 0.0325" (HyDE, RAG-Fusion: one list per search query).
+  // "query 1 #3 · query 2 ×2 #1 · rrf 0.0325" (HyDE, RAG-Fusion: one list per search query;
+  // ×2 is a list's weight when it is not 1), and "kept as #1 of query 2" (keep_top).
   const LIST_NAMES = { dense: "vector", bm25: "keyword" };
+  const listName = (list) => LIST_NAMES[list] || list.replace("_", " ");
   function ranks(trace) {
     if (!trace || !("rrf" in trace)) return "";
     const parts = Object.keys(trace).filter((key) => key.endsWith("_rank")).map((key) => {
       const list = key.slice(0, -"_rank".length);
-      return `${LIST_NAMES[list] || list.replace("_", " ")} #${trace[key]}`;
+      const weight = trace[`${list}_weight`];
+      return `${listName(list)}${weight === undefined ? "" : ` ×${weight}`} #${trace[key]}`;
     });
     parts.push(`rrf ${trace.rrf.toFixed(4)}`);
+    if (trace.kept_as_top_of) parts.push(`kept as #1 of ${trace.kept_as_top_of.map(listName).join(", ")}`);
     return `  [${parts.join(" · ")}]`;
   }
 

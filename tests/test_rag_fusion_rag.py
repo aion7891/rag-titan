@@ -116,7 +116,8 @@ def test_empty_question_and_empty_index(store):
 
 def test_setting_and_cli(tmp_path, monkeypatch, capsys):
     monkeypatch.setenv("FUSION_QUERIES", "5")
-    assert rag_options("rag_fusion", get_settings()) == {"queries": 5}
+    assert rag_options("rag_fusion", get_settings()) == {"queries": 5, "question_weight": 1.0,
+                                                          "keep_top": False}
     monkeypatch.delenv("FUSION_QUERIES")
     assert get_settings()["fusion_queries"] == 3
 

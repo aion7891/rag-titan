@@ -14,6 +14,10 @@ Each one wins over its setting in .env, for that command only:
     --no-crag-refine   CRAG_REFINE            corrective: give the model whole chunks
     --crag-max-retries CRAG_MAX_RETRIES       corrective: times to search again
     --iterative-max-steps ITERATIVE_MAX_STEPS iterative: think-then-search rounds
+    --hybrid-dense-weight 2  HYBRID_DENSE_WEIGHT  hybrid: how much vector search counts
+    --hybrid-bm25-weight 2   HYBRID_BM25_WEIGHT   hybrid: how much keyword search counts
+    --question-weight 2      QUESTION_WEIGHT      hyde, rag_fusion: the question's search
+    --rrf-keep-top           RRF_KEEP_TOP         keep every search's #1 when fusing
 """
 
 import argparse
@@ -23,7 +27,9 @@ TUNING = {"top_k": "top_k", "top_n": "top_n", "max_attempts": "adaptive_max_atte
           "parent_size": "parent_size", "parent_budget": "parent_budget",
           "hyde_with_question": "hyde_with_question", "fusion_queries": "fusion_queries",
           "crag_upper": "crag_upper", "crag_lower": "crag_lower", "crag_refine": "crag_refine",
-          "crag_max_retries": "crag_max_retries", "iterative_max_steps": "iterative_max_steps"}
+          "crag_max_retries": "crag_max_retries", "iterative_max_steps": "iterative_max_steps",
+          "hybrid_dense_weight": "hybrid_dense_weight", "hybrid_bm25_weight": "hybrid_bm25_weight",
+          "question_weight": "question_weight", "rrf_keep_top": "rrf_keep_top"}
 
 
 def positive_int(text):
@@ -45,6 +51,18 @@ def whole_number(text):
         raise argparse.ArgumentTypeError(f"must be a whole number, got {text!r}")
     if value < 0:
         raise argparse.ArgumentTypeError(f"must be 0 or more, got {value}")
+    return value
+
+
+def positive_number(text):
+    """argparse type: a number above 0 like 1.5, as an RRF weight."""
+    try:
+        value = float(text)
+    except ValueError:
+        raise argparse.ArgumentTypeError(f"must be a number, got {text!r}")
+    # value > 0 is False for nan too; inf would outweigh every other list
+    if not 0 < value < float("inf"):
+        raise argparse.ArgumentTypeError(f"must be a number above 0, got {text}")
     return value
 
 
@@ -89,6 +107,7 @@ def add_tuning_options(command, search=True):
                          help="rag_fusion: rewordings of the question to search with, "
                               "1 to 10 (default: FUSION_QUERIES, 3)")
     add_correction_options(command)
+    add_fusion_options(command)
 
 
 def add_correction_options(command):
@@ -108,6 +127,22 @@ def add_correction_options(command):
     command.add_argument("--iterative-max-steps", type=whole_number,
                          help="iterative: think-then-search rounds after the first search, "
                               "0 searches once (default: ITERATIVE_MAX_STEPS, 3)")
+
+
+def add_fusion_options(command):
+    """The options of fusing ranked lists (RRF): hybrid search, hyde and rag_fusion."""
+    command.add_argument("--hybrid-dense-weight", type=positive_number,
+                         help="hybrid: how much the vector search's ranking counts, above 0 "
+                              "(default: HYBRID_DENSE_WEIGHT, 1.0)")
+    command.add_argument("--hybrid-bm25-weight", type=positive_number,
+                         help="hybrid: how much the keyword search's ranking counts, above 0 "
+                              "(default: HYBRID_BM25_WEIGHT, 1.0)")
+    command.add_argument("--question-weight", type=positive_number,
+                         help="hyde, rag_fusion: how much the question's own search counts "
+                              "against the made-up queries' (default: QUESTION_WEIGHT, 1.0)")
+    command.add_argument("--rrf-keep-top", action=argparse.BooleanOptionalAction,
+                         help="keep the #1 chunk of every search when the lists are fused "
+                              "(default: RRF_KEEP_TOP, off)")
 
 
 def tuning_settings(args):

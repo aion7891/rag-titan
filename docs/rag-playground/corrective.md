@@ -68,6 +68,7 @@ Every result below is a real recorded run you can repeat with the knobs.
 | lower grade | `CRAG_LOWER` | every chunk graded below this makes it *incorrect*; chunks below it are never kept (default 3) |
 | keep useful sentences | `CRAG_REFINE` | on (default): the model reads only the sentences that help, word for word |
 | max retries | `CRAG_MAX_RETRIES` | times to search again with a rewritten question; 0 grades only (default 1) |
+| vector / keyword search weight, keep each search's #1 | `HYBRID_DENSE_WEIGHT`, `HYBRID_BM25_WEIGHT`, `RRF_KEEP_TOP` | shown with retriever `hybrid`: how much each search counts when the two are fused (default 1), and keep each one's #1 (see [Retrieval](../retrieval.md#trusting-one-search-more-and-keeping-each-searchs-best)) |
 
 ## How the answers are made here
 

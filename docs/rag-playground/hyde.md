@@ -30,14 +30,33 @@ Every result below is a real recorded run you can repeat with the knobs.
    The policy says 150 euros. The made-up text is only used to search; it is never
    given to the model as a source.
 2. **When fusing hurts.** Same setup, with *search the question too* **on** (the
-   default): the 150-euro chunk of `expenses.md` is found only by the question's
-   search, so chunks found by **both** searches rank above it. It comes 5th of 5
-   in *Fuse lists*, the reranker keeps two others, and the model says it does not
-   know. Turn the knob **off**: the made-up answer's own search puts that chunk
-   first and the answer is *"Hotel costs are refunded up to 150 euros per night."*
-   Reciprocal Rank Fusion rewards agreement between the lists, even over a clear
-   first place in one of them.
-3. **The big picture.** Over all 54 recorded setups (3 chunkers × 3 retrievers ×
+   default). Both searches put a 150-euro chunk of `expenses.md` first, but not the
+   same one: word chunks overlap, and chunk_1 (the made-up answer's #1) and chunk_2
+   (the question's #1) share that sentence. After fusing, chunk_1 is dropped as a
+   near-copy of chunk_2, and chunk_2, found near the top by the question's search
+   only, comes 5th of 5 in *Fuse lists*: chunks found by **both** searches rank
+   above it. The reranker keeps two others and the model says it does not know.
+   Turn the knob **off**: the made-up answer's search alone puts chunk_1 first and
+   the answer is *"Hotel costs are refunded up to 150 euros per night."* Reciprocal
+   Rank Fusion rewards agreement between the lists, even over a clear first place
+   in one of them.
+3. **Keep each search's #1.** Same setup, knob back **on**, and set *keep each
+   search's #1* **on**: nothing changes, because chunk_2 is already in the fused five
+   and it is the reranker that drops it. Now set `top_k` to **2**: without the knob
+   the two fused chunks are a `remote_work.md` and a `leave_policy.md` one and the
+   model does not know; with it, chunk_2 is *"kept as #1 of query 2"* and the answer
+   is *"hotel costs are refunded up to 150 euros per night"*. Over all 54 setups with
+   `top_k` 2, keeping each search's #1 raised the setups with all the evidence from
+   47 to 49 and lowered none.
+4. **Weigh the question.** Pick *What do I get for working from home: equipment and
+   money for furniture?*, chunker `sentence`, retriever `dense`, `top_k` **2**: the
+   model gets the laptop chunk and the `expenses.md` chunk with the 300 euros. Set
+   *question weight* to **2**: in *Fuse lists* the question's search (`query 2 ×2`)
+   now decides more, a second `remote_work.md` chunk replaces the expenses one, and
+   the answer has no money for furniture. Over the 54 setups with `top_k` 2 a weight
+   of 2 lowered the setups with all the evidence from 47 to 44; 0.5 raised it to 49.
+   The made-up answer can be the better search: measure before trusting either one.
+5. **The big picture.** Over all 54 recorded setups (3 chunkers × 3 retrievers ×
    6 questions) the chunks given to the model held all the evidence in 45 for
    Simple RAG, 44 for HyDE with the question searched too, and 48 with the made-up
    answer alone. These short policies use the same words as the questions, so
@@ -55,6 +74,9 @@ Every result below is a real recorded run you can repeat with the knobs.
 | top_k | `TOP_K` | chunks the fused search returns (default 5) |
 | top_n | `TOP_N` | chunks the model reads (default 2) |
 | search the question too | `HYDE_WITH_QUESTION` | on (default): the question's search is fused in, so a wrong guess cannot take over; off: the made-up answer alone, like the paper |
+| question weight | `QUESTION_WEIGHT` | how much the question's search counts against the made-up answer's when fusing (default 1) |
+| keep each search's #1 | `RRF_KEEP_TOP` | on: the best chunk of both searches stays in the fused `top_k` (default off) |
+| vector / keyword search weight, keep each search's #1 | `HYBRID_DENSE_WEIGHT`, `HYBRID_BM25_WEIGHT`, `RRF_KEEP_TOP` | shown with retriever `hybrid`: how much each search counts when the two are fused (default 1), and keep each one's #1 (see [Retrieval](../retrieval.md#trusting-one-search-more-and-keeping-each-searchs-best)) |
 
 ## How the answers are made here
 

@@ -238,7 +238,8 @@ A retriever made of several steps can draw them: see `SEARCH_FLOW` and
    to the nav in `mkdocs.yml`, and list its knob values in `PRESET_GRID`
    (`playground/recording.py`). Its own knobs get one line each in `KNOBS` in
    `docs/assets/javascripts/rag-knobs.js` (`top_k`, `top_n`, the retriever and
-   the reranker are there for every type). Then record the
+   the reranker are there for every type, and the hybrid search's knobs appear
+   whenever the retriever is `hybrid`). Then record the
    [RAG playground](rag-playground.md) examples again, so your type shows up with
    its diagram and tuning knobs:
 

@@ -19,20 +19,25 @@ from rag_titan.factory import RAG_TYPES, RETRIEVERS
 from rag_titan.llm.replay_llm import RecordingLLM
 from rag_titan.playground.presets import build_parts, index_documents, preset_settings
 from rag_titan.playground.session import Playground
-from rag_titan.playground.tuning import default_tuning
+from rag_titan.playground.tuning import RETRIEVER_DEFAULTS, default_tuning
 
 RERANKER_VALUES = ["keyword", "none", "mmr", "llm"]
 
 # the values recorded for each knob, one knob at a time (the default is included)
 PRESET_GRID = {
-    "simple": {"top_k": [3, 5, 8], "top_n": [1, 2, 3], "reranker": RERANKER_VALUES},
+    # the hybrid knobs are recorded for Simple RAG only: they change nothing but the search
+    "simple": {"top_k": [3, 5, 8], "top_n": [1, 2, 3], "reranker": RERANKER_VALUES,
+               "hybrid_dense_weight": [1.0, 2.0], "hybrid_bm25_weight": [1.0, 2.0],
+               "rrf_keep_top": [False, True]},
     "adaptive": {"top_k": [2, 4, 6], "top_n": [1, 2, 3], "adaptive_max_attempts": [1, 2, 3],
                  "reranker": RERANKER_VALUES},
     "parent_child": {"top_k": [4, 8, 12], "top_n": [2, 4, 6], "parent_budget": [300, 600, 3000],
                      "parent_size": [1500, 200], "reranker": RERANKER_VALUES},
     "hyde": {"top_k": [3, 5, 8], "top_n": [1, 2, 3], "hyde_with_question": [True, False],
+             "question_weight": [0.5, 1.0, 2.0], "rrf_keep_top": [False, True],
              "reranker": RERANKER_VALUES},
     "rag_fusion": {"top_k": [3, 5, 8], "top_n": [1, 2, 3], "fusion_queries": [1, 3, 5],
+                   "question_weight": [0.5, 1.0, 2.0], "rrf_keep_top": [False, True],
                    "reranker": RERANKER_VALUES},
     "corrective": {"top_k": [3, 5, 8], "top_n": [1, 2, 3], "crag_upper": [5, 7, 9],
                    "crag_lower": [1, 3, 5], "crag_refine": [True, False],
@@ -51,7 +56,7 @@ def grid_tunings(rag_type, grid, reranker):
         reranker: the presets' default reranker (the other knobs' defaults come
             from the RAG type itself).
     """
-    defaults = {**default_tuning()[rag_type], "reranker": reranker}
+    defaults = {**RETRIEVER_DEFAULTS, **default_tuning()[rag_type], "reranker": reranker}
     tunings = [("default", None)]
     for knob, values in (grid or {}).get(rag_type, {}).items():
         for value in values:

@@ -1,5 +1,6 @@
 """
-Loop limits for the RAG types that search more than once (Corrective, Iterative).
+Loop limits for the RAG types that search more than once (Adaptive, Corrective,
+Iterative).
 
 A loop that asks a model "search again?" must never run away, so every loop:
     - has a hard cap on its rounds (max_steps);

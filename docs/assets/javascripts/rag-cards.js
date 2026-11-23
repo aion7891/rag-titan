@@ -41,7 +41,7 @@ const RagCards = (() => {
     }
     const files = [...new Set(run.sources)].join(", ") || "none";
     const given = run.recorded === false ? "files the model would read" : "files given to the LLM";
-    // Corrective and Iterative RAG: how their loop went, e.g. "1 of 1 rounds, stopped: evidence is good"
+    // Adaptive, Corrective and Iterative RAG: how their loop went, e.g. "1 of 2 rounds, stopped: evidence is good"
     const loop = run.loop ? ` · loop: ${RagSteps.describe(run.loop)}` : "";
     return `${evidence} · ${run.steps.length} steps · ${Math.round(run.ms)} ms · ${given}: ${files}`
       + loop;

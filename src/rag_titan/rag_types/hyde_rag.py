@@ -39,6 +39,9 @@ class HyDERAG(QueryTransformRAG):
         top_n: how many chunks the model reads.
         with_question: also search with the question and fuse both lists
             (default True); False searches with the made-up passage only.
+        question_weight: how much the question's search counts against the
+            passage's when fusing (default 1.0; 2.0 trusts the question more).
+        keep_top: True keeps the #1 chunk of both searches (default False).
     """
 
     # also search with the question (HYDE_WITH_QUESTION)
@@ -61,8 +64,11 @@ class HyDERAG(QueryTransformRAG):
 
     def __init__(self, llm, retriever, reranker, generator,
                  top_k=QueryTransformRAG.DEFAULT_TOP_K, top_n=QueryTransformRAG.DEFAULT_TOP_N,
-                 with_question=DEFAULT_WITH_QUESTION):
-        super().__init__(llm, retriever, reranker, generator, top_k, top_n)
+                 with_question=DEFAULT_WITH_QUESTION,
+                 question_weight=QueryTransformRAG.DEFAULT_QUESTION_WEIGHT,
+                 keep_top=QueryTransformRAG.DEFAULT_KEEP_TOP):
+        super().__init__(llm, retriever, reranker, generator, top_k, top_n, question_weight,
+                         keep_top)
         if not isinstance(with_question, bool):
             raise ValueError(f"with_question must be True or False, got {with_question!r}")
         self.with_question = with_question

@@ -36,6 +36,15 @@ Every result below is a real recorded run you can repeat with the knobs.
    don't know"*. With **`llm`** both right files reach it and it answers.
 4. **Too little context.** Chunker `word`, retriever `dense`, same question,
    `top_n` **1**: one chunk is not enough and the model says it does not know.
+5. **Trust one search more.** Pick *When do I need a note from the doctor?*,
+   chunker `word`, retriever **`hybrid`**: the hybrid knobs appear. The answer is
+   *"From the third sick day you need a doctor's note"*. Set *keyword search weight*
+   to **2**: in *Fuse ranks* the keyword search's votes count twice
+   (`keyword ×2`), a neighbouring chunk replaces the one that says *third sick day*,
+   and the answer becomes *"You need a doctor's note for sick leave"*. The evidence
+   score stays 100%, because it counts files, not sentences. Over the 18 hybrid
+   setups a weight of 2 reordered the fused chunks in 10 (vector) and 6 (keyword)
+   but never changed which files the model got.
 
 ## The knobs
 
@@ -46,6 +55,7 @@ Every result below is a real recorded run you can repeat with the knobs.
 | Reranker | `RERANKER` | `keyword` rewards shared words, `none` keeps the search order, `mmr` avoids near-copies, `llm` lets the model rate each chunk |
 | top_k | `TOP_K` | how many chunks the search finds (default 5) |
 | top_n | `TOP_N` | how many of them reach the model (default 2, at most top_k) |
+| vector / keyword search weight, keep each search's #1 | `HYBRID_DENSE_WEIGHT`, `HYBRID_BM25_WEIGHT`, `RRF_KEEP_TOP` | shown with retriever `hybrid`: how much each search counts when the two are fused (default 1), and keep each one's #1 (see [Retrieval](../retrieval.md#trusting-one-search-more-and-keeping-each-searchs-best)) |
 
 The code under the result builds the same setup in Python, ready to copy.
 

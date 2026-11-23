@@ -30,11 +30,14 @@ Every result below is a real recorded run you can repeat with the knobs.
    (150 euros) is already first, but the model's evidence check says *no*: it is a
    small model's judgement. Adaptive RAG rewrites the question as *"Hotel price
    limits per night; maximum hotel rates; nightly hotel cost ceilings"*, searches
-   wider (`top_k` 4 → 8), checks again, and answers in 9 steps. Now set **max
-   attempts** to **1**: no second chance, so it says it does not know after 5 steps.
+   wider (`top_k` 4 → 8), checks again, and answers in 9 steps: the line under the
+   answer says *"loop: 2 of 2 rounds, stopped: evidence is good"*. Now set **max
+   attempts** to **1**: no second chance, so it says it does not know after 5 steps
+   (*"1 of 1 rounds, stopped: max steps"*).
 2. **More chunks can hurt.** Same question, max attempts back to 2, `top_n`
-   **3**: with the extra chunk the check says *no* twice and it gives up. More
-   context is not always better for a small model.
+   **3**: with the extra chunk the check says *no* twice and it gives up
+   (*"2 of 2 rounds, stopped: max steps"*). More context is not always better for a
+   small model.
 3. **Words or meaning.** Pick *When do I need a note from the doctor?* with chunker
    `word`. Retriever `dense` answers in 5 steps. Retriever **`bm25`** finds only one
    chunk with the words *doctor's note*, and it starts mid-sentence, without *from
@@ -52,6 +55,7 @@ Every result below is a real recorded run you can repeat with the knobs.
 | top_k | `TOP_K` | chunks searched for a *simple* question (default 4). A *complex* question searches 2 × top_k, and every retry adds top_k more |
 | top_n | `TOP_N` | chunks kept the same way (default 2; 2 × for complex, + top_n per retry) |
 | max attempts | `ADAPTIVE_MAX_ATTEMPTS` | searches before it gives up and says it does not know (default 2) |
+| vector / keyword search weight, keep each search's #1 | `HYBRID_DENSE_WEIGHT`, `HYBRID_BM25_WEIGHT`, `RRF_KEEP_TOP` | shown with retriever `hybrid`: how much each search counts when the two are fused (default 1), and keep each one's #1 (see [Retrieval](../retrieval.md#trusting-one-search-more-and-keeping-each-searchs-best)) |
 
 Adaptive RAG asks the model up to five times per question (route, check, rewrite,
 check again, answer), so more of its steps depend on recorded replies than in

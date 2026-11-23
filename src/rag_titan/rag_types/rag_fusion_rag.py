@@ -40,6 +40,9 @@ class RAGFusionRAG(QueryTransformRAG):
         top_n: how many chunks the model reads.
         queries: how many rewordings to ask for, 1 to 10 (default 3), so
             queries + 1 searches with the question.
+        question_weight: how much the question's search counts against each
+            rewording's when fusing (default 1.0; 2.0 trusts the question more).
+        keep_top: True keeps the #1 chunk of every search (default False).
     """
 
     # rewordings searched next to the question (FUSION_QUERIES)
@@ -62,8 +65,11 @@ class RAGFusionRAG(QueryTransformRAG):
 
     def __init__(self, llm, retriever, reranker, generator,
                  top_k=QueryTransformRAG.DEFAULT_TOP_K, top_n=QueryTransformRAG.DEFAULT_TOP_N,
-                 queries=DEFAULT_QUERIES):
-        super().__init__(llm, retriever, reranker, generator, top_k, top_n)
+                 queries=DEFAULT_QUERIES,
+                 question_weight=QueryTransformRAG.DEFAULT_QUESTION_WEIGHT,
+                 keep_top=QueryTransformRAG.DEFAULT_KEEP_TOP):
+        super().__init__(llm, retriever, reranker, generator, top_k, top_n, question_weight,
+                         keep_top)
         check_count("queries", queries)
         if queries > MAX_QUERIES:
             raise ValueError(f"queries must be at most {MAX_QUERIES}: each one is a search, "

@@ -10,6 +10,7 @@ from rag_titan.config import get_settings
 from rag_titan.embeddings.replay_embedder import ReplayEmbedder
 from rag_titan.factory import build_chunker, build_generator, build_reranker, build_retriever
 from rag_titan.llm.replay_llm import ReplayLLM
+from rag_titan.playground.tuning import RETRIEVER_DEFAULTS
 from rag_titan.vector_stores.memory_store import MemoryStore
 
 # the ingestion choices offered in the playground
@@ -54,9 +55,17 @@ def build_parts(settings, embedder, llm, retriever="dense", parent_size=None):
     return with_retriever(parts, retriever)
 
 
-def with_retriever(parts, retriever):
-    """The same parts (and index) searched with another retriever: dense, bm25 or hybrid."""
+def with_retriever(parts, retriever, tuning=None):
+    """
+    The same parts (and index) searched with another retriever: dense, bm25 or hybrid.
+
+    Args:
+        tuning: optional knobs of the hybrid search (hybrid_dense_weight,
+            hybrid_bm25_weight, rrf_keep_top); the others are ignored here.
+    """
     settings = {"retriever": retriever, "dedupe_overlap": parts["dedupe_overlap"]}
+    settings.update({key: value for key, value in (tuning or {}).items()
+                     if key in RETRIEVER_DEFAULTS})
     return {**parts, "retriever": build_retriever(settings, parts["embedder"], parts["store"])}
 
 

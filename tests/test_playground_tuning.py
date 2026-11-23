@@ -182,7 +182,9 @@ def test_the_query_transformation_knobs_record_and_replay():
 
 def test_the_query_transformation_defaults_for_the_pages():
     defaults = default_tuning()
-    assert defaults["hyde"] == {"top_k": 5, "top_n": 2, "hyde_with_question": True}
-    assert defaults["rag_fusion"] == {"top_k": 5, "top_n": 2, "fusion_queries": 3}
+    assert defaults["hyde"] == {"top_k": 5, "top_n": 2, "hyde_with_question": True,
+                                "question_weight": 1.0, "rrf_keep_top": False}
+    assert defaults["rag_fusion"] == {"top_k": 5, "top_n": 2, "fusion_queries": 3,
+                                      "question_weight": 1.0, "rrf_keep_top": False}
     assert check_tuning({"hyde_with_question": False, "fusion_queries": 4}, [1500]) == {
         "hyde_with_question": False, "fusion_queries": 4}

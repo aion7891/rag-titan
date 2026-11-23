@@ -39,7 +39,19 @@ Every result below is a real recorded run you can repeat with the knobs.
    chunks and says it does not know (Simple RAG answers this one). Set **queries**
    to **5**: with more votes the answer comes back. Reciprocal Rank Fusion rewards
    being found by every search more than being first in most of them.
-3. **The big picture.** Over all 54 recorded setups the chunks given to the model
+3. **Keep each search's #1.** Pick *What do I get for working from home: equipment
+   and money for furniture?* again, chunker `word`, retriever `dense`, `top_k`
+   **2**. The model writes *"work from home benefits"*, *"remote work allowances"*
+   and *"home office stipends"*; the two fused chunks are a
+   `remote_work.md` and a `leave_policy.md` one, and the model says it does not
+   know. Set *keep each search's #1* **on**: the `expenses.md` chunk with the
+   furniture money, first for *"home office stipends"*, is *"kept as #1 of query 4"*
+   and replaces the leave chunk, so all the evidence reaches the model. Its answer
+   was not recorded (two knobs changed): the run stops at *Generate answer* and
+   shows what the model would read. Over all 54 setups with `top_k` 2, keeping each
+   search's #1 raised the setups with all the evidence from 50 to 53 and lowered
+   none; with the default `top_k` 5 that count stayed at 47.
+4. **The big picture.** Over all 54 recorded setups the chunks given to the model
    held all the evidence in 45 for Simple RAG and in 46, 47 and 48 for RAG-Fusion
    with 1, 3 and 5 queries. Each extra query is one more search and the model's
    rewordings can drift, so measure it on your own questions:
@@ -55,6 +67,9 @@ Every result below is a real recorded run you can repeat with the knobs.
 | top_k | `TOP_K` | chunks the fused search returns (default 5) |
 | top_n | `TOP_N` | chunks the model reads (default 2) |
 | queries | `FUSION_QUERIES` | rewordings the model writes (default 3), so queries + 1 searches |
+| question weight | `QUESTION_WEIGHT` | how much the question's search counts against each rewording's when fusing (default 1) |
+| keep each search's #1 | `RRF_KEEP_TOP` | on: the best chunk of every search stays in the fused `top_k` (default off) |
+| vector / keyword search weight, keep each search's #1 | `HYBRID_DENSE_WEIGHT`, `HYBRID_BM25_WEIGHT`, `RRF_KEEP_TOP` | shown with retriever `hybrid`: how much each search counts when the two are fused (default 1), and keep each one's #1 (see [Retrieval](../retrieval.md#trusting-one-search-more-and-keeping-each-searchs-best)) |
 
 ## How the answers are made here
 

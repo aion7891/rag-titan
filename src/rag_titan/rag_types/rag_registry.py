@@ -29,8 +29,10 @@ CLASSES = {"simple": SimpleRAG, "adaptive": AdaptiveRAG, "parent_child": ParentC
 TYPE_OPTIONS = {
     "adaptive": {"max_attempts": "adaptive_max_attempts"},
     "parent_child": {"parent_budget": "parent_budget"},
-    "hyde": {"with_question": "hyde_with_question"},
-    "rag_fusion": {"queries": "fusion_queries"},
+    "hyde": {"with_question": "hyde_with_question", "question_weight": "question_weight",
+             "keep_top": "rrf_keep_top"},
+    "rag_fusion": {"queries": "fusion_queries", "question_weight": "question_weight",
+                   "keep_top": "rrf_keep_top"},
     "corrective": {"upper": "crag_upper", "lower": "crag_lower", "refine": "crag_refine",
                    "max_retries": "crag_max_retries"},
     "iterative": {"max_steps": "iterative_max_steps"},
