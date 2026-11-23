@@ -6,6 +6,10 @@ Question -> Choose route -> Retrieve -> Rerank -> Check evidence
                                   Enough evidence -> Answer
                                                   |
                               Not enough -> Rewrite and retry
+
+The retries run under a LoopLimit (rag_types/loops.py), like Corrective and
+Iterative RAG, so every answer says how the loop went: result["loop"] is
+{"steps": searches made, "max_steps": max_attempts, "stop_reason": ...}.
 """
 
 from rag_titan.prompts import DIRECT_REPLY_PROMPT, NO_ANSWER
@@ -13,6 +17,7 @@ from rag_titan.rag_types.adaptive.evidence_checker import EvidenceChecker
 from rag_titan.rag_types.adaptive.query_rewriter import QueryRewriter
 from rag_titan.rag_types.adaptive.router import Router
 from rag_titan.rag_types.base_rag import BaseRAG, check_count, check_search_sizes
+from rag_titan.rag_types.loops import EVIDENCE_GOOD, LoopLimit
 from rag_titan.rag_types.trace import Trace
 from rag_titan.utils.logger import get_logger
 
@@ -108,12 +113,18 @@ class AdaptiveRAG(BaseRAG):
         return self.top_k * factor, self.top_n * factor
 
     def _search_and_answer(self, query, top_k, top_n, trace):
-        """Search, check the evidence, and retry with a rewritten query."""
+        """
+        Search, check the evidence, and retry with a rewritten query.
+
+        The loop stops with "evidence is good" (answer) or "max steps"
+        (max_attempts searches without enough evidence: no answer).
+        """
         # the original question never changes, only the search query does
         search_query = query
+        limit = LoopLimit(self.max_attempts, name="max_attempts")
 
-        for attempt in range(1, self.max_attempts + 1):
-            logger.info("Search attempt %d: '%s'", attempt, search_query)
+        while limit.next_step():
+            logger.info("Search attempt %d: '%s'", limit.steps, search_query)
 
             matches = trace.search(self.retriever, query=search_query, top_k=top_k)
             chunks = trace.record("rerank", self.reranker.rerank,
@@ -123,17 +134,25 @@ class AdaptiveRAG(BaseRAG):
 
             if enough:
                 logger.info("Enough evidence found")
+                limit.stop(EVIDENCE_GOOD)
                 answer = trace.record("generate", self.generator.generate,
                                       query=query, chunks=chunks)
-                return trace.result(answer, chunks)
+                return with_loop(trace.result(answer, chunks), limit)
 
-            if attempt == self.max_attempts:
-                break
+            if limit.steps == self.max_attempts:
+                continue  # the last search: next_step() ends the loop, no rewrite
 
             logger.info("Not enough evidence, rewriting and widening the search")
             search_query = trace.record("rewrite", self.query_rewriter.rewrite, query=query)
             top_k += self.top_k
             top_n += self.top_n
 
-        trace.add("give_up", {"attempts": self.max_attempts}, NO_ANSWER)
-        return trace.result(NO_ANSWER)
+        trace.add("give_up", {"attempts": self.max_attempts, "loop": limit.summary()},
+                  NO_ANSWER)
+        return with_loop(trace.result(NO_ANSWER), limit)
+
+
+def with_loop(result, limit):
+    """The run's result with "loop": how many searches ran and why they stopped."""
+    result["loop"] = limit.summary()
+    return result
