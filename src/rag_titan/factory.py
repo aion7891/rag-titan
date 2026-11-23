@@ -13,7 +13,9 @@ from rag_titan.chunking.fixed_size import (
     TokenChunker,
     WordChunker,
 )
+from rag_titan.chunking.markdown import MarkdownChunker
 from rag_titan.chunking.parent_child import ParentChildChunker
+from rag_titan.chunking.statistical import TextTilingChunker
 from rag_titan.chunking.structure_aware import (
     HeadingChunker,
     PageChunker,
@@ -44,7 +46,8 @@ from rag_titan.vector_stores.store_registry import VECTOR_STORES, build_store  #
 LLM_PROVIDERS = ["ollama", "anthropic", "claude"]
 
 # every chunker build_chunker() knows, used by the CLI
-CHUNKERS = ["word", "character", "token", "recursive", "sentence", "paragraph", "heading", "page"]
+CHUNKERS = ["word", "character", "token", "recursive", "sentence", "paragraph", "heading", "page",
+            "markdown", "texttiling"]
 
 
 def build_llm(settings, model=None, think=False):
@@ -112,9 +115,15 @@ def build_chunker(settings):
         "paragraph": ParagraphChunker,
         "heading": HeadingChunker,
         "page": PageChunker,
+        # whole Markdown blocks: lists, tables, code, quotes (chunking/markdown/)
+        "markdown": MarkdownChunker,
     }
     if name in structure_aware:
         return structure_aware[name](size, overlap)
+
+    if name == "texttiling":
+        # topic boundaries from word overlap (chunking/statistical/)
+        return TextTilingChunker(size, overlap, window=settings.get("texttiling_window", 3))
 
     raise ValueError(f"Unknown chunker: {name}")
 
