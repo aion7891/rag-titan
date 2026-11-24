@@ -6,6 +6,41 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.15.2] - 2026-11-25
+
+More model providers through one built-in client. Ollama and Claude work as before.
+
+### Added
+- **OpenAI-compatible providers** for answers, agents and embeddings, with no SDK
+  and nothing extra to install: `LLM_PROVIDER` / `EMBED_PROVIDER` accept `openai`,
+  `gemini`, `openrouter`, `huggingface` (`hf`, chat only), `lmstudio`, `vllm`, and
+  `openai_compatible` for any other server (`LLM_BASE_URL`, `EMBED_BASE_URL`).
+  Keys come from `OPENAI_API_KEY`, `GEMINI_API_KEY`, `OPENROUTER_API_KEY`,
+  `HF_TOKEN`, or `LLM_API_KEY` / `EMBED_API_KEY`. Default models (when `LLM_MODEL`
+  / `EMBED_MODEL` are unset): `gpt-5-mini` and `text-embedding-3-small` (OpenAI),
+  `gemini-3.7-flash` and `gemini-embedding-001` (Gemini), `openai/gpt-5-mini` and
+  `openai/text-embedding-3-small` (OpenRouter), `openai/gpt-oss-120b` (Hugging
+  Face). [Setup](https://aion7891.github.io/rag-titan/configuration/#openai-gemini-openrouter-hugging-face-and-local-servers).
+- `OpenAICompatibleLLM` (`rag_titan.llm`): Chat Completions with tool calls, so
+  agents work; clear errors for a missing key (naming the variable), a reply
+  without an answer, and a reply cut off at the length limit.
+- `OpenAICompatibleEmbedder` (`rag_titan.embeddings`): batches, vectors put in
+  order by their index, and a check that every vector has the same size.
+- `rag_titan.providers`: the providers, their addresses, key variables and
+  default models in one place.
+- Checked against a real server: pointed at Ollama's own OpenAI-compatible
+  endpoint, chat, agent tool calls and RAG answers work, and search found the same
+  top-3 chunks for every help-desk question as the native Ollama client (recall@3
+  1.000, MRR 0.917 for both).
+
+### Changed
+- **API keys never enter the settings.** They are read from the environment only
+  when a client is made, so they cannot appear in reports, traces or logs.
+- `EMBED_MODEL` now defaults to the embedding provider's own model
+  (`nomic-embed-text` for Ollama, as before). In `.env.example` it is commented
+  out, so switching `EMBED_PROVIDER` alone is enough.
+- An unknown provider name lists every provider.
+
 ## [0.15.1] - 2026-11-23
 
 Two chunkers that need no model. Nothing changes for the existing chunkers.
