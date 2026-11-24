@@ -20,8 +20,8 @@
 ## Building blocks
 
 - [x] LLMs: Anthropic Claude (`LLM_PROVIDER=claude`), available since 0.9.0
-- [ ] LLMs: OpenAI, Gemini, OpenRouter, Hugging Face
-- [ ] Embedders: OpenAI, sentence-transformers
+- [x] LLMs and embeddings: OpenAI, Gemini, OpenRouter, Hugging Face (chat), LM Studio, vLLM and any OpenAI-compatible server, one built-in client, available since 0.15.2
+- [ ] Embedders: sentence-transformers (local, no server)
 - [x] Saved vector stores: SQLite (built in), Chroma, Qdrant; `rag-titan index`, add/replace files, embedder check, available since 0.10.0
 - [ ] Vector stores: FAISS, LanceDB, pgvector, Pinecone, then Weaviate, Milvus, Elasticsearch, Redis, MongoDB
 - [x] Retrievers: BM25 and hybrid (RRF) next to dense, `RETRIEVER` setting, `evaluate --retriever`, available since 0.11.0

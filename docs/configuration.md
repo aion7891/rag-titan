@@ -15,15 +15,19 @@ cp .env.example .env
 
 | Variable          | Settings key      | Default                  | Meaning                                        |
 |-------------------|-------------------|--------------------------|------------------------------------------------|
-| `LLM_PROVIDER`    | `llm_provider`    | `ollama`                 | `ollama`, or `claude` / `anthropic` (below)    |
+| `LLM_PROVIDER`    | `llm_provider`    | `ollama`                 | `ollama`, `claude` / `anthropic`, `openai`, `gemini`, `openrouter`, `huggingface`, `lmstudio`, `vllm` or `openai_compatible` ([below](#openai-gemini-openrouter-hugging-face-and-local-servers)) |
 | `LLM_MODEL`       | `llm_model`       | provider's (`gemma3:4b`) | Chat model for answers                         |
 | `OLLAMA_HOST`     | `ollama_host`     | `http://localhost:11434` | Ollama server address                          |
 | `ANTHROPIC_API_KEY` | –               | –                        | Your Claude key (`claude` only)                |
+| `OPENAI_API_KEY`, `GEMINI_API_KEY`, `OPENROUTER_API_KEY`, `HF_TOKEN` | – | – | The key of that provider |
+| `LLM_BASE_URL`    | `llm_base_url`    | the provider's           | Another address for an OpenAI-compatible server (needed for `openai_compatible`) |
+| `LLM_API_KEY`     | –                 | –                        | A key for that server; wins over the provider's own key variable |
 | `AGENT_MODEL`     | `agent_model`     | provider's (`qwen3:4b`)  | Model for agents (needs tools)                 |
 | `AGENT_THINK`     | `agent_think`     | `true`                   | Turn on thinking for agents                    |
 | `AGENT_MAX_STEPS` | `agent_max_steps` | `5`                      | Max agent think/tool rounds                    |
-| `EMBED_PROVIDER`  | `embed_provider`  | `ollama`                 | `ollama`, or `hash` (no model, see below)      |
-| `EMBED_MODEL`     | `embed_model`     | `nomic-embed-text`       | Embedding model                                |
+| `EMBED_PROVIDER`  | `embed_provider`  | `ollama`                 | `ollama`, `hash` (no model, see below), `openai`, `gemini`, `openrouter`, `lmstudio`, `vllm` or `openai_compatible` |
+| `EMBED_MODEL`     | `embed_model`     | provider's (`nomic-embed-text`) | Embedding model                         |
+| `EMBED_BASE_URL`, `EMBED_API_KEY` | `embed_base_url`, – | the provider's | Like `LLM_BASE_URL` / `LLM_API_KEY`, for embeddings |
 | `CHUNKER`         | `chunker`         | `word`                   | see [Chunking methods](chunking.md)            |
 | `CHUNK_SIZE`      | `chunk_size`      | `150`                    | Units per chunk (see below)                    |
 | `CHUNK_OVERLAP`   | `chunk_overlap`   | `30`                     | Units shared by neighbouring chunks            |
@@ -161,6 +165,48 @@ Good to know:
   model shows Anthropic's own message (the key itself is never printed).
 - In Python, `AnthropicLLM(model, api_key=None, max_tokens=2048, temperature=None)`
   from `rag_titan.llm` can be used directly (see [Building blocks](building-blocks.md)).
+
+## OpenAI, Gemini, OpenRouter, Hugging Face and local servers
+
+These providers all speak the OpenAI API, so one built-in client serves them,
+with nothing extra to install. Put the key in `.env` and pick the provider; for
+embeddings too, set `EMBED_PROVIDER` the same way.
+
+| Provider | `LLM_PROVIDER` | Key | Chat model (default) | Embeddings (default) |
+|---|---|---|---|---|
+| OpenAI | `openai` | `OPENAI_API_KEY` | `gpt-5-mini` | `text-embedding-3-small` |
+| Google Gemini | `gemini` | `GEMINI_API_KEY` | `gemini-3.7-flash` | `gemini-embedding-001` |
+| OpenRouter | `openrouter` | `OPENROUTER_API_KEY` | `openai/gpt-5-mini` | `openai/text-embedding-3-small` |
+| Hugging Face | `huggingface` (`hf`) | `HF_TOKEN` | `openai/gpt-oss-120b` | – (chat only) |
+| LM Studio | `lmstudio` | – | set `LLM_MODEL` | set `EMBED_MODEL` |
+| vLLM | `vllm` | – | set `LLM_MODEL` | set `EMBED_MODEL` |
+| any other server | `openai_compatible` | optional `LLM_API_KEY` | set `LLM_MODEL` | set `EMBED_MODEL` |
+
+```bash
+# .env: answers from Gemini, search with Ollama on your machine
+LLM_PROVIDER=gemini
+GEMINI_API_KEY=...
+EMBED_PROVIDER=ollama
+
+# or a local vLLM server for both
+LLM_PROVIDER=vllm
+LLM_MODEL=Qwen/Qwen3-8B
+LLM_BASE_URL=http://localhost:8000/v1   # the default for vllm
+```
+
+Try one in a minute: `rag-titan ask --files your.pdf --question "..." --trace`.
+
+- **Defaults change.** Providers rename models often; set `LLM_MODEL` /
+  `EMBED_MODEL` to the exact names your account offers.
+- **Embeddings must match the index.** Changing `EMBED_PROVIDER` or `EMBED_MODEL`
+  needs a new index; a saved index says so instead of mixing vectors.
+- **Tools work** (agents), through the standard OpenAI tool calls.
+- **Keys stay out of sight.** They are read from the environment when a client is
+  made, never stored in the settings, and never shown in errors, logs or traces.
+- **Checked against a real server:** with `LLM_PROVIDER=openai_compatible` pointed
+  at Ollama's own OpenAI-compatible endpoint (`http://localhost:11434/v1`), chat,
+  agent tool calls and RAG answers work, and search found the same top-3 chunks
+  for every test question as the native Ollama client.
 
 ## Without an embedding model
 

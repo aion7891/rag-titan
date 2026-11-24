@@ -18,7 +18,7 @@ about a travel policy.
 ## Get the example
 
 ```bash
-python -m pip install "rag-titan==0.15.1"
+python -m pip install "rag-titan==0.15.2"
 ```
 
 [Download the starter ZIP](../assets/cookbook/rag-titan-cookbook.zip){ .md-button }

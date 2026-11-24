@@ -13,6 +13,9 @@ Example:
 
 import os
 
+# the providers and their default models (provider_name stays importable from here)
+from rag_titan.providers import fill_models, provider_name  # noqa: F401
+
 try:
     from dotenv import load_dotenv
 except ImportError:
@@ -20,23 +23,9 @@ except ImportError:
     # from environment variables and overrides
     load_dotenv = None
 
-# chat and agent models used when LLM_MODEL / AGENT_MODEL are not set,
-# so switching LLM_PROVIDER alone is enough
-DEFAULT_MODELS = {
-    "ollama": {"llm_model": "gemma3:4b", "agent_model": "qwen3:4b"},
-    "anthropic": {"llm_model": "claude-haiku-5-5", "agent_model": "claude-haiku-5-5"},
-}
-PROVIDER_ALIASES = {"claude": "anthropic"}
-
 # where a saved index lives when VECTOR_STORE_PATH is not set: a file or a folder
 DEFAULT_STORE_PATHS = {"sqlite": "rag_titan.db", "chroma": "rag_titan_chroma",
                        "qdrant": "rag_titan_qdrant"}
-
-
-def provider_name(name):
-    """Turn "Claude", " anthropic " and the like into the provider's real name."""
-    name = str(name).strip().lower()
-    return PROVIDER_ALIASES.get(name, name)
 
 
 def _get_int(name, default):
@@ -103,6 +92,7 @@ def get_settings(overrides=None):
         # LLM used by RAG
         "llm_provider": os.getenv("LLM_PROVIDER", "ollama"),
         "llm_model": os.getenv("LLM_MODEL"),          # None: the provider's default
+        "llm_base_url": os.getenv("LLM_BASE_URL"),    # OpenAI-compatible servers (no keys here)
         "ollama_host": os.getenv("OLLAMA_HOST", "http://localhost:11434"),
 
         # LLM used by agents (needs tool-calling support)
@@ -112,7 +102,8 @@ def get_settings(overrides=None):
 
         # Embeddings
         "embed_provider": os.getenv("EMBED_PROVIDER", "ollama"),
-        "embed_model": os.getenv("EMBED_MODEL", "nomic-embed-text"),
+        "embed_model": os.getenv("EMBED_MODEL"),      # None: the provider's default
+        "embed_base_url": os.getenv("EMBED_BASE_URL"),
 
         # Chunking
         **_chunk_settings(),
@@ -190,10 +181,7 @@ def _store_settings():
 
 def _fill_defaults(settings):
     """Fill empty models and store path with the provider's and the store's defaults."""
-    defaults = DEFAULT_MODELS.get(provider_name(settings["llm_provider"]), DEFAULT_MODELS["ollama"])
-    for key, model in defaults.items():
-        if not settings.get(key):
-            settings[key] = model
+    fill_models(settings)
 
     store = str(settings["vector_store"]).strip().lower()
     if not settings.get("vector_store_path"):
