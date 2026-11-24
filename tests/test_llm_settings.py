@@ -53,7 +53,8 @@ def test_key_comes_from_the_environment(monkeypatch):
 
 def test_unknown_provider_lists_the_choices():
     with pytest.raises(ValueError, match="Unknown LLM provider: 'openia'. Use one of: "
-                                         "ollama, anthropic, claude"):
+                                         "ollama, anthropic, openai, gemini, openrouter, "
+                                         "huggingface, lmstudio, vllm, openai_compatible"):
         build_llm(get_settings({"llm_provider": "openia"}))
 
 
