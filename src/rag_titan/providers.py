@@ -36,7 +36,7 @@ PROVIDERS = {
                     "no_embeddings": True},
     "lmstudio": {"service": "LM Studio", "base_url": "http://localhost:1234/v1"},
     "vllm": {"service": "vLLM", "base_url": "http://localhost:8000/v1"},
-    "openai_compatible": {"service": "The OpenAI-compatible server", "base_url": None},
+    "openai_compatible": {"service": "OpenAI-compatible server", "base_url": None},
 }
 
 ALIASES = {"claude": "anthropic", "hf": "huggingface", "lm_studio": "lmstudio",
