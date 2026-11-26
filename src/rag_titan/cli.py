@@ -13,6 +13,7 @@ Examples:
         --rag-type simple adaptive --chunker word paragraph --retriever dense hybrid
     rag-titan evaluate --input data.json --output report.json --baseline last_report.json
     rag-titan golden --questions questions.txt --files policy.md --output golden.json
+    rag-titan okf validate path/to/bundle
     rag-titan --version
 """
 
@@ -22,6 +23,7 @@ from rag_titan import __version__
 from rag_titan.cli_evaluate import add_evaluate_command, build_setups, run_evaluate  # noqa: F401
 from rag_titan.cli_golden import add_golden_command, run_golden
 from rag_titan.cli_index import add_index_command, add_store_options, prepare_rag, run_index
+from rag_titan.cli_okf import add_okf_command, run_okf
 from rag_titan.cli_options import add_tuning_options
 from rag_titan.factory import RAG_TYPES, RERANKERS, RETRIEVERS
 from rag_titan.utils.logger import setup_logging
@@ -57,6 +59,7 @@ def build_parser():
     add_evaluate_command(commands)
     add_golden_command(commands)
     add_index_command(commands)
+    add_okf_command(commands)
     return parser
 
 
@@ -78,7 +81,8 @@ def main(argv=None):
     args = build_parser().parse_args(argv)
     setup_logging(args.log_level)
 
-    runners = {"evaluate": run_evaluate, "golden": run_golden, "index": run_index}
+    runners = {"evaluate": run_evaluate, "golden": run_golden, "index": run_index,
+               "okf": run_okf}
     if args.command in runners:
         runners[args.command](args)
         return
