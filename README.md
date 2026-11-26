@@ -54,6 +54,7 @@ extra; `[all]` installs every one of them:
 | `pip install "rag-titan[chroma]"` | `VECTOR_STORE=chroma` |
 | `pip install "rag-titan[qdrant]"` | `VECTOR_STORE=qdrant` |
 | `pip install "rag-titan[rerank]"` | `RERANKER=cross_encoder` (sentence-transformers, PyTorch) |
+| `pip install "rag-titan[okf]"` | reading Open Knowledge Format bundles (PyYAML) |
 | `pip install "rag-titan[all]"` | all of the above |
 
 `rerank` (and so `all`) brings PyTorch, a large download on Linux. For a smaller one,

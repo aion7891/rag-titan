@@ -25,7 +25,7 @@ def extras():
 
 def test_all_installs_every_feature_extra():
     table = extras()
-    assert table["all"] == ["rag-titan[tokens,chroma,qdrant,rerank]"]
+    assert table["all"] == ["rag-titan[tokens,chroma,qdrant,rerank,okf]"]
 
     named = set(re.fullmatch(r"rag-titan\[(.+)\]", table["all"][0]).group(1).split(","))
     assert named == set(table) - DEVELOPER_EXTRAS     # a new extra must be added to all

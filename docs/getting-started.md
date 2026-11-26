@@ -20,6 +20,7 @@ extra, and `[all]` installs every one of them:
 | `pip install "rag-titan[chroma]"` | `VECTOR_STORE=chroma`, see [Vector stores](vector-stores.md) | medium |
 | `pip install "rag-titan[qdrant]"` | `VECTOR_STORE=qdrant`, see [Vector stores](vector-stores.md) | medium |
 | `pip install "rag-titan[rerank]"` | `RERANKER=cross_encoder`, see [Retrieval and rerankers](retrieval.md) | large (PyTorch) |
+| `pip install "rag-titan[okf]"` | reading Open Knowledge Format (OKF) bundles | small (PyYAML) |
 | `pip install "rag-titan[all]"` | all of the above | large |
 
 Extras combine, for example `pip install "rag-titan[chroma,tokens]"`. On Linux,
