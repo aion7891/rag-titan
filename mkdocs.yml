@@ -75,6 +75,7 @@ nav:
       - Chunking methods: chunking.md
       - Retrieval and rerankers: retrieval.md
       - Vector stores: vector-stores.md
+      - OKF knowledge bundles: okf.md
       - Agents: agents.md
   - Playgrounds:
       - "RAG playground: compare": rag-playground.md

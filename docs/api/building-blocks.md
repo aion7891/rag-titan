@@ -10,6 +10,8 @@
 
 ::: rag_titan.vector_stores
 
+::: rag_titan.okf
+
 ::: rag_titan.retrieval
 
 ::: rag_titan.retrieval.fusion
