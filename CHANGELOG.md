@@ -6,6 +6,48 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.15.3] - 2026-11-27
+
+Open Knowledge Format (OKF) bundles: check them, and index them so answers come
+from current knowledge and show how far each passage can be trusted.
+
+### Added
+- **Read OKF bundles** (`rag_titan.okf`, OKF v0.3; v0.2 and unversioned bundles
+  are read with the spec's fallback): a folder of Markdown files with YAML
+  frontmatter, or a `.zip` of one. Concepts, skipped files, assets, reserved
+  files (`index.md`, `log.md`) and the bundle metadata (`okf_version`, `title`,
+  `description`, `license`) are sorted as the spec says. Reading is safe: dot
+  paths are skipped, a symbolic link or zip entry that leads out of the bundle is
+  never read, and YAML follows the 1.2 rule for booleans (`on`, `yes`, `no` stay
+  text) and refuses duplicate keys.
+- **Trust, freshness and lifecycle:** trust tiers (unverified, machine-confirmed,
+  human-reviewed) from current verification events only, so a tier drops when the
+  content changed after a review; staleness from `stale_after` (a value that cannot
+  be read is never fresh); status, and `superseded_by` followed to the concept that
+  replaced an old one. Links and path fields resolve from the bundle root or the
+  file's folder, never outside the bundle.
+- **`rag-titan okf validate`** (errors and warnings; exit 1 on errors, `--strict`
+  for warnings too, `--json`) and **`rag-titan okf info`** (concepts by type,
+  trust tier, status; stale; broken links). In Python: `validate_bundle()`.
+- **Index a bundle:** give its folder or `.zip` to `index()` or `--files`. Each
+  concept becomes a document, and every chunk keeps the concept's facts in
+  `chunk["metadata"]` (also in a saved index). `OKF_INCLUDE=current` (default)
+  leaves out deprecated concepts; `all` keeps every one. `OKF_MIN_TRUST` leaves out
+  concepts below a trust tier. CLI: `--okf-include`, `--okf-min-trust`. The model
+  sees each OKF passage's trust tier, status and staleness in its source line.
+- `pip install "rag-titan[okf]"` (PyYAML).
+- `examples/okf_rag.py` with an example bundle (`examples/okf_bundle/`) where three
+  policies changed and the old versions stay deprecated. Guide:
+  [OKF knowledge bundles](https://aion7891.github.io/rag-titan/okf/). With
+  `gemma3:4b`, three runs: with `OKF_INCLUDE=current` 12 of 12 answers gave the
+  current value; with `all` the old version was always among the passages read,
+  and 5 of 12 answers also gave the old value.
+
+### Changed
+- A document's `metadata` is copied onto each of its chunks (every chunker,
+  parent-child too). Documents without metadata give exactly the same chunks.
+- A folder or `.zip` in the files to index is read as an OKF bundle.
+
 ## [0.15.2] - 2026-11-25
 
 More model providers through one built-in client. Ollama and Claude work as before.

@@ -182,7 +182,9 @@ def build_rag_parts(settings, rag_type=None):
 
     return {
         "llm": llm,
-        "pipeline": IndexingPipeline(chunker, embedder, store),
+        "pipeline": IndexingPipeline(chunker, embedder, store,
+                                     okf_include=settings.get("okf_include", "current"),
+                                     okf_min_trust=settings.get("okf_min_trust", "unverified")),
         "retriever": build_retriever(settings, embedder, store),
         "reranker": build_reranker(settings, llm, embedder),
         "generator": build_generator(settings, llm),

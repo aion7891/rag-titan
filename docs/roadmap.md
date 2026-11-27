@@ -31,6 +31,7 @@
 - [x] Tuning settings for every RAG type (`TOP_K`, `TOP_N`, `ADAPTIVE_MAX_ATTEMPTS`, `PARENT_SIZE`, `PARENT_BUDGET`) and a playground page per RAG type with knobs, available since 0.12.0
 - [x] Loaders: TXT and Markdown (`TextLoader`), available since 0.3.0
 - [ ] Loaders: HTML, CSV
+- [x] Open Knowledge Format bundles: read and validate (v0.3, v0.2 readable), `rag-titan okf validate` / `info`, index with trust tiers and current-only filtering (`OKF_INCLUDE`, `OKF_MIN_TRUST`), available since 0.15.3
 - [x] Chunkers: character, token, recursive (`"character"`, `"token"`, `"recursive"`), available since 0.2.0
 - [x] Chunkers: sentence, paragraph, heading, page (`"sentence"`, `"paragraph"`, `"heading"`, `"page"`), available since 0.3.0
 - [x] Chunkers: element-aware Markdown (`"markdown"`: whole lists, tables, code) and TextTiling (`"texttiling"`: topic changes, no model), available since 0.15.1

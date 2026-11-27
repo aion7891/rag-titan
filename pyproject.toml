@@ -44,6 +44,7 @@ dev = [
     "ruff>=0.6",
     "build>=1.2",
     "twine>=5.0",
+    "pyyaml>=6.0",       # so the tests of OKF bundles run too
 ]
 tokens = [
     "tiktoken>=0.7",
@@ -59,10 +60,14 @@ qdrant = [
 rerank = [
     "sentence-transformers>=3.0",
 ]
+# reading Open Knowledge Format bundles (YAML frontmatter)
+okf = [
+    "pyyaml>=6.0",
+]
 # every optional feature in one install: pip install "rag-titan[all]"
 # (it names the extras above, so each package and version is written once)
 all = [
-    "rag-titan[tokens,chroma,qdrant,rerank]",
+    "rag-titan[tokens,chroma,qdrant,rerank,okf]",
 ]
 docs = [
     "mkdocs-material>=9.5",

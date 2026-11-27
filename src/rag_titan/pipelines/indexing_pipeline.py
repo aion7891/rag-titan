@@ -1,9 +1,15 @@
 """
 Offline indexing, shared by every RAG type:
     load files -> chunk -> embed -> store
+
+A folder or a .zip in the file list is read as an OKF knowledge bundle: its
+concepts become the documents (see okf/documents.py).
 """
 
+from pathlib import Path
+
 from rag_titan.loaders.loader_registry import load_document
+from rag_titan.okf.documents import check_okf_options, okf_documents
 from rag_titan.utils.logger import get_logger
 from rag_titan.vector_stores.index_info import build_info, check_same_build
 
@@ -18,12 +24,19 @@ class IndexingPipeline:
         chunker: a BaseChunker.
         embedder: a BaseEmbedder.
         store: a BaseStore.
+        okf_include: for OKF bundles: "current" (leave out deprecated concepts)
+            or "all".
+        okf_min_trust: for OKF bundles: the lowest trust tier to index
+            ("unverified" keeps all).
     """
 
-    def __init__(self, chunker, embedder, store):
+    def __init__(self, chunker, embedder, store, okf_include="current",
+                 okf_min_trust="unverified"):
+        check_okf_options(okf_include, okf_min_trust)
         self.chunker = chunker
         self.embedder = embedder
         self.store = store
+        self.okf_include, self.okf_min_trust = okf_include, okf_min_trust
 
     def run(self, file_paths, reset=True):
         """
@@ -90,10 +103,13 @@ class IndexingPipeline:
         return info["next_chunk"] if info else self.store.count()
 
     def load_documents(self, file_paths):
-        """Load every file and skip the ones without any text."""
+        """Load every file (and every OKF bundle's concepts); skip the ones without text."""
         documents = []
 
         for path in file_paths:
+            if is_bundle(path):
+                documents += okf_documents(path, self.okf_include, self.okf_min_trust)
+                continue
             document = load_document(path)
 
             if not document["text"].strip():
@@ -105,3 +121,9 @@ class IndexingPipeline:
             documents.append(document)
 
         return documents
+
+
+def is_bundle(path):
+    """True for a folder or a .zip file: they are read as OKF bundles."""
+    path = Path(path)
+    return path.is_dir() or (path.is_file() and path.suffix.lower() == ".zip")

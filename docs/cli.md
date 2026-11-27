@@ -103,6 +103,17 @@ your files. Every record starts with `"validated": false`: you review it, write 
 expected answer, then mark it validated. It never overwrites an existing file unless
 you add `--force`. See [Build a golden set](cookbook/golden-set.md).
 
+## Check an OKF bundle
+
+```bash
+rag-titan okf validate examples/okf_bundle            # errors and warnings; exit 1 on errors
+rag-titan okf validate bundle.zip --strict --json     # warnings fail too; JSON for CI
+rag-titan okf info examples/okf_bundle                # concepts by type, trust tier, status
+```
+
+Needs `pip install "rag-titan[okf]"`. A folder or `.zip` given to `--files` is
+indexed as a bundle. See [OKF knowledge bundles](okf.md).
+
 ## Options
 
 | Option        | Used by     | Meaning                                   |
@@ -115,6 +126,8 @@ you add `--force`. See [Build a golden set](cookbook/golden-set.md).
 | `--max-attempts` | ask, chat, evaluate | adaptive: searches before giving up (default 2) |
 | `--parent-size` | ask, chat, index, evaluate | parent_child: largest parent section in characters, when indexing (default 1500) |
 | `--texttiling-window` | ask, chat, index, evaluate | texttiling chunker: sentences compared on each side of a possible cut, when indexing (default 3) |
+| `--okf-include` | ask, chat, index, evaluate | OKF bundles: `current` (default) or `all` concepts, when indexing |
+| `--okf-min-trust` | ask, chat, index, evaluate | OKF bundles: lowest trust tier to index (default `unverified`) |
 | `--parent-budget` | ask, chat, evaluate | parent_child: most characters of sections given to the model (default 3000) |
 | `--hyde-with-question`, `--no-hyde-with-question` | ask, chat, evaluate | hyde: also search with the question (default on) |
 | `--fusion-queries` | ask, chat, evaluate | rag_fusion: rewordings of the question to search with (default 3) |

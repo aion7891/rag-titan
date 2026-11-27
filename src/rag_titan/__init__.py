@@ -21,7 +21,7 @@ from rag_titan.rag_types.rag_fusion_rag import RAGFusionRAG
 from rag_titan.rag_types.simple_rag import SimpleRAG
 from rag_titan.utils.logger import setup_logging
 
-__version__ = "0.15.2"
+__version__ = "0.15.3"
 
 __all__ = [
     "RAGTitan",

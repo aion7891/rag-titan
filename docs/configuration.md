@@ -34,6 +34,8 @@ cp .env.example .env
 | `CHUNK_ENCODING`  | `chunk_encoding`  | `cl100k_base`            | tiktoken encoding (`token` only)               |
 | `PARENT_SIZE`     | `parent_size`     | `1500`                   | Largest parent section in characters (`parent_child` RAG only) |
 | `TEXTTILING_WINDOW` | `texttiling_window` | `3`                    | `texttiling` chunker: sentences compared on each side of a possible cut |
+| `OKF_INCLUDE`     | `okf_include`     | `current`                | [OKF bundles](okf.md): `current` leaves out deprecated concepts, `all` indexes every one |
+| `OKF_MIN_TRUST`   | `okf_min_trust`   | `unverified`             | OKF bundles: the lowest trust tier to index (`machine-confirmed`, `human-reviewed`) |
 | `VECTOR_STORE`    | `vector_store`    | `memory`                 | `memory`, `sqlite`, `chroma`, `qdrant`: see [Vector stores](vector-stores.md) |
 | `VECTOR_STORE_PATH` | `vector_store_path` | store's (`rag_titan.db`) | File (sqlite) or folder (chroma, qdrant) of a saved index |
 | `VECTOR_STORE_URL` | `vector_store_url` | –                       | Chroma or Qdrant server instead of a folder    |

@@ -1,0 +1,10 @@
+[
+  {"id": "o_001", "question": "What is the maximum hotel cost per night?",
+   "current": "180", "old": "150"},
+  {"id": "o_002", "question": "How much money do I get for home office furniture?",
+   "current": "400", "old": "300"},
+  {"id": "o_003", "question": "How many paid leave days do I get per year?",
+   "current": "25", "old": "20"},
+  {"id": "o_004", "question": "What may a hotel night in London cost?",
+   "current": "220", "old": "150"}
+]

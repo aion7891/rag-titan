@@ -9,6 +9,18 @@ from rag_titan.chunking.locations import Locations
 from rag_titan.chunking.offsets import located_spans
 
 
+def document_metadata(document):
+    """
+    The document's own metadata for each of its chunks: {"metadata": {...}}, or
+    {} when it has none (so plain documents give exactly the same chunks).
+
+    A loader can attach facts every chunk should carry, for example an OKF
+    concept's id and trust tier. Each chunk gets its own copy.
+    """
+    metadata = document.get("metadata")
+    return {"metadata": dict(metadata)} if metadata else {}
+
+
 class BaseChunker:
     """Splits documents into smaller pieces called chunks."""
 
@@ -25,7 +37,8 @@ class BaseChunker:
             `document["text"][start_offset:end_offset]` is where the chunk comes
             from (the offsets are None if it cannot be found).
             When known, chunks also get "page_numbers" (PDFs) and
-            "section_path" (documents with headings).
+            "section_path" (documents with headings), and the document's own
+            "metadata" when it has one.
         """
         chunks = []
 
@@ -39,6 +52,7 @@ class BaseChunker:
                     "start_offset": start,
                     "end_offset": end,
                     **locations.describe(start, end),
+                    **document_metadata(document),
                 })
 
         return chunks
