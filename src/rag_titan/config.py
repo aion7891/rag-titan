@@ -135,6 +135,9 @@ def _chunk_settings():
         "chunk_encoding": os.getenv("CHUNK_ENCODING", "cl100k_base"),  # token chunker only
         "parent_size": _get_int("PARENT_SIZE", 1500),  # parent_child RAG: largest parent
         "texttiling_window": _get_int("TEXTTILING_WINDOW", 3),  # texttiling: sentences per side
+        # OKF bundles: index only current concepts (or all), and from which trust tier
+        "okf_include": os.getenv("OKF_INCLUDE", "current"),
+        "okf_min_trust": os.getenv("OKF_MIN_TRUST", "unverified"),
     }
 
 

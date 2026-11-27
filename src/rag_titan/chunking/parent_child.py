@@ -19,7 +19,7 @@ Stores save the whole chunk, so the parent is saved (and replaced by
 `index --add`) together with its children, in every store.
 """
 
-from rag_titan.chunking.base_chunker import BaseChunker
+from rag_titan.chunking.base_chunker import BaseChunker, document_metadata
 from rag_titan.chunking.locations import Locations
 from rag_titan.chunking.offsets import shift
 from rag_titan.chunking.structure_aware.heading_chunker import HeadingChunker
@@ -85,6 +85,7 @@ class ParentChildChunker(BaseChunker):
                         "end_offset": last,
                         **locations.describe(first, last),
                         **parent,
+                        **document_metadata(document),
                     })
 
         return chunks

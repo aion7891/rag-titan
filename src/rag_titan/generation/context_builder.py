@@ -7,6 +7,7 @@ def describe_source(chunk):
 
     Example:
         [chunk_4] Source: handbook.pdf, page 3, section: Leave policy > Sick leave
+        [chunk_7] Source: metrics/margin.md, trust: human-reviewed      (an OKF concept)
     """
     parts = [str(chunk["source"])]
 
@@ -17,7 +18,26 @@ def describe_source(chunk):
     if chunk.get("section_path"):
         parts.append("section: " + " > ".join(chunk["section_path"]))
 
+    parts += okf_notes(chunk.get("metadata") or {})
     return f"[{chunk['id']}] Source: {', '.join(parts)}"
+
+
+def okf_notes(metadata):
+    """
+    What the model should know about an OKF concept: its trust tier, and
+    whether it is a draft, deprecated (and by what replaced) or due for a check.
+    Example: ["trust: human-reviewed", "status: deprecated, replaced by metrics/new"]
+    """
+    if "okf_concept" not in metadata:
+        return []
+    notes = [f"trust: {metadata.get('trust_tier', 'unverified')}"]
+    status = metadata.get("status", "stable")
+    if status != "stable":
+        replaced = metadata.get("replaced_by")
+        notes.append(f"status: {status}" + (f", replaced by {replaced}" if replaced else ""))
+    if metadata.get("stale"):
+        notes.append("stale: due for a check")
+    return notes
 
 
 def build_context(chunks):
